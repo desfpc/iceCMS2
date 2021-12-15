@@ -134,17 +134,17 @@ class Settings
         foreach ($possibleSettings as $key => $value) {
             $paramName = $key;
             if (!is_array($value)) {
-                if (!isset($setup[$paramName])) {
+                if (!isset($settings[$paramName])) {
                     if ($value === 1) {
                         throw new Exception('Settings file error - there is no required field: ' . $paramName);
                     }
-                    $setup[$paramName] = null;
+                    $settings[$paramName] = null;
                 }
-                $this->$paramName = $setup[$paramName];
+                $this->$paramName = $settings[$paramName];
             } else {
                 if (count($value) === 0) {
-                    if (isset($setup[$paramName])) {
-                        $this->$paramName = $setup[$paramName];
+                    if (isset($settings[$paramName])) {
+                        $this->$paramName = $settings[$paramName];
                     } else {
                         $this->$paramName = null;
                     }
@@ -155,13 +155,13 @@ class Settings
                     $this->$paramName = new stdClass();
                     foreach ($possibleSettings[$paramName] as $key2 => $value2) {
                         $paramName2 = $key2;
-                        if (!isset($setup[$paramName][$paramName2])) {
+                        if (!isset($settings[$paramName][$paramName2])) {
                             if ($value2 === 1) {
                                 throw new Exception('Settings file error - there is no required field: ' . $paramName . '-' . $paramName2);
                             }
-                            $setup[$paramName][$paramName2] = null;
+                            $settings[$paramName][$paramName2] = null;
                         }
-                        $this->$paramName->$paramName2 = $setup[$paramName][$paramName2];
+                        $this->$paramName->$paramName2 = $settings[$paramName][$paramName2];
                     }
                 }
             }
