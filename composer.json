@@ -1,0 +1,21 @@
+{
+    "name": "desfpc/iceCMS2",
+    "description": "IceCMS2 - lite php8, mySql and Vue.js CMS",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Sergey Peshalov",
+            "email": "desfpc@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "ext-json": "*",
+        "desfpc/redka": "0.*",
+        "desfpc/pechkin": "0.*",
+        "desfpc/visualijoper": "1.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    }
+}
