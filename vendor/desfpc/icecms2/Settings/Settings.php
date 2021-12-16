@@ -78,8 +78,8 @@ class Settings
     /** @var stdClass|null cache system settings */
     public ?stdClass $cache = null;
 
-    /** @var stdClass|null site controllers routes */
-    public ?stdClass $routes = null;
+    /** @var array<string, mixed>|null site controllers routes */
+    public ?array $routes = null;
 
     /** @var string|null secret passphrase for encryption */
     public ?string $secret = null;
@@ -147,8 +147,10 @@ class Settings
                         $this->$paramName = null;
                     }
                 } else {
-                    if (!isset($settings[$paramName]) && !is_array($settings[$paramName])) {
-                        throw new Exception('Settings file error - there is no required field or it is not an array : ' . $paramName);
+                    if (!isset($settings[$paramName])) {
+                        throw new Exception('Settings file error - there is no required field: ' . $paramName);
+                    } elseif (!is_array($settings[$paramName])) {
+                        throw new Exception('Settings file error - required field is no array: ' . $paramName);
                     }
                     $this->$paramName = new stdClass();
                     foreach (self::_POSSIBLE_SETTINGS[$paramName] as $key2 => $value2) {
