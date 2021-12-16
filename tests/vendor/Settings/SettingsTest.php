@@ -6,7 +6,12 @@ use PHPUnit\Framework\TestCase;
 
 class SettingsTest extends TestCase
 {
-    public function testSettings()
+    /**
+     * Test iceCMS2\Settings\Settings
+     *
+     * @return void
+     */
+    public function testSettings(): void
     {
         // empty array
         $settings = new Settings([]);
