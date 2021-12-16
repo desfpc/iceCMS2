@@ -6,8 +6,6 @@ declare(strict_types=1);
  * https://github.com/desfpc/iceCMS2
  *
  * Settings Class
- * TODO store in cache
- * TODO unit tests
  */
 
 namespace iceCMS2\Settings;
@@ -18,6 +16,50 @@ use Throwable;
 
 class Settings
 {
+    /**
+     * Possible settings;
+     *
+     * possible values:
+     * 1 - required
+     * 0 - optional
+     * [] - optional array
+     */
+    private const _POSSIBLE_SETTINGS = [
+        'path' => 1,
+        'template' => 1,
+        'dev' => 1,
+        'secret' => 1,
+        'db' => [
+            'type' => 1, 
+            'name' => 1,
+            'host' => 1,
+            'port' => 1,
+            'login' => 1,
+            'pass' => 1,
+            'encoding' => 1,
+        ],
+        'email' => [
+            'mail' => 1,
+            'port' => 1,
+            'signature' => 1,
+            'pass' => 1,
+            'smtp' => 1,
+        ],
+        'sms' => 0,
+        'site' => [
+            'title' => 1,
+            'primary_domain' => 1,
+            'redirect_to_primary_domain' => 1,
+            'language_subdomain' => 1,
+        ],
+        'cache' => [
+            'use_redis' => 1,
+            'redis_host' => 0,
+            'redis_port' => 0,
+        ],
+        'routes' => [],
+    ];
+    
     /** @var stdClass|null DataBase settings */
     public ?stdClass $db = null;
 
@@ -65,50 +107,7 @@ class Settings
         $this->errors->text = 'Settings were not loaded';
 
         try {
-            /**
-             * @var array<string, int|array<string, int>> array with possible settings;
-             *
-             * possible values:
-             * 1 - required
-             * 0 - optional
-             * [] - optional array
-             */
-            $possibleSettings = [];
-
-            $possibleSettings['path'] = 1;
-            $possibleSettings['template'] = 1;
-            $possibleSettings['dev'] = 1;
-            $possibleSettings['secret'] = 1;
-
-            $possibleSettings['db']['type'] = 1;
-            $possibleSettings['db']['name'] = 1;
-            $possibleSettings['db']['host'] = 1;
-            $possibleSettings['db']['port'] = 1;
-            $possibleSettings['db']['login'] = 1;
-            $possibleSettings['db']['pass'] = 1;
-            $possibleSettings['db']['encoding'] = 1;
-
-            $possibleSettings['email']['mail'] = 1;
-            $possibleSettings['email']['port'] = 1;
-            $possibleSettings['email']['signature'] = 1;
-            $possibleSettings['email']['pass'] = 1;
-            $possibleSettings['email']['smtp'] = 1;
-
-            // TODO add SMS possible values
-            $possibleSettings['sms'] = 0;
-
-            $possibleSettings['site']['title'] = 1;
-            $possibleSettings['site']['primary_domain'] = 1;
-            $possibleSettings['site']['redirect_to_primary_domain'] = 1;
-            $possibleSettings['site']['language_subdomain'] = 1;
-
-            $possibleSettings['cache']['use_redis'] = 1;
-            $possibleSettings['cache']['redis_host'] = 0;
-            $possibleSettings['cache']['redis_port'] = 0;
-
-            $possibleSettings['routes'] = [];
-
-            $this->_buildSettings($possibleSettings, $settings);
+            $this->_buildSettings($settings);
 
             $this->errors->flag = 0;
             $this->errors->text = 'Settings loaded ';
@@ -124,14 +123,13 @@ class Settings
      * Initializes the properties of the settings object from the passed array
      * TODO convert the repetitive code to a recursive function
      *
-     * @param array<string, int|array<string, int>|array> $possibleSettings
      * @param array<string, mixed> $settings
      * @return void
      * @throws Exception
      */
-    private function _buildSettings(array $possibleSettings, array $settings): void
+    private function _buildSettings(array $settings): void
     {
-        foreach ($possibleSettings as $key => $value) {
+        foreach (self::_POSSIBLE_SETTINGS as $key => $value) {
             $paramName = $key;
             if (!is_array($value)) {
                 if (!isset($settings[$paramName])) {
@@ -153,7 +151,7 @@ class Settings
                         throw new Exception('Settings file error - there is no required field or it is not an array : ' . $paramName);
                     }
                     $this->$paramName = new stdClass();
-                    foreach ($possibleSettings[$paramName] as $key2 => $value2) {
+                    foreach (self::_POSSIBLE_SETTINGS[$paramName] as $key2 => $value2) {
                         $paramName2 = $key2;
                         if (!isset($settings[$paramName][$paramName2])) {
                             if ($value2 === 1) {
