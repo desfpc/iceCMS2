@@ -10,7 +10,6 @@
   ],
   "minimum-stability": "dev",
   "require": {
-    "php": "^8.0",
     "ext-mysqli": "*",
     "ext-json": "*",
     "desfpc/redka": "0.*",

@@ -35,7 +35,7 @@ class DBFactory
     public function __construct(Settings $settings)
     {
         switch ($settings->db->type) {
-            case 'MySql':
+            case 'MySQL':
                 $this->DB = new MySql($settings->db);
                 break;
         }

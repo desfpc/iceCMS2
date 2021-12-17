@@ -13,7 +13,7 @@ namespace iceCMS2\DB;
 class MySql implements DBInterface
 {
     /** @var stdClass|null DB Connection settings */
-    private ?stdClass $_settings = null;
+    private ?\stdClass $_settings = null;
 
     /** @var bool DB error flag */
     private bool $_isError = false;
@@ -28,20 +28,20 @@ class MySql implements DBInterface
     private ?array $_warningText = null;
 
     /** @var mysqli|false|null mysqli resourse */
-    private null|mysqli|false $_mysqli = null;
+    private $_mysqli = null;
 
     /** @var bool connecting flag */
     private bool $_isConnected = false;
 
-    /** @var text|null connecting status text */
-    private ?text $_connectedText = null;
+    /** @var string|null connecting status text */
+    private ?string $_connectedText = null;
 
     /**
      * Class Constructor
      *
-     * @param stdClass|null $dbSettings
+     * @param \stdClass|null $dbSettings
      */
-    public function __construct(?stdClass $dbSettings)
+    public function __construct(?\stdClass $dbSettings)
     {
         $this->_settings = $dbSettings;
     }
@@ -131,6 +131,7 @@ class MySql implements DBInterface
             $this->_isError = true;
             $this->_errorText = 'Failed to establish a connection to the database: ' . $t->getMessage();
         }
+    return $this->_isConnected;
     }
 
     /**
@@ -155,7 +156,7 @@ class MySql implements DBInterface
     /**
      * @inheritDoc
      */
-    public function query(string $query, $isFree = true, $isCnt = false, $isForced = false): bool|array
+    public function query(string $query, $isFree = true, $isCnt = false, $isForced = false)
     {
         if ($this->_isConnected || $isForced) {
             /** @var mysqli_result|bool $res */

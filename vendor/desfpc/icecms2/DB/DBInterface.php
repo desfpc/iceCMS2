@@ -77,7 +77,7 @@ interface DBInterface
      * @param bool $isForced try to execute the request even if there are errors
      * @return bool|array<mixed, mixed>
      */
-    public function query(string $query, $isFree = true, $isCnt = false, $isForced = false): bool|array;
+    public function query(string $query, $isFree = true, $isCnt = false, $isForced = false);
 
     /**
      * MultiQuery to DB

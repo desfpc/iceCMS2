@@ -1,5 +1,14 @@
 <?php
 declare(strict_types=1);
+/**
+ * iceCMS2 v0.1a
+ * Created by Sergey Peshalov https://github.com/desfpc
+ * https://github.com/desfpc/iceCMS2
+ *
+ * Settings Class Tests
+ */
+
+namespace vendor\Settings;
 
 use iceCMS2\Settings\Settings;
 use PHPUnit\Framework\TestCase;
@@ -24,7 +33,7 @@ class SettingsTest extends TestCase
             'dev' => true,
             'secret' => 'verySecretSecret',
             'db' => [
-                'type' => 'mySql',
+                'type' => 'MySQL',
                 'name' => 'testDB',
                 'host' => '127.0.0.1',
                 'port' => '3306',
