@@ -32,12 +32,17 @@ class Migrations
     /** @var bool DB resourse flag */
     private bool $_isDB = false;
 
+    /** @var string */
+    private string $_migrationsFolder;
+
     /**
      * Constructor class
      */
     public function __construct(Settings $settings)
     {
         $this->_settings = $settings;
+        $this->_migrationsFolder = $this->_settings->path . 'migrations' . DIRECTORY_SEPARATOR
+            . $this->_settings->db->type . DIRECTORY_SEPARATOR;
         $this->_db = DBFactory::get($this->_settings);
         if (is_null($this->_db)) {
             $this->_errorText = 'Wrong DB settings';
@@ -64,12 +69,10 @@ class Migrations
         } else {
             $name = str_replace(' ', '', $name);
         }
-        $fullName = $this->_settings->path . 'migrations' . DIRECTORY_SEPARATOR . $this->_settings->db->type
-            . DIRECTORY_SEPARATOR . date('YmdHis') . '_' . Strings::camelToSnake($name) . '.php';
+        $fullName = $this->_migrationsFolder . date('YmdHis') . '_' . Strings::camelToSnake($name) . '.php';
         echo "\n" . 'Creating migration file ' . $fullName;
 
-        $tempFile = $this->_settings->path . 'migrations' . DIRECTORY_SEPARATOR . $this->_settings->db->type
-            . DIRECTORY_SEPARATOR . 'template.txt';
+        $tempFile = $this->_migrationsFolder . 'template.txt';
 
         if (!$template = file_get_contents($tempFile)) {
             $this->_errorText = "\n\e[31m" . 'Error when trying read migration template file: ' . $fullName . "\e[39m";
@@ -94,8 +97,44 @@ class Migrations
      */
     public function exec(): bool
     {
-        // TODO do it
-        return false;
+        if (!$this->_isDB) {
+            return false;
+        }
+
+        $migrationFolderFiles = scandir($this->_migrationsFolder);
+        $migrations = [];
+        foreach ($migrationFolderFiles as $file) {
+            if (!in_array($file, ['.', '..', 'template.txt'])) {
+                $migration = $this->_getMigrationData($file);
+                if (!$this->_isMigrationExecuted($migration['version'])) {
+                    echo "\n" . 'Executing migration ' . $file;
+                    include_once($this->_migrationsFolder . $file);
+                    $mName = $migration['name'];
+                    /** @var AbstractMigration $mObj */
+                    $mObj = new $mName($this->_db, $migration['version'], $migration['name']);
+                    if ($mObj->exec()) {
+                        echo ' ... ' . "\e[32m" . 'DONE' . "\e[39m";
+                    } else {
+                        echo ' ... ' . "\e[31m" . 'ERROR' . "\e[39m";
+                        $this->_errorText = $mObj->getErrorText();
+                        return false;
+                    }
+                };
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check is migration executed
+     *
+     * @param string $version
+     * @return bool
+     */
+    private function _isMigrationExecuted(string $version): bool
+    {
+        return (bool)($this->_db->query('SELECT * FROM `migrations` WHERE `version` = '
+            . $this->_db->realEscapeString($version)));
     }
 
     /**
@@ -105,8 +144,34 @@ class Migrations
      */
     public function rollback(): bool
     {
-        // TODO do it
-        return false;
+        if (!$this->_isDB) {
+            return false;
+        }
+
+        if ($res = $this->_db->query('SELECT `version`, `name` FROM `migrations` ORDER BY `version` DESC LIMIT 0, 1')) {
+            $lastTransaction = $res[0];
+            $file = $lastTransaction['version'] . '_' . Strings::camelToSnake($lastTransaction['name']) . '.php';
+            $migration = $this->_getMigrationData($file);
+        }
+
+        return true;
+    }
+
+    /**
+     * Get migration array
+     *
+     * @param string $migrationName
+     * @return array
+     */
+    private function _getMigrationData(string $migrationName): array
+    {
+        $content = file_get_contents($this->_migrationsFolder . $migrationName);
+        preg_match('/class (.*) extends AbstractMigration/', $content, $name);
+        return [
+            'file' => $migrationName,
+            'version' => (explode('_', $migrationName))[0],
+            'name' => $name[1],
+        ];
     }
 
     /**

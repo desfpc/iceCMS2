@@ -43,6 +43,7 @@ class MySql implements DBInterface
      */
     public function __construct(?\stdClass $dbSettings)
     {
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         $this->_settings = $dbSettings;
     }
 
@@ -75,7 +76,7 @@ class MySql implements DBInterface
      */
     public function getWarningText(): ?string
     {
-        return $this->_warningText;
+        return json_encode($this->_warningText);
     }
 
     /**
@@ -184,7 +185,6 @@ class MySql implements DBInterface
   `name` varchar(100) NOT NULL,
   `start_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `value_mtype` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`version`) USING BTREE,
   INDEX `migration_name_idx`(`name`) USING BTREE
 ) ENGINE = InnoDB;');
@@ -202,7 +202,7 @@ class MySql implements DBInterface
                 if (is_null($this->_warningText)) {
                     $this->_warningText = [];
                 }
-                $this->_warningText[] = 'Error in request query: ' . $query;
+                $this->_warningText[] = 'Error in request query (' . $query . '): ' . $this->_mysqli->error;
                 return false;
             }
 
@@ -230,5 +230,49 @@ class MySql implements DBInterface
             return true;
         }
         return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function realEscapeString(string $value): string
+    {
+        return $this->_mysqli->real_escape_string($value);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function transaction(string $query): bool
+    {
+        $this->_mysqli->begin_transaction();
+
+        try {
+            $this->_mysqli->autocommit(false);
+            $queryes = explode(';', $query);
+            $s = [];
+            foreach ($queryes as $q) {
+                if(!empty($q)) {
+                    $s[] = $this->_mysqli->prepare($q);
+                }
+            }
+
+            foreach ($s as $q) {
+                $q->execute();
+            }
+
+            $this->_mysqli->commit();
+            $this->_isWarning = false;
+            $this->_warningText = null;
+        } catch (\Exception $exception) {
+            $this->_mysqli->rollback();
+            $this->_isWarning = true;
+            if (is_null($this->_warningText)) {
+                $this->_warningText = [];
+            }
+            $this->_warningText[] = $exception->getMessage();
+        }
+        $this->_mysqli->autocommit(true);
+        return !$this->_isWarning;
     }
 }

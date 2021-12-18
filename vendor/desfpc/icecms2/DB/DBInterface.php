@@ -88,9 +88,25 @@ interface DBInterface
     public function multiQuery(string $query): bool;
 
     /**
+     * Transaction CREATE -> process $query -> COMMIT OR ROLLBACK
+     *
+     * @param string $query
+     * @return bool
+     */
+    public function transaction(string $query): bool;
+
+    /**
      * Creating migration table
      *
      * @return bool
      */
     public function createMigrationTable(): bool;
+
+    /**
+     * Real escape string for SQL request
+     *
+     * @param string $value
+     * @return string
+     */
+    public function realEscapeString(string $value): string;
 }

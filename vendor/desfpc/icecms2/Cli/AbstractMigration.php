@@ -17,11 +17,11 @@ abstract class AbstractMigration
     /** @var ?string migration SQL for executing */
     public ?string $sql = null;
 
-    /** @var ?string */
-    protected ?string $_errorText = null;
+    /** @var string */
+    protected ?string $_errorText = '';
 
     /** @var bool */
-    protected bool $_isConnectionError = true;
+    protected bool $_isConnectionError = false;
 
     /**
      * @var DBInterface|null DR Resourse
@@ -101,7 +101,11 @@ abstract class AbstractMigration
         if ($this->_isConnectionError) {
             return false;
         }
-        return $this->_db->multiQuery($this->sql);
+        if (!$this->_db->transaction($this->sql)) {
+            $this->_errorText = $this->_db->getWarningText();
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -124,8 +128,21 @@ abstract class AbstractMigration
     {
     }
 
+    /**
+     * Get Error Text
+     *
+     * @return string
+     */
+    public function getErrorText(): string
+    {
+        return $this->_errorText;
+    }
+
     protected function _makeFullSQL(string $sql)
     {
-        return 'START TRANSACTION;' . "\n" . $sql . "\n" . 'COMMIT;';
+        return "INSERT INTO `migrations`(`version`, `name`) \n"
+            . "VALUES(" . $this->_version . ", '" . $this->_name . "');"
+            . "\n" . $sql . "\n"
+            . 'UPDATE `migrations` SET `end_time` = NOW() WHERE `version` = ' . $this->_version . ';';
     }
 }
