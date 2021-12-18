@@ -55,18 +55,18 @@ class App
                 echo "\n" . 'Type command after php cli.php:';
                 echo "\n\n" . 'help - IceCMS2 Help';
                 echo "\n";
-                echo "\n" . 'migration-create {name} - Create blank new DB migration with name {name}';
-                echo "\n" . 'migration-exec - Execute DB migrations';
-                echo "\n" . 'migration-rollback - Rollback last DB migration';
+                echo "\n" . 'migration-create {name} - Create blank new DB migration with name {name}. Name must be in CamelCase.';
+                echo "\n" . 'migration-exec - Execute DB migrations.';
+                echo "\n" . 'migration-rollback - Rollback last DB migration.';
                 echo "\n\n";
                 break;
             case 'migration-create':
                 echo "\n" . 'IceCMS2 Migration Creating';
-                if (empty($argv[2])) {
-                    $argv[2] = null;
+                if (empty($this->_argv[2])) {
+                    $this->_argv[2] = null;
                 }
                 $migrations = new Migrations($this->_settings);
-                if (!$migrations->create($argv[2])) {
+                if (!$migrations->create($this->_argv[2])) {
                     echo "\n\e[31m" . 'Error when trying create migration: ' . $migrations->getError() . "\e[39m";
                 } else {
                     echo "\n\e[32m" . 'Migration created!' . "\e[39m";

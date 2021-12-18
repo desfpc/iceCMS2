@@ -131,7 +131,7 @@ class MySql implements DBInterface
             $this->_isError = true;
             $this->_errorText = 'Failed to establish a connection to the database: ' . $t->getMessage();
         }
-    return $this->_isConnected;
+        return $this->_isConnected;
     }
 
     /**
@@ -151,6 +151,43 @@ class MySql implements DBInterface
         $this->_warningText = null;
 
         return true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function multiQuery(string $query): bool
+    {
+        if ($this->_isConnected) {
+            /** @var mysqli_result|bool $res */
+            if (!$res = $this->_mysqli->multi_query($query)) {
+                do {
+                    $this->_isWarning = true;
+                    if (is_null($this->_warningText)) {
+                        $this->_warningText = [];
+                    }
+                    $this->_warningText[] = 'Error in request query: ' . $query;
+                    return false;
+                } while (mysqli_more_results($this->_mysqli) && mysqli_next_result($this->_mysqli));
+            }
+            return true;
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function createMigrationTable(): bool
+    {
+        return $this->query('CREATE TABLE `migrations`  (
+  `version` bigint(14) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `start_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `end_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `value_mtype` int(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`version`) USING BTREE,
+  INDEX `migration_name_idx`(`name`) USING BTREE
+) ENGINE = InnoDB;');
     }
 
     /**
@@ -193,26 +230,5 @@ class MySql implements DBInterface
             return true;
         }
         return false;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function multiQuery(string $query): bool
-    {
-        if ($this->_isConnected) {
-            /** @var mysqli_result|bool $res */
-            if (!$res = $this->_mysqli->multi_query($query)) {
-                do {
-                    $this->_isWarning = true;
-                    if (is_null($this->_warningText)) {
-                        $this->_warningText = [];
-                    }
-                    $this->_warningText[] = 'Error in request query: ' . $query;
-                    return false;
-                } while (mysqli_more_results($this->_mysqli) && mysqli_next_result($this->_mysqli));
-            }
-            return true;
-        }
     }
 }

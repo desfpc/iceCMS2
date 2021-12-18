@@ -9,7 +9,7 @@ declare(strict_types=1);
  */
 
 $settings = [
-    'path' => 'text/path',
+    'path' => str_replace('settings', '', dirname(__FILE__)),
     'template' => 'ice',
     'dev' => true,
     'secret' => 'verySecretSecret',

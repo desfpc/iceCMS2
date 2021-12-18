@@ -86,4 +86,11 @@ interface DBInterface
      * @return bool
      */
     public function multiQuery(string $query): bool;
+
+    /**
+     * Creating migration table
+     *
+     * @return bool
+     */
+    public function createMigrationTable(): bool;
 }

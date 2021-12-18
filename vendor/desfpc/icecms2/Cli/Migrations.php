@@ -58,12 +58,22 @@ class Migrations
             return false;
         }
         if (empty($name)) {
-            $name = 'migration';
+            $name = 'CustomMigration';
+        } else {
+            $name = str_replace(' ', '', $name);
         }
-        $fullName = date('YmdHis') . '_' . $name . '.php';
+        $fullName = date('YmdHis') . '_' . $name . '.php ...';
         echo "\n" . 'Creating migration file ' . $fullName;
 
+        $tempFile = $this->_settings->path . 'migrations' . DIRECTORY_SEPARATOR . $this->_settings->db->type
+            . DIRECTORY_SEPARATOR . 'template.txt';
+
+        if (!$template = file_get_contents($tempFile)) {
+            die("\n\e[31m" . 'Error when trying read migration template file: ' . $tempFile . "\e[39m");
+        }
         
+        $template = str_replace('{DB Migration Template - DO NOT DELETE}', $name. ' DB Migration', $template);
+        $template = str_replace('{MigrationClass}', $name. ' DB Migration', $template);
 
         return true;
     }
