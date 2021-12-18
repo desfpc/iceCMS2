@@ -13,6 +13,7 @@ namespace iceCMS2\Cli;
 use iceCMS2\DB\DBInterface;
 use iceCMS2\DB\DBFactory;
 use iceCMS2\Settings\Settings;
+use iceCMS2\Helpers\Strings;
 
 class Migrations
 {
@@ -62,7 +63,7 @@ class Migrations
         } else {
             $name = str_replace(' ', '', $name);
         }
-        $fullName = date('YmdHis') . '_' . $name . '.php ...';
+        $fullName = date('YmdHis') . '_' . Strings::camelToSnake($name) . '.php ...';
         echo "\n" . 'Creating migration file ' . $fullName;
 
         $tempFile = $this->_settings->path . 'migrations' . DIRECTORY_SEPARATOR . $this->_settings->db->type

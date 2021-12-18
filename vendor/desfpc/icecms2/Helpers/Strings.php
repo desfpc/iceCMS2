@@ -20,7 +20,7 @@ class Strings
      */
     public static function camelToSnake(string $camel): string
     {
-
+        return ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $camel)), '_');
     }
 
     /**
@@ -30,6 +30,10 @@ class Strings
      */
     public static function snakeToCamel(string $snake, bool $isLowerCamelCase = true): string
     {
-
+        $camel = str_replace('_', '', ucwords($snake, '_'));
+        if ($isLowerCamelCase) {
+            $camel = lcfirst($camel);
+        }
+        return $camel;
     }
 }
