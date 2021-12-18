@@ -14,6 +14,7 @@ use iceCMS2\DB\DBInterface;
 use iceCMS2\DB\DBFactory;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Helpers\Strings;
+use PhpParser\Error;
 
 class Migrations
 {
@@ -63,18 +64,25 @@ class Migrations
         } else {
             $name = str_replace(' ', '', $name);
         }
-        $fullName = date('YmdHis') . '_' . Strings::camelToSnake($name) . '.php ...';
+        $fullName = $this->_settings->path . 'migrations' . DIRECTORY_SEPARATOR . $this->_settings->db->type
+            . DIRECTORY_SEPARATOR . date('YmdHis') . '_' . Strings::camelToSnake($name) . '.php';
         echo "\n" . 'Creating migration file ' . $fullName;
 
         $tempFile = $this->_settings->path . 'migrations' . DIRECTORY_SEPARATOR . $this->_settings->db->type
             . DIRECTORY_SEPARATOR . 'template.txt';
 
         if (!$template = file_get_contents($tempFile)) {
-            die("\n\e[31m" . 'Error when trying read migration template file: ' . $tempFile . "\e[39m");
+            $this->_errorText = "\n\e[31m" . 'Error when trying read migration template file: ' . $fullName . "\e[39m";
+            return false;
         }
-        
-        $template = str_replace('{DB Migration Template - DO NOT DELETE}', $name. ' DB Migration', $template);
-        $template = str_replace('{MigrationClass}', $name. ' DB Migration', $template);
+
+        $template = str_replace('{DB Migration Template - DO NOT DELETE}', $name . ' DB Migration', $template);
+        $template = str_replace('{MigrationClass}', $name, $template);
+
+        if (!file_put_contents($fullName, $template)) {
+            $this->_errorText = "\n\e[31m" . 'Error when trying save migration file: ' . $fullName . "\e[39m";
+            return false;
+        }
 
         return true;
     }
