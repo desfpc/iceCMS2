@@ -2,4 +2,5 @@
 composer.lock
 vendor/
 !vendor/desfpc/icecms2
+!tests/vendor
 .phpunit.result.cache
