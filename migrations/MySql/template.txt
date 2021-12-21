@@ -24,6 +24,8 @@ class {MigrationClass} extends AbstractMigration
     }
 
     /**
+     * Rollback Migration
+     *
      * @return string
      */
     public function down(): string

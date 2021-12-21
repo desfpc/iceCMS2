@@ -75,7 +75,7 @@ abstract class AbstractMigration
      */
     public function exec(): bool
     {
-        $this->sql = $this->_makeFullSQL($this->up());
+        $this->sql = $this->_makeFullUpSQL($this->up());
         return $this->_request();
     }
 
@@ -101,6 +101,7 @@ abstract class AbstractMigration
         if ($this->_isConnectionError) {
             return false;
         }
+
         if (!$this->_db->transaction($this->sql)) {
             $this->_errorText = $this->_db->getWarningText();
             return false;
@@ -115,7 +116,7 @@ abstract class AbstractMigration
      */
     public function rollback(): bool
     {
-        $this->sql = $this->_makeFullSQL($this->down());
+        $this->sql = $this->_makeFullDownSQL($this->down());
         return $this->_request();
     }
 
@@ -138,11 +139,28 @@ abstract class AbstractMigration
         return $this->_errorText;
     }
 
-    protected function _makeFullSQL(string $sql)
+    /**
+     * Adding creating transaction record in SQL
+     *
+     * @param string $sql
+     * @return string
+     */
+    protected function _makeFullUpSQL(string $sql)
     {
         return "INSERT INTO `migrations`(`version`, `name`) \n"
             . "VALUES(" . $this->_version . ", '" . $this->_name . "');"
             . "\n" . $sql . "\n"
             . 'UPDATE `migrations` SET `end_time` = NOW() WHERE `version` = ' . $this->_version . ';';
+    }
+
+    /**
+     * Adding deleting transaction record in SQL
+     *
+     * @param string $sql
+     * @return string
+     */
+    protected function _makeFullDownSQL(string $sql)
+    {
+        return $sql . "\nDELETE FROM `migrations` WHERE `version` = " . $this->_version . ';';
     }
 }

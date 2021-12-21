@@ -83,9 +83,9 @@ interface DBInterface
      * MultiQuery to DB
      *
      * @param string $query
-     * @return bool
+     * @return bool|array
      */
-    public function multiQuery(string $query): bool;
+    public function multiQuery(string $query);
 
     /**
      * Transaction CREATE -> process $query -> COMMIT OR ROLLBACK

@@ -157,21 +157,36 @@ class MySql implements DBInterface
     /**
      * @inheritDoc
      */
-    public function multiQuery(string $query): bool
+    public function multiQuery(string $query)
     {
         if ($this->_isConnected) {
-            /** @var mysqli_result|bool $res */
-            if (!$res = $this->_mysqli->multi_query($query)) {
+
+            try {
+                $results = [];
+                $i = -1;
+                $this->_mysqli->multi_query($query);
                 do {
-                    $this->_isWarning = true;
-                    if (is_null($this->_warningText)) {
-                        $this->_warningText = [];
+                    ++$i;
+                    /** @var mysqli_result|false $result */
+                    if ($result = $this->_mysqli->store_result()) {
+                        while ($row = $result->fetch_assoc()) {
+                            $results[$i][] = $row;
+                        }
                     }
-                    $this->_warningText[] = 'Error in request query: ' . $query;
-                    return false;
-                } while (mysqli_more_results($this->_mysqli) && mysqli_next_result($this->_mysqli));
+                } while ($this->_mysqli->next_result());
+
+                if (empty($results)) {
+                    return true;
+                }
+                return $results;
+            } catch (\Exception $exception) {
+                $this->_isWarning = true;
+                if (is_null($this->_warningText)) {
+                    $this->_warningText = [];
+                }
+                $this->_warningText[] = 'Error in request query: ' . $query;
+                return false;
             }
-            return true;
         }
     }
 
@@ -196,8 +211,10 @@ class MySql implements DBInterface
     public function query(string $query, $isFree = true, $isCnt = false, $isForced = false)
     {
         if ($this->_isConnected || $isForced) {
-            /** @var mysqli_result|bool $res */
-            if (!$res = $this->_mysqli->query($query)) {
+            try {
+                /** @var mysqli_result|bool $res */
+                $res = $this->_mysqli->query($query);
+            } catch (\Exception $exception) {
                 $this->_isWarning = true;
                 if (is_null($this->_warningText)) {
                     $this->_warningText = [];
@@ -245,10 +262,9 @@ class MySql implements DBInterface
      */
     public function transaction(string $query): bool
     {
-        $this->_mysqli->begin_transaction();
+        $this->_mysqli->begin_transaction(MYSQLI_TRANS_START_READ_WRITE);
 
         try {
-            $this->_mysqli->autocommit(false);
             $queryes = explode(';', $query);
             $s = [];
             foreach ($queryes as $q) {
@@ -272,7 +288,6 @@ class MySql implements DBInterface
             }
             $this->_warningText[] = $exception->getMessage();
         }
-        $this->_mysqli->autocommit(true);
         return !$this->_isWarning;
     }
 }

@@ -152,6 +152,18 @@ class Migrations
             $lastTransaction = $res[0];
             $file = $lastTransaction['version'] . '_' . Strings::camelToSnake($lastTransaction['name']) . '.php';
             $migration = $this->_getMigrationData($file);
+            echo "\n" . 'Rollbacking migration ' . $file;
+            include_once($this->_migrationsFolder . $file);
+            $mName = $migration['name'];
+            /** @var AbstractMigration $mObj */
+            $mObj = new $mName($this->_db, $migration['version'], $migration['name']);
+            if ($mObj->rollback()) {
+                echo ' ... ' . "\e[32m" . 'DONE' . "\e[39m";
+            } else {
+                echo ' ... ' . "\e[31m" . 'ERROR' . "\e[39m";
+                $this->_errorText = $mObj->getErrorText();
+                return false;
+            }
         }
 
         return true;
@@ -167,6 +179,7 @@ class Migrations
     {
         $content = file_get_contents($this->_migrationsFolder . $migrationName);
         preg_match('/class (.*) extends AbstractMigration/', $content, $name);
+
         return [
             'file' => $migrationName,
             'version' => (explode('_', $migrationName))[0],

@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 use iceCMS2\Cli\AbstractMigration;
 
-class IceCMS2Structure extends AbstractMigration
+class Icecms2Structure extends AbstractMigration
 {
     /**
      * Execute migration query
@@ -21,8 +21,7 @@ class IceCMS2Structure extends AbstractMigration
     public function up(): string
     {
         return '
-DROP TABLE IF EXISTS `migrations_test`;
-CREATE TABLE `migrations_test`  (
+CREATE TABLE IF NOT EXISTS `migrations_test` (
   `version` bigint(14) NOT NULL,
   `name` varchar(100) NOT NULL,
   `start_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -35,6 +34,8 @@ CREATE TABLE `migrations_test`  (
     }
 
     /**
+     * Rollback Migration
+     *
      * @return string
      */
     public function down(): string
