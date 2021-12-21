@@ -22,6 +22,15 @@ $settings = [
         'pass' => 'pass',
         'encoding' => 'UTF8',
     ],
+    'db_test' => [
+        'type' => 'MySQL',
+        'name' => 'icecms2_test',
+        'host' => '127.0.0.1',
+        'port' => '3306',
+        'login' => 'login',
+        'pass' => 'pass',
+        'encoding' => 'UTF8',
+    ],
     'email' => [
         'mail' => 'test@domain',
         'port' => '465',

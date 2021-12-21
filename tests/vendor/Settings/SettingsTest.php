@@ -41,6 +41,15 @@ class SettingsTest extends TestCase
                 'pass' => 'testPass',
                 'encoding' => 'UTF8',
             ],
+            'db_test' => [
+                'type' => 'MySQL',
+                'name' => 'testDB',
+                'host' => '127.0.0.1',
+                'port' => '3306',
+                'login' => 'testLogin',
+                'pass' => 'testPass',
+                'encoding' => 'UTF8',
+            ],
             'email' => [
                 'mail' => 'test@domain',
                 'port' => '465',
