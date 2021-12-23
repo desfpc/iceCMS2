@@ -50,10 +50,32 @@ class DBTest extends TestCase
         self::$_settings->db = self::$_settings->db_test;
         self::$_DB = (new DBFactory(self::$_settings))->DB;
 
-        //TODO Copy Tables structure from real DB to test DB
+        //Copy Tables structure from real DB to test DB
+        if (!empty(self::DB_TABLES)) {
+            self::$_realDB->connect();
+            self::$_DB->connect();
+            foreach (self::DB_TABLES as $table) {
+                if ($createTableSQL = self::$_realDB->query('SHOW CREATE TABLE `' . $table . '`;')) {
+                    $createTableSQL = $createTableSQL[0]['Create Table'];
+                    if (self::$_DB->query($createTableSQL)) {
+                        echo "\nTest table " . $table . ' created';
+                    }
+                }
+            }
+            self::$_realDB->disconnect();
+        }
+
+        //TODO Insert test Data - find self::DB_TABLES json file for insert
+    }
+
+    /**
+     * This method is called after the last test of this test class is run.
+     */
+    public static function tearDownAfterClass(): void
+    {
         if (!empty(self::DB_TABLES)) {
             foreach (self::DB_TABLES as $table) {
-
+                self::$_DB->query('DROP TABLE IF EXISTS `' . $table . '`');
             }
         }
     }
@@ -65,7 +87,15 @@ class DBTest extends TestCase
      */
     public function testConnect(): void
     {
-        self::$_DB->connect();
         $this->assertEquals(true, self::$_DB->getConnected());
+    }
+
+    /**
+     * TestSetUpBeforeClass
+     */
+    public function testSetUpBeforeClass(): void
+    {
+        $res = self::$_DB->query('SHOW CREATE TABLE `migrations`;');
+        $this->assertEquals('migrations', $res[0]['Table']);
     }
 }
