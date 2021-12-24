@@ -61,11 +61,34 @@ class DBTest extends TestCase
                         echo "\nTest table " . $table . ' created';
                     }
                 }
+                //TODO Insert test Data - find self::DB_TABLES json file for insert
+                if ($data = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . $table . '.json')) {
+                    if ($data = json_decode($data, true)) {
+                        foreach ($data as $row) {
+                            $values = '';
+                            $binded = [];
+                            $query = 'INSERT INTO `' . $table . '`(';
+                            $i = 0;
+                            foreach ($row as $key => $value) {
+                                ++$i;
+                                if ($i > 1) {
+                                    $query .= ', ';
+                                }
+                                $query .= '`' . $key . '`';
+                                if ($values !== '') {
+                                    $values .= ', ';
+                                }
+                                $values .= ':' . $key;
+                                $binded[':' . $key] = $value;
+                            }
+                            $query .= ') VALUES(' . $values . ')';
+                            // TODO query with binded params
+                        }
+                    }
+                }
             }
             self::$_realDB->disconnect();
         }
-
-        //TODO Insert test Data - find self::DB_TABLES json file for insert
     }
 
     /**

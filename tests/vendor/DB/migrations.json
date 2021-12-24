@@ -1,0 +1,14 @@
+[
+  {
+    "version": 20211217193000,
+    "name": "TestMigration1",
+    "start_time": "2021-12-23 19:40:45",
+    "end_time": "2021-12-23 19:40:45"
+  },
+  {
+    "version": 20211217194500,
+    "name": "TestMigration2",
+    "start_time": "2021-12-23 19:41:45",
+    "end_time": "2021-12-23 19:41:45"
+  }
+]
