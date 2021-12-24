@@ -208,6 +208,73 @@ class MySql implements DBInterface
     /**
      * @inheritDoc
      */
+    public function queryBinded(string $query, array $values, $isCnt = false, $isForced = false)
+    {
+        if ($this->_isConnected || $isForced) {
+            try {
+                $stmt = $this->_mysqli->prepare($query);
+                if (!empty($values)) {
+                    if (empty($values['types'])) {
+                        $types = '';
+                        foreach ($values as $key => $value) {
+                            switch (gettype($value)) {
+                                case 'boolean':
+                                    if ($value === true) {
+                                        $values[$key] = 1;
+                                    } else {
+                                        $values[$key] = 0;
+                                    }
+                                    $types .= 'i';
+                                    break;
+                                case 'integer':
+                                    $types .= 'i';
+                                    break;
+                                case 'double':
+                                    $types .= 'd';
+                                    break;
+                                case 'string':
+                                    $types .= 's';
+                                    break;
+                                case 'NULL':
+                                    $types .= 'i';
+                                    break;
+                                default:
+                                    throw new \Exception('Wrong value type "' . gettype($value) . '" for 
+                                    auto-generate "types" string for mysqli params bindidg. Specify $values["types"] 
+                                    with a valid type string. https://www.php.net/manual/en/mysqli-stmt.bind-param.php');
+                                    break;
+                            }
+                        }
+                    } else {
+                        $types = $values['types'];
+                        unset($values['types']);
+                    }
+                    $stmtValues = [];
+                    foreach ($values as $value) {
+                        $stmtValues[] = $value;
+                    }
+                    $stmt->bind_param($types, ...$stmtValues);
+                    $stmt->execute();
+                }
+            } catch (\mysqli_sql_exception $exception) {
+                return $this->_queryException($exception, $query);
+            }
+            catch (\Exception $exception) {
+                $this->_isWarning = true;
+                if (is_null($this->_warningText)) {
+                    $this->_warningText = [];
+                }
+                $this->_warningText[] = $exception->getMessage();
+                return false;
+            }
+            return $this->_queryRes($query, $stmt, $isCnt, false);
+        }
+        return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function query(string $query, $isFree = true, $isCnt = false, $isForced = false)
     {
         if ($this->_isConnected || $isForced) {
@@ -215,38 +282,65 @@ class MySql implements DBInterface
                 /** @var mysqli_result|bool $res */
                 $res = $this->_mysqli->query($query);
             } catch (\Exception $exception) {
-                $this->_isWarning = true;
-                if (is_null($this->_warningText)) {
-                    $this->_warningText = [];
-                }
-                $this->_warningText[] = 'Error in request query (' . $query . '): ' . $this->_mysqli->error;
-                return false;
+                return $this->_queryException($exception, $query);
             }
+            return $this->_queryRes($query, $res, $isCnt, $isFree);
+        }
+        return false;
+    }
 
-            // Query is SELECT, SHOW or WITH RECURSIVE
-            if (preg_match("/^select/i", trim($query)) || preg_match("/^show/i", trim($query)) || preg_match("/^with recursive/i", trim($query))) {
-                if (!$isCnt) {
-                    $result = [];
-                    while ($row = $res->fetch_assoc()) {
-                        $result[] = $row;
-                    }
-                    if ($isFree) {
-                        $res->free();
-                    }
-                    return $result;
+    /**
+     * Query exception processing
+     *
+     * @param \Exception $exception
+     * @param string $query
+     * @return bool
+     */
+    private function _queryException(\Exception $exception, string $query): bool
+    {
+        $this->_isWarning = true;
+        if (is_null($this->_warningText)) {
+            $this->_warningText = [];
+        }
+        $this->_warningText[] = 'Error in request query (' . $query . '): ' . $this->_mysqli->error;
+        return false;
+    }
+
+    /**
+     * Query result processing
+     *
+     * @param string $query
+     * @param \mysqli_result|\mysqli_stmt|bool $res
+     * @param bool $isCnt
+     * @param bool $isFree
+     */
+    private function _queryRes(string $query, \mysqli_result|\mysqli_stmt|bool $res, bool $isCnt, bool $isFree)
+    {
+        // Query is SELECT, SHOW or WITH RECURSIVE
+        if (preg_match("/^select/i", trim($query)) || preg_match("/^show/i", trim($query)) || preg_match("/^with recursive/i", trim($query))) {
+            if (!$isCnt) {
+                $result = [];
+                if (get_class($res) === 'mysqli_stmt') {
+                    $res = $res->get_result();
                 }
-
-                $result = $res->num_rows;
-                if ($free) {
+                while ($row = $res->fetch_assoc()) {
+                    $result[] = $row;
+                }
+                if ($isFree) {
                     $res->free();
                 }
                 return $result;
             }
 
-            // Other queryes
-            return true;
+            $result = $res->num_rows;
+            if ($free) {
+                $res->free();
+            }
+            return $result;
         }
-        return false;
+
+        // Other queryes
+        return true;
     }
 
     /**

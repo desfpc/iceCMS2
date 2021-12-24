@@ -61,7 +61,7 @@ class DBTest extends TestCase
                         echo "\nTest table " . $table . ' created';
                     }
                 }
-                //TODO Insert test Data - find self::DB_TABLES json file for insert
+                //Insert test Data - find self::DB_TABLES json file for insert
                 if ($data = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . $table . '.json')) {
                     if ($data = json_decode($data, true)) {
                         foreach ($data as $row) {
@@ -78,11 +78,11 @@ class DBTest extends TestCase
                                 if ($values !== '') {
                                     $values .= ', ';
                                 }
-                                $values .= ':' . $key;
+                                $values .= '?';
                                 $binded[':' . $key] = $value;
                             }
                             $query .= ') VALUES(' . $values . ')';
-                            // TODO query with binded params
+                            self::$_DB->queryBinded($query, $binded);
                         }
                     }
                 }
@@ -120,5 +120,33 @@ class DBTest extends TestCase
     {
         $res = self::$_DB->query('SHOW CREATE TABLE `migrations`;');
         $this->assertEquals('migrations', $res[0]['Table']);
+
+        $res = self::$_DB->query('SELECT * FROM `migrations`;');
+        $this->assertEquals([
+            0 => [
+                'version' => '20211217193000',
+                'name' => 'TestMigration1',
+                'start_time' => '2021-12-23 19:40:45',
+                'end_time' => '2021-12-23 19:40:45',
+            ],
+            1 => [
+                'version' => '20211217194500',
+                'name' => 'TestMigration2',
+                'start_time' => '2021-12-23 19:41:45',
+                'end_time' => '2021-12-23 19:41:45',
+            ],
+        ], $res);
+
+        $res = self::$_DB->queryBinded('SELECT * FROM `migrations` WHERE `version` = ?', [
+            0 => 20211217193000
+        ]);
+        $this->assertEquals([
+            0 => [
+                'version' => '20211217193000',
+                'name' => 'TestMigration1',
+                'start_time' => '2021-12-23 19:40:45',
+                'end_time' => '2021-12-23 19:40:45',
+            ],
+        ], $res);
     }
 }

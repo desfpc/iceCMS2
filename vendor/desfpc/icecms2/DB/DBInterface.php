@@ -80,6 +80,17 @@ interface DBInterface
     public function query(string $query, $isFree = true, $isCnt = false, $isForced = false);
 
     /**
+     * Query to DB with binded values (prepare and execute)
+     *
+     * @param string $query SQL query
+     * @param array $values values for bind
+     * @param false $isCnt return number of rows, not rows array
+     * @param bool $isForced try to execute the request even if there are errors
+     * @return bool|array<mixed, mixed>
+     */
+    public function queryBinded(string $query, array $values, $isCnt = false, $isForced = false);
+
+    /**
      * MultiQuery to DB
      *
      * @param string $query
