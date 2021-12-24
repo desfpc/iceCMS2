@@ -1,0 +1,1 @@
+This is where the app controllers templates are. Files in this folder are not loaded automatically.
