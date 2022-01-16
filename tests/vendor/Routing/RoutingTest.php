@@ -11,10 +11,14 @@ declare(strict_types=1);
 namespace vendor\Routing;
 
 use iceCMS2\Routing\Routing;
+use iceCMS2\Settings\Settings;
 use PHPUnit\Framework\TestCase;
 
 class RoutingTest extends TestCase
 {
+    /**
+     * Testing parsing URL from request
+     */
     public function testParseURL(): void
     {
         $routing = new Routing();
@@ -37,6 +41,113 @@ class RoutingTest extends TestCase
             'query_vars' => [
                 'test4' => 'val1',
                 'test5' => 'val2',
+            ],
+        ], $routing->pathInfo);
+
+        $_SERVER['REQUEST_URI'] = '/тест1/тест2/?тест3=val1&тест4=знач2';
+        $_SERVER['SCRIPT_NAME'] = '/script_name/';
+
+        $routing->parseURL();
+        $this->assertEquals([
+            'base' => '',
+            'call_utf8' => 'тест1/тест2/',
+            'call' => '????1/????2/',
+            'call_parts' => [
+                0 => 'тест1',
+                1 => 'тест2',
+            ],
+            'query_utf8' => 'тест3=val1&тест4=знач2',
+            'query' => '????3=val1&????4=????2',
+            'query_vars' => [
+                'тест3' => 'val1',
+                'тест4' => 'знач2',
+            ],
+        ], $routing->pathInfo);
+    }
+
+    /**
+     * Testing getting route from pathInfo and Settings
+     */
+    public function testGettingRoute(): void
+    {
+        /** @var array $settings */
+        require_once('testSettings.php');
+
+        $settings['routes'] = [
+            'test1/test2/test3' => 'test3',
+            'test1/test2' => 'test2',
+            'test1' => 'test1'
+        ];
+        $_SERVER['SCRIPT_NAME'] = '/script_name/';
+
+        $settings1 = new Settings($settings);
+        $_SERVER['REQUEST_URI'] = '/test5/test2/test3/?test4=val1&test5=val2';
+
+        $routing = new Routing();
+        $routing->parseURL();
+        $routing->getRoute($settings1);
+        $this->assertEquals([
+            'controller' => '404',
+            'method' => 'main',
+            'parts' => [],
+        ], $routing->route
+        );
+
+        $_SERVER['REQUEST_URI'] = '/test1/test2/?test4=val1&test5=val2';
+        $routing->parseURL();
+        $routing->getRoute($settings1);
+        $this->assertEquals([
+            'controller' => 'test2',
+            'method' => 'main',
+            'parts' => [],
+        ], $routing->route
+        );
+
+        $_SERVER['REQUEST_URI'] = '/test1/test5/test3/test2/?test4=val1&test5=val2';
+        $routing->parseURL();
+        $routing->getRoute($settings1);
+        $this->assertEquals([
+            'controller' => 'test1',
+            'method' => 'test5',
+            'parts' => [
+                0 => 'test3',
+                1 => 'test2',
+            ],
+        ], $routing->route
+        );
+
+        $settings['routes'] = [
+            'test1/test2/$id/$action' => 'test1',
+            'test2/test3/$id' => 'test2',
+            'test4/$id' => 'test4'
+        ];
+        $settings2 = new Settings($settings);
+        $_SERVER['REQUEST_URI'] = '/test1/test2/10/save/?test4=val1&test5=val2';
+        $routing->parseURL();
+        $routing->getRoute($settings2);
+        $this->assertEquals([
+            'controller' => 'test1',
+            'method' => 'test2',
+            'parts' => [],
+        ], $routing->route
+        );
+        $this->assertEquals([
+            'base' => '',
+            'call_utf8' => '/test1/test2/10/save/',
+            'call' => '/test1/test2/10/save/',
+            'call_parts' => [
+                0 => 'test1',
+                1 => 'test2',
+                2 => '10',
+                3 => 'save',
+            ],
+            'query_utf8' => 'test4=val1&test5=val2',
+            'query' => 'test4=val1&test5=val2',
+            'query_vars' => [
+                'test4' => 'val1',
+                'test5' => 'val2',
+                'id' => '10',
+                'action' => 'save'
             ],
         ], $routing->pathInfo);
     }
