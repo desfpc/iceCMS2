@@ -74,9 +74,9 @@ class RoutingTest extends TestCase
         require_once('testSettings.php');
 
         $settings['routes'] = [
-            'test1/test2/test3' => 'test3',
-            'test1/test2' => 'test2',
-            'test1' => 'test1'
+            'test1/test2/test3' => 'controller3',
+            'test1/test2' => 'controller2',
+            'test1' => 'controller1'
         ];
         $_SERVER['SCRIPT_NAME'] = '/script_name/';
 
@@ -97,7 +97,7 @@ class RoutingTest extends TestCase
         $routing->parseURL();
         $routing->getRoute($settings1);
         $this->assertEquals([
-            'controller' => 'test2',
+            'controller' => 'controller2',
             'method' => 'main',
             'parts' => [],
         ], $routing->route
@@ -107,7 +107,7 @@ class RoutingTest extends TestCase
         $routing->parseURL();
         $routing->getRoute($settings1);
         $this->assertEquals([
-            'controller' => 'test1',
+            'controller' => 'controller1',
             'method' => 'test5',
             'parts' => [
                 0 => 'test3',
@@ -117,24 +117,24 @@ class RoutingTest extends TestCase
         );
 
         $settings['routes'] = [
-            'test1/test2/$id/$action' => 'test1',
-            'test2/test3/$id' => 'test2',
-            'test4/$id' => 'test4'
+            'test1/test2/$id/$action' => ['controller' => 'controller1', 'method' => 'get'],
+            'test2/test3/$id' => 'controller2',
+            'test4/$id' => 'controller4'
         ];
         $settings2 = new Settings($settings);
         $_SERVER['REQUEST_URI'] = '/test1/test2/10/save/?test4=val1&test5=val2';
         $routing->parseURL();
         $routing->getRoute($settings2);
         $this->assertEquals([
-            'controller' => 'test1',
-            'method' => 'test2',
+            'controller' => 'controller1',
+            'method' => 'get',
             'parts' => [],
         ], $routing->route
         );
         $this->assertEquals([
             'base' => '',
-            'call_utf8' => '/test1/test2/10/save/',
-            'call' => '/test1/test2/10/save/',
+            'call_utf8' => 'test1/test2/10/save/',
+            'call' => 'test1/test2/10/save/',
             'call_parts' => [
                 0 => 'test1',
                 1 => 'test2',

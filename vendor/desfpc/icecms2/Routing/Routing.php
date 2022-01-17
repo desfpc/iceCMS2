@@ -79,8 +79,49 @@ class Routing
                 }
             }
 
-            // TODO Finding a Match between a Request Query String and a Route
+            // Finding a Match between a Request Query String and a Route // TODO cache
+            $lastRoute = null;
+            foreach ($rouresTree as $route) {
+                $this->route['method'] = 'main';
+                $this->route['parts'] = [];
+                $addedQueryVars = [];
+                $i = -1;
+                foreach ($this->pathInfo['call_parts'] as $call_part) {
+                    ++$i;
+                    if (!isset($route['parts'][$i])) {
+                        if ($this->route['method'] === 'main') {
+                            $this->route['method'] = $call_part;
+                        } else {
+                            $this->route['parts'][] = $call_part;
+                        }
+                        continue;
+                    }
+                    $part = $route['parts'][$i];
 
+                    if($part['type'] === 'route') {
+                        if (mb_strtolower($call_part, 'UTF-8') !== $part['partName']) {
+                            continue(2);
+                        }
+                    } else {
+                        $addedQueryVars[$part['partName']] = $call_part;
+                    }
+                }
+                if (isset($route['parts'][$i+1])) {
+                    continue;
+                }
+
+                $lastRoute = $route;
+                if (is_array($route['value'])) {
+                    $this->route['controller'] = $route['value']['controller'];
+                    if (isset($route['value']['method'])) {
+                        $this->route['method'] = $route['value']['method'];
+                    }
+                } else {
+                    $this->route['controller'] = $route['value'];
+                }
+                $this->pathInfo['query_vars'] = array_merge($this->pathInfo['query_vars'], $addedQueryVars);
+                break;
+            }
         }
     }
 
