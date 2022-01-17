@@ -118,6 +118,7 @@ class RoutingTest extends TestCase
 
         $settings['routes'] = [
             'test1/test2/$id/$action' => ['controller' => 'controller1', 'method' => 'get'],
+            'test1/test2' => ['controller' => 'controller5', 'method' => 'set'],
             'test2/test3/$id' => 'controller2',
             'test4/$id' => 'controller4'
         ];
@@ -150,5 +151,15 @@ class RoutingTest extends TestCase
                 'action' => 'save'
             ],
         ], $routing->pathInfo);
+
+        $_SERVER['REQUEST_URI'] = '/test1/test2/?test4=val1&test5=val2';
+        $routing->parseURL();
+        $routing->getRoute($settings2);
+        $this->assertEquals([
+            'controller' => 'controller5',
+            'method' => 'set',
+            'parts' => [],
+        ], $routing->route
+        );
     }
 }

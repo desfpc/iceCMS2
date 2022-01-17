@@ -20,6 +20,7 @@ class DBFactory
      * @var DBInterface|null
      */
     private static ?DBInterface $_singleDB = null;
+
     /**
      * For many DB connections usage
      *
