@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace iceCMS2\Helpers;
 
+use iceCMS2\Settings\Settings;
+
 class Strings
 {
     /**
@@ -35,5 +37,17 @@ class Strings
             $camel = lcfirst($camel);
         }
         return $camel;
+    }
+
+    /**
+     * Getting cache key with site name
+     *
+     * @param Settings $settings
+     * @param string $key
+     * @return string
+     */
+    public static function cacheKey(Settings $settings, string $key): string
+    {
+        return $settings->site->primary_domain . '_' . $key;
     }
 }

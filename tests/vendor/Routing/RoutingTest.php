@@ -78,6 +78,7 @@ class RoutingTest extends TestCase
             'test1/test2' => 'controller2',
             'test1' => 'controller1'
         ];
+
         $_SERVER['SCRIPT_NAME'] = '/script_name/';
 
         $settings1 = new Settings($settings);
@@ -85,7 +86,7 @@ class RoutingTest extends TestCase
 
         $routing = new Routing();
         $routing->parseURL();
-        $routing->getRoute($settings1);
+        $routing->getRoute($settings1, false);
         $this->assertEquals([
             'controller' => '404',
             'method' => 'main',
@@ -95,7 +96,7 @@ class RoutingTest extends TestCase
 
         $_SERVER['REQUEST_URI'] = '/test1/test2/?test4=val1&test5=val2';
         $routing->parseURL();
-        $routing->getRoute($settings1);
+        $routing->getRoute($settings1, false);
         $this->assertEquals([
             'controller' => 'controller2',
             'method' => 'main',
@@ -105,7 +106,7 @@ class RoutingTest extends TestCase
 
         $_SERVER['REQUEST_URI'] = '/test1/test5/test3/test2/?test4=val1&test5=val2';
         $routing->parseURL();
-        $routing->getRoute($settings1);
+        $routing->getRoute($settings1, false);
         $this->assertEquals([
             'controller' => 'controller1',
             'method' => 'test5',
@@ -125,7 +126,7 @@ class RoutingTest extends TestCase
         $settings2 = new Settings($settings);
         $_SERVER['REQUEST_URI'] = '/test1/test2/10/save/?test4=val1&test5=val2';
         $routing->parseURL();
-        $routing->getRoute($settings2);
+        $routing->getRoute($settings2, false);
         $this->assertEquals([
             'controller' => 'controller1',
             'method' => 'get',
@@ -154,7 +155,7 @@ class RoutingTest extends TestCase
 
         $_SERVER['REQUEST_URI'] = '/test1/test2/?test4=val1&test5=val2';
         $routing->parseURL();
-        $routing->getRoute($settings2);
+        $routing->getRoute($settings2, false);
         $this->assertEquals([
             'controller' => 'controller5',
             'method' => 'set',
