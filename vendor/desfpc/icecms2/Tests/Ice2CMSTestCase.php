@@ -43,7 +43,6 @@ abstract class Ice2CMSTestCase extends TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        //$dir = str_replace('tests' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'DB', '', __DIR__);
         $dir = '';
         $dirArr = explode(DIRECTORY_SEPARATOR, __DIR__);
         foreach ($dirArr as $value) {
@@ -56,7 +55,7 @@ abstract class Ice2CMSTestCase extends TestCase
             $dir .= $value;
         }
 
-        require_once $dir . DIRECTORY_SEPARATOR . 'settings' . DIRECTORY_SEPARATOR . 'settingsSelector.php';
+        require $dir . DIRECTORY_SEPARATOR . 'settings' . DIRECTORY_SEPARATOR . 'settingsSelector.php';
         /** @var array $settings */
         static::$_settings = new Settings($settings);
         static::$_realDB = (new DBFactory(static::$_settings))->DB;

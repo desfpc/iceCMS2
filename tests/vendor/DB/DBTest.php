@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * DB Classes Tests TODO make framework class, extends PHPUnit\Framework\TestCase, with Settings and DB initialization
+ * DB Classes Tests
  */
 
 namespace vendor\DB;

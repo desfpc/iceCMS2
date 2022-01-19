@@ -10,15 +10,24 @@ declare(strict_types=1);
 
 namespace iceCMS2\Caching;
 
-use redka\redka;
+use desfpc\Redka\Redka;
 
 class Redis implements CachingInterface
 {
+    /** @var bool Connected flag */
     public bool $connected = false;
+
+    /** @var string Redis host */
     public $host;
+
+    /** @var int Redis port */
     public $port;
+
+    /** @var array Cacher errors array */
     public $errors = [];
-    private redka $redis;
+
+    /** @var Redka Redis client object */
+    private Redka $redis;
 
     /**
      * Cacher constructor.
@@ -31,18 +40,15 @@ class Redis implements CachingInterface
         $this->host = $host;
         $this->port = $port;
 
-        $this->redis = new redka($this->host, $this->port);
-        $this->redis->connect();
-
-        if ($this->redis->connect()) {
+        try {
+            $this->redis = new Redka($this->host, $this->port);
+            $this->redis->connect();
             if ($this->redis->status == 1) {
                 $this->connected = true;
-                return true;
             }
+        } catch (\Exception $e) {
+            $this->errors[] = $e->getMessage();
         }
-
-        $this->errors[] = 'Failed to connect to Redis';
-        return false;
     }
 
     /**
@@ -94,7 +100,11 @@ class Redis implements CachingInterface
             $this->value = $value;
             $this->expired = $expired;
 
-            return $this->redis->set($this->key, $this->value, $this->expired);
+            $res = $this->redis->set($this->key, $this->value, $this->expired);
+            if ($res === 'OK') {
+                return true;
+            }
+            return false;
         }
         throw new \Exception('No Redis connection');
     }
@@ -106,7 +116,11 @@ class Redis implements CachingInterface
     {
         if ($this->connected) {
             $this->key = $key;
-            return $this->redis->del($this->key);
+            $res = $this->redis->del($this->key);
+            if ($res === 'OK' || $res === '1' || $res === 1) {
+                return true;
+            }
+            return false;
         }
         throw new \Exception('No Redis connection');
     }

@@ -19,4 +19,4 @@ declare(strict_types=1);
  */
 
 //require_once('product.php');
-require_once('local.php');
+require('local.php');
