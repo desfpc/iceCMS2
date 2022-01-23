@@ -32,7 +32,7 @@ class Routing
      * @var array
      */
     public array $route = [
-        'controller' => '404',
+        'controller' => 'NotFound',
         'method' => 'main',
         'parts' => [],
     ];
@@ -55,7 +55,7 @@ class Routing
                 $i = -1;
                 foreach ($settings->routes as $route => $value)
                 {
-                    $routeParts = explode('/', $route);
+                    $routeParts = explode('/', (string)$route);
                     if (!empty($routeParts)) {
                         $routeReal = [];
                         $realPartsCnt = 0;

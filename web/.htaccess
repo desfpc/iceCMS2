@@ -1,0 +1,42 @@
+# -FrontPage-
+
+Options -Indexes
+
+IndexIgnore .htaccess */.??* *~ *# */HEADER* */README* */_vti*
+
+<Limit GET POST>
+order deny,allow
+deny from all
+allow from all
+</Limit>
+<Limit PUT DELETE>
+order deny,allow
+deny from all
+</Limit>
+
+php_flag register_globals off
+php_value post_max_size 80M
+php_value upload_max_filesize 80M
+php_value max_execution_time 10
+php_value max_input_time 30
+php_flag display_errors On
+php_value memory_limit 128M
+
+
+
+RewriteEngine on
+
+Options +FollowSymlinks
+#RewriteBase /
+DirectoryIndex index.php
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^(.*)$ /index.php [L]
+
+RewriteCond %{REQUEST_METHOD} ^TRACE
+RewriteRule .* - [F]
+
+ErrorDocument 404 /404
+ErrorDocument 500 /500

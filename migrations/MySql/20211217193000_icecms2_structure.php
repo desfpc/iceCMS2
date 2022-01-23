@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS `migrations_test` (
     /**
      * Rollback Migration
      *
+     *
      * @return string
      */
     public function down(): string
