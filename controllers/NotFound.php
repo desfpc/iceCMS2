@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * Controller class
+ * Not Found Error Class
  */
 
 namespace app\Controllers;

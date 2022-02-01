@@ -14,6 +14,7 @@ use iceCMS2\Settings\Settings;
 use iceCMS2\Routing\Routing;
 use iceCMS2\Controller\ControllerInterface;
 use desfpc\Visualijoper\Visualijoper;
+use \Exception;
 
 class Loader
 {
@@ -40,8 +41,9 @@ class Loader
      * @param ?string $controllerName Contoller name for loading or null for use Routing data
      * @param ?string $controllerMethod Controller method name for loading or null fot use Routing data
      */
-    public function loadController(?string $controllerName = null, ?string $controllerMethod = null): void
+    public function loadController(?string $controllerName = null, ?string $controllerMethod = null, bool $putSettings = true): void
     {
+        // including controller file
         if (is_null($controllerName)) {
             $controllerName = $this->routing->route['controller'];
         }
@@ -51,10 +53,29 @@ class Loader
         }
 
         $controllerFile = $this->settings->path . 'controllers' . DIRECTORY_SEPARATOR . $controllerName . '.php';
-        require_once ($controllerFile);
-        $controllerClassName = 'app\Controllers\\' . $controllerName;
-        $this->controller = new $controllerClassName();
-        
+        try {
+            require_once ($controllerFile);
+            $controllerClassName = 'app\Controllers\\' . $controllerName;
+            if (!$putSettings) {
+                $this->controller = new $controllerClassName($this->routing);
+            } else {
+                $this->controller = new $controllerClassName($this->routing, $this->settings);
+            }
+        } catch (Exception $e) {
+            throw new Exception('Can\'t load controller file: ' . $e->getMessage());
+        }
+
+        // run controller method
+        if (is_null($controllerMethod)) {
+            $controllerMethod = $this->routing->route['method'];
+        }
+
+        try {
+            $this->controller->$controllerMethod();
+        } catch (Exception $e) {
+            throw new Exception('Can\'t run controller method: ' . $e->getMessage());
+        }
+
         Visualijoper::visualijop($this->routing);
         Visualijoper::visualijop($this->settings);
         Visualijoper::visualijop($this->controller);
