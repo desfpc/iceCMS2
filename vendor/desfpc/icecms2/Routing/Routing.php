@@ -16,14 +16,12 @@ use iceCMS2\Settings\Settings;
 
 class Routing
 {
-    /**
-     * Parsed path information
-     *
-     * @var array
-     */
+    /** @var array Parsed path information */
     public array $pathInfo;
 
+    /** @var string Cache key for routes tree */
     private const CACHE_KEY_ROUTES_TREE = 'Routing_Tree';
+    /** @var string Cache key for routes match */
     private const CACHE_KEY_ROUTES_MATCH = 'Routing_Match';
     
     /**
@@ -32,7 +30,7 @@ class Routing
      * @var array
      */
     public array $route = [
-        'controller' => 'NotFound',
+        'controller' => 'ServerErrors',
         'method' => 'main',
         'parts' => [],
     ];
@@ -135,6 +133,9 @@ class Routing
                 }
                 $this->pathInfo['query_vars'] = array_merge($this->pathInfo['query_vars'], $addedQueryVars);
                 break;
+            }
+            if ($this->route['controller'] === 'ServerErrors') {
+                $this->route['method'] = 'notFound';
             }
         }
     }

@@ -22,20 +22,32 @@ abstract class Controller implements ControllerInterface
     /** @var Routing|null Routing data */
     public ?Routing $routing = null;
 
+    /** @var string Site Page Title */
+    public string $title = '';
+
+    /** @var string Site Page Description */
+    public string $description = '';
+
+    /** @var string Site Page Keywords  */
+    public string $keyword = '';
+
     /** @var string Template layout */
     public string $layout = 'default';
 
-    /** @var string[] JS files to load */
-    public array $jsFiles = ['/js/ice.js'];
+    /** @var array<int, string|array<string, string>> JS files to load */
+    public array $jsFiles = [];
 
-    /** @var string[] CSS files to load */
-    public array $cssFiles = ['/css/ice.css'];
+    /** @var array<int, string|array<string, string>> CSS files to load */
+    public array $cssFiles = [];
 
     /** @var string JS code for Document Ready */
     public string $jsReady = '';
 
     /** @var string Full template file path for including */
     protected string $_fullTemplatePath = '';
+
+    /** @var string[] Headers for php header() function */
+    protected array $_headers = [];
 
     /** Class constructor */
     public function __construct(?Routing $routing, ?Settings $settings)
@@ -62,8 +74,6 @@ abstract class Controller implements ControllerInterface
             $dbt=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,2);
             $template = isset($dbt[1]['function']) ? $dbt[1]['function'] : 'main';
         }
-        Visualijoper::visualijop($this->_getFullTemplatePath($template));
-        Visualijoper::visualijop($this->_getFullLayoutPath());
 
         if ($isFullTemplatePatch) {
             $this->_fullTemplatePath = $template;
@@ -72,10 +82,7 @@ abstract class Controller implements ControllerInterface
         }
 
         try {
-            ob_start();
             require($this->_getFullLayoutPath());
-            echo ob_get_contents();
-            ob_end_clean();
         } catch (\Exception $e) {
             throw new \Exception('Can\'t render template: ' . $e->getMessage());
         }
@@ -102,5 +109,93 @@ abstract class Controller implements ControllerInterface
     {
         return $this->settings->path . 'templates' . DIRECTORY_SEPARATOR . $this->settings->template
             . DIRECTORY_SEPARATOR . $this->routing->route['controller'] . DIRECTORY_SEPARATOR . $template . '.php';
+    }
+
+    /** Echo Template File Body */
+    protected function _echoTemplateBody(): void
+    {
+        if (!include($this->_fullTemplatePath)) {
+            throw new \Exception('Can\'t echo template body, because can\'t include file "'
+                . $this->_fullTemplatePath . '"');
+        }
+    }
+
+    /** Echo JS script on document ready from $this->jsReady string */
+    protected function _echoOnReadyJS(): void
+    {
+        if (!empty($this->jsReady)) {
+            echo PHP_EOL . '<script>' . PHP_EOL
+                . "document.addEventListener('DOMContentLoaded', function(){" . PHP_EOL
+                . $this->jsReady . "});" . PHP_EOL . '</script>';
+        }
+    }
+
+    /** Echo JS files (<script ...></script>) from $this->jsFiles array */
+    protected function _echoJS(): void
+    {
+        if (!empty($this->jsFiles)) {
+            foreach ($this->jsFiles as $jsFile) {
+                echo PHP_EOL;
+                if (!is_array($jsFile)) {
+                    echo  '<script src="' . $jsFile . '">';
+                } else {
+                    echo '<script';
+                    foreach ($jsFile as $key => $value) {
+                        echo ' ' . $key . '="' . $value . '"';
+                    }
+                    echo '></script>';
+                }
+            }
+        }
+    }
+
+    /** Echo CSS files (<link rel="stylesheet" href= ... >) from $this->cssFiles array */
+    protected function _echoCSS(): void
+    {
+        if (!empty($this->cssFiles)) {
+            foreach ($this->cssFiles as $cssFile) {
+                echo PHP_EOL;
+                if (!is_array($cssFile)) {
+                    echo  '<link rel="stylesheet" href="' . $cssFile . '"/>';
+                } else {
+                    echo '<link';
+                    foreach ($cssFile as $key => $value) {
+                        echo ' ' . $key . '="' . $value . '"';
+                    }
+                    echo '/>';
+                }
+            }
+        }
+    }
+
+    /**
+     * Return default Site headers
+     *
+     * @return string[]
+     */
+    protected function _getDefaultHeaders(): array
+    {
+        return [
+            'X-Powered-By: newtons',
+            'Server: Summit',
+            'expires: mon, 26 jul 2000 05:00:00 GMT',
+            'cache-control: no-cache, must-revalidate',
+            'pragma: no-cache',
+            'last-modified: ' . gmdate('d, d m y h:i:s') . ' GMT',
+            'X-Frame-Options: SAMEORIGIN',
+            'X-XSS-Protection: 1; mode=block;',
+            'X-Content-Type-Options: nosniff',
+        ];
+    }
+
+    /** Echo php heades() from $this->_headers array */
+    protected function _echoHeaders(): void
+    {
+        if (empty($this->_headers)) {
+            $this->_headers = $this->_getDefaultHeaders();
+        }
+        foreach ($this->_headers as $header) {
+            header($header);
+        }
     }
 }

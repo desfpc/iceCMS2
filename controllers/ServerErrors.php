@@ -1,0 +1,44 @@
+<?php
+declare(strict_types=1);
+/**
+ * iceCMS2 v0.1a
+ * Created by Sergey Peshalov https://github.com/desfpc
+ * https://github.com/desfpc/iceCMS2
+ *
+ * Not Found Error Class
+ */
+
+namespace app\Controllers;
+
+use Exception;
+use iceCMS2\Controller\Controller;
+use iceCMS2\Controller\ControllerInterface;
+
+class ServerErrors extends Controller implements ControllerInterface
+{
+    /**
+     * 505 Server Error page
+     *
+     * @throws Exception
+     */
+    public function serverError()
+    {
+        $this->_headers = $this->_getDefaultHeaders();
+        $this->_headers[] = 'HTTP/1.0 500 Internal Server Error';
+        $this->_headers[] = 'Status: 500 Internal Server Error';
+        $this->renderTemplate('serverError');
+    }
+
+    /**
+     * 404 Not Found Page
+     *
+     * @throws Exception
+     */
+    public function notFound()
+    {
+        $this->_headers = $this->_getDefaultHeaders();
+        $this->_headers[] = 'HTTP/1.0 404 Not Found';
+        $this->_headers[] = 'Status: 404 Not Found';
+        $this->renderTemplate('notFound');
+    }
+}

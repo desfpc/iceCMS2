@@ -88,8 +88,8 @@ class RoutingTest extends TestCase
         $routing->parseURL();
         $routing->getRoute($settings1, false);
         $this->assertEquals([
-            'controller' => 'NotFound',
-            'method' => 'main',
+            'controller' => 'ServerErrors',
+            'method' => 'notFound',
             'parts' => [],
         ], $routing->route
         );

@@ -17,6 +17,8 @@ require_once '../settings/settingsSelector.php';
 use iceCMS2\Loader\Loader;
 
 $site = new Loader($settings);
-$site->loadController();
-
-echo 'Hello World!';
+try {
+    $site->loadController();
+} catch (Exception $e) {
+    $site->loadController('ServerErrors', 'serverError');
+}
