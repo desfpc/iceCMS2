@@ -104,7 +104,7 @@ class Routing
                     ++$i;
                     if (!isset($route['parts'][$i])) {
                         if ($this->route['method'] === 'main') {
-                            $this->route['method'] = $call_part;
+                            $this->route['method'] = Strings::snakeToCamel($call_part);
                         } else {
                             $this->route['parts'][] = $call_part;
                         }

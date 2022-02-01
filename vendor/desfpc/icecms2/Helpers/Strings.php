@@ -32,7 +32,7 @@ class Strings
      */
     public static function snakeToCamel(string $snake, bool $isLowerCamelCase = true): string
     {
-        $camel = str_replace('_', '', ucwords($snake, '_'));
+        $camel = str_replace(['_','-'], '', ucwords($snake, '_-'));
         if ($isLowerCamelCase) {
             $camel = lcfirst($camel);
         }

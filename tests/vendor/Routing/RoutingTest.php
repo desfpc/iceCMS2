@@ -88,7 +88,7 @@ class RoutingTest extends TestCase
         $routing->parseURL();
         $routing->getRoute($settings1, false);
         $this->assertEquals([
-            'controller' => '404',
+            'controller' => 'NotFound',
             'method' => 'main',
             'parts' => [],
         ], $routing->route
@@ -104,12 +104,12 @@ class RoutingTest extends TestCase
         ], $routing->route
         );
 
-        $_SERVER['REQUEST_URI'] = '/test1/test5/test3/test2/?test4=val1&test5=val2';
+        $_SERVER['REQUEST_URI'] = '/test1/test-test5/test3/test2/?test4=val1&test5=val2';
         $routing->parseURL();
         $routing->getRoute($settings1, false);
         $this->assertEquals([
             'controller' => 'controller1',
-            'method' => 'test5',
+            'method' => 'testTest5',
             'parts' => [
                 0 => 'test3',
                 1 => 'test2',
