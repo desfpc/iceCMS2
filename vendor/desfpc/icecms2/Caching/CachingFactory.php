@@ -23,8 +23,8 @@ class CachingFactory
      */
     public static function instance(Settings $settings): CachingInterface
     {
-        if ($settings->cache->use_redis) {
-            return new Redis($settings->cache->redis_host, $settings->cache->redis_port);
+        if ($settings->cache->useRedis) {
+            return new Redis($settings->cache->redisHost, $settings->cache->redisPort);
         } else {
             throw new \Exception('Redis caching is not configured, but the file cache is not done yet ...');
         }

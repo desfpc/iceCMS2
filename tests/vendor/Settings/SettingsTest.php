@@ -60,14 +60,16 @@ class SettingsTest extends TestCase
             'sms' => null,
             'site' => [
                 'title' => 'Test Site Name',
-                'primary_domain' => 'test.site',
-                'redirect_to_primary_domain' => true,
-                'language_subdomain' => true,
+                'primaryDomain' => 'test.site',
+                'redirectToPrimaryDomain' => true,
+                'languageSubdomain' => true,
+                'cssScriptsVersion' => '1',
+                'jsScriptsVersion' => '1',
             ],
             'cache' => [
-                'use_redis' => true,
-                'redis_host' => '127.0.0.1',
-                'redis_port' => 6379,
+                'useRedis' => true,
+                'redisHost' => '127.0.0.1',
+                'redisPort' => 6379,
             ],
             'routes' => [
                 '404' => '404',
@@ -89,9 +91,9 @@ class SettingsTest extends TestCase
 
         // wrong settings #2
         $wrongSettings = $validSettings;
-        unset($wrongSettings['site']['redirect_to_primary_domain']);
+        unset($wrongSettings['site']['redirectToPrimaryDomain']);
         $settings = new Settings($wrongSettings);
         $this->assertEquals(1, $settings->errors->flag);
-        $this->assertEquals('Failed to load settings: Settings file error - there is no required field: site-redirect_to_primary_domain', $settings->errors->text);
+        $this->assertEquals('Failed to load settings: Settings file error - there is no required field: site-redirectToPrimaryDomain', $settings->errors->text);
     }
 }

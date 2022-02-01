@@ -57,14 +57,16 @@ class Settings
         'sms' => 0,
         'site' => [
             'title' => 1,
-            'primary_domain' => 1,
-            'redirect_to_primary_domain' => 1,
-            'language_subdomain' => 1,
+            'primaryDomain' => 1,
+            'redirectToPrimaryDomain' => 1,
+            'languageSubdomain' => 1,
+            'cssScriptsVersion' => 1,
+            'jsScriptsVersion' => 1,
         ],
         'cache' => [
-            'use_redis' => 1,
-            'redis_host' => 0,
-            'redis_port' => 0,
+            'useRedis' => 1,
+            'redisHost' => 0,
+            'redisPort' => 0,
         ],
         'routes' => [],
     ];

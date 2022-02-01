@@ -48,6 +48,6 @@ class Strings
      */
     public static function cacheKey(Settings $settings, string $key): string
     {
-        return $settings->site->primary_domain . '_' . $key;
+        return $settings->site->primaryDomain . '_' . $key;
     }
 }

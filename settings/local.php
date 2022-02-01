@@ -41,14 +41,16 @@ $settings = [
     'sms' => null,
     'site' => [
         'title' => 'IceCMS2 Great Site',
-        'primary_domain' => 'icecms2',
-        'redirect_to_primary_domain' => true,
-        'language_subdomain' => true,
+        'primaryDomain' => 'icecms2',
+        'redirectToPrimaryDomain' => true,
+        'languageSubdomain' => true,
+        'cssScriptsVersion' => '1',
+        'jsScriptsVersion' => '1',
     ],
     'cache' => [
-        'use_redis' => true,
-        'redis_host' => '127.0.0.1',
-        'redis_port' => 6379,
+        'useRedis' => true,
+        'redisHost' => '127.0.0.1',
+        'redisPort' => 6379,
     ],
     'routes' => [
         '404' => '404',
