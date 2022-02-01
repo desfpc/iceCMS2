@@ -21,7 +21,22 @@ abstract class Controller implements ControllerInterface
 
     /** @var Routing|null Routing data */
     public ?Routing $routing = null;
-    
+
+    /** @var string Template layout */
+    public string $layout = 'default';
+
+    /** @var string[] JS files to load */
+    public array $jsFiles = ['/js/ice.js'];
+
+    /** @var string[] CSS files to load */
+    public array $cssFiles = ['/css/ice.css'];
+
+    /** @var string JS code for Document Ready */
+    public string $jsReady = '';
+
+    /** @var string Full template file path for including */
+    protected string $_fullTemplatePath = '';
+
     /** Class constructor */
     public function __construct(?Routing $routing, ?Settings $settings)
     {
@@ -38,14 +53,54 @@ abstract class Controller implements ControllerInterface
     /**
      * Render (print) template
      *
-     * @param ?string $template
+     * @param ?string $template Template name
+     * @param bool $isFullTemplatePatch If "true", then the $template parameter contains the full template file path
      */
-    public function renderTemplate(?string $template = null): void
+    public function renderTemplate(?string $template = null, bool $isFullTemplatePatch = false): void
     {
         if (is_null($template)) {
             $dbt=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,2);
             $template = isset($dbt[1]['function']) ? $dbt[1]['function'] : 'main';
         }
-        Visualijoper::visualijop($template);
+        Visualijoper::visualijop($this->_getFullTemplatePath($template));
+        Visualijoper::visualijop($this->_getFullLayoutPath());
+
+        if ($isFullTemplatePatch) {
+            $this->_fullTemplatePath = $template;
+        } else {
+            $this->_fullTemplatePath = $this->_getFullTemplatePath($template);
+        }
+
+        try {
+            ob_start();
+            require($this->_getFullLayoutPath());
+            echo ob_get_contents();
+            ob_end_clean();
+        } catch (\Exception $e) {
+            throw new \Exception('Can\'t render template: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get full layout file path
+     *
+     * @return string
+     */
+    protected function _getFullLayoutPath(): string
+    {
+        return $this->settings->path . 'templates' . DIRECTORY_SEPARATOR . $this->settings->template
+            . DIRECTORY_SEPARATOR . 'layouts' . DIRECTORY_SEPARATOR . $this->layout . '.php';
+    }
+
+    /**
+     * Get full template file path
+     *
+     * @param string $template
+     * @return string
+     */
+    protected function _getFullTemplatePath(string $template): string
+    {
+        return $this->settings->path . 'templates' . DIRECTORY_SEPARATOR . $this->settings->template
+            . DIRECTORY_SEPARATOR . $this->routing->route['controller'] . DIRECTORY_SEPARATOR . $template . '.php';
     }
 }
