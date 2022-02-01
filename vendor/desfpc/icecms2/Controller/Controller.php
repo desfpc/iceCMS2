@@ -10,12 +10,16 @@ declare(strict_types=1);
 
 namespace iceCMS2\Controller;
 
-use desfpc\Visualijoper\Visualijoper;
 use iceCMS2\Routing\Routing;
 use iceCMS2\Settings\Settings;
+use iceCMS2\Tools\FlashVars;
+use iceCMS2\Tools\Exception;
 
 abstract class Controller implements ControllerInterface
 {
+    /** @var array<string, mixed> Data for template */
+    public array $templateData = [];
+
     /** @var Settings|null Project settings */
     public ?Settings $settings = null;
 
@@ -67,6 +71,7 @@ abstract class Controller implements ControllerInterface
      *
      * @param ?string $template Template name
      * @param bool $isFullTemplatePatch If "true", then the $template parameter contains the full template file path
+     * @throws Exception
      */
     public function renderTemplate(?string $template = null, bool $isFullTemplatePatch = false): void
     {
@@ -84,7 +89,7 @@ abstract class Controller implements ControllerInterface
         try {
             require($this->_getFullLayoutPath());
         } catch (\Exception $e) {
-            throw new \Exception('Can\'t render template: ' . $e->getMessage());
+            throw new Exception('Can\'t render template: ' . $e->getMessage());
         }
     }
 
@@ -115,7 +120,7 @@ abstract class Controller implements ControllerInterface
     protected function _echoTemplateBody(): void
     {
         if (!include($this->_fullTemplatePath)) {
-            throw new \Exception('Can\'t echo template body, because can\'t include file "'
+            throw new Exception('Can\'t echo template body, because can\'t include file "'
                 . $this->_fullTemplatePath . '"');
         }
     }

@@ -13,7 +13,7 @@ namespace iceCMS2\Loader;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Routing\Routing;
 use iceCMS2\Controller\ControllerInterface;
-use \Exception;
+use iceCMS2\Tools\Exception;
 
 class Loader
 {
@@ -77,9 +77,13 @@ class Loader
             $controllerMethod = $this->routing->route['method'];
         }
 
+        if (!method_exists($this->controller, $controllerMethod)) {
+            throw new Exception('Can\'t run controller method: ' . $controllerMethod . ' not exist');
+        }
+
         try {
             $this->controller->$controllerMethod();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new Exception('Can\'t run controller method: ' . $controllerMethod . '; ' . $e->getMessage());
         }
     }

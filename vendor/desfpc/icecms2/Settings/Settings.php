@@ -104,8 +104,8 @@ class Settings
     /** @var string|null full path to the site directory */
     public ?string $path = null;
 
-    /** @var bool|null development mode */
-    public ?bool $isDev = null;
+    /** @var bool development mode */
+    public bool $dev = false;
 
     /**
      * Class constructor

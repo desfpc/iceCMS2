@@ -8,7 +8,7 @@ declare(strict_types=1);
  * Start point of Your Best Application
  */
 
-//Composer auto-load project classes
+//Composer auto-load
 require_once '../vendor/autoload.php';
 
 /** @var array $settings Settings array from settingsSelector.php */

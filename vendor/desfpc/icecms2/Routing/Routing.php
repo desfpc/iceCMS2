@@ -134,9 +134,9 @@ class Routing
                 $this->pathInfo['query_vars'] = array_merge($this->pathInfo['query_vars'], $addedQueryVars);
                 break;
             }
-            if ($this->route['controller'] === 'ServerErrors') {
-                $this->route['method'] = 'notFound';
-            }
+        }
+        if ($this->route['controller'] === 'ServerErrors') {
+            $this->route['method'] = 'notFound';
         }
     }
 
