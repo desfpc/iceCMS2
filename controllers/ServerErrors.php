@@ -10,12 +10,12 @@ declare(strict_types=1);
 
 namespace app\Controllers;
 
-use iceCMS2\Controller\Controller;
+use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Tools\FlashVars;
 
-class ServerErrors extends Controller implements ControllerInterface
+class ServerErrors extends AbstractController implements ControllerInterface
 {
     /**
      * 505 Server Error page

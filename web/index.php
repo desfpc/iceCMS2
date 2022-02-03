@@ -11,14 +11,20 @@ declare(strict_types=1);
 //Composer auto-load
 require_once '../vendor/autoload.php';
 
+//Variables Visualization class for debugging
+require_once '../vendor/desfpc/visualijoper/src/Visualijoper.php';
+
 /** @var array $settings Settings array from settingsSelector.php */
 require_once '../settings/settingsSelector.php';
 
+use desfpc\visualijoper\Visualijoper;
 use iceCMS2\Loader\Loader;
 
-$site = new Loader($settings);
+$app = new Loader($settings);
 try {
-    $site->loadController();
+    $app->loadController();
 } catch (Exception $e) {
-    $site->loadController('ServerErrors', 'serverError');
+    $app->loadController('ServerErrors', 'serverError');
 }
+
+Visualijoper::visualijop($app);

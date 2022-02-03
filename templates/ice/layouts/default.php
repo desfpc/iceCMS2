@@ -1,8 +1,5 @@
 <?php
 declare(strict_types=1);
-
-use iceCMS2\Controller\Controller;
-
 /**
  * iceCMS2 v0.1a
  * Created by Sergey Peshalov https://github.com/desfpc
@@ -10,7 +7,7 @@ use iceCMS2\Controller\Controller;
  *
  * Default templates layout file
  *
- * @var Controller $this
+ * @var iceCMS2\Controller\AbstractController $this
  */
 
 $this->_echoHeaders(); ?>

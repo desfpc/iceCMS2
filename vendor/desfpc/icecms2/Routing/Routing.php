@@ -44,7 +44,10 @@ class Routing
     public function getRoute(Settings $settings, bool $useCache = true): void
     {
         $cacher = CachingFactory::instance($settings);
-        if (!empty($this->pathInfo['call_parts']) && !empty($settings->routes)) {
+        if (empty($this->pathInfo['call_parts'])) {
+            $this->pathInfo['call_parts'][] = '';
+        }
+        if (!empty($settings->routes)) {
             $rouresTreeKey = Strings::cacheKey($settings, self::CACHE_KEY_ROUTES_TREE);
             if ($useCache && $cacher->has($rouresTreeKey)) {
                 $rouresTree = $cacher->get($rouresTreeKey, true);
@@ -135,7 +138,7 @@ class Routing
                 break;
             }
         }
-        if ($this->route['controller'] === 'ServerErrors') {
+        if ($this->route['controller'] === 'ServerErrors' && $this->route['method'] === 'main') {
             $this->route['method'] = 'notFound';
         }
     }
