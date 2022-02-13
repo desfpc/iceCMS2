@@ -88,6 +88,28 @@ abstract class AbstractEntity
         return $this->_settings->db->name . '_tableCols_' . $this->_dbtable;
     }
 
+    //удаление записи из БД
+
+    /**
+     * Delete Entity
+     *
+     * @param int|null $id
+     * @return bool
+     */
+    public function del(?int $id = null): bool
+    {
+        $this->id = $id;
+
+        if ($res = $this->DB->query($this->_delEntityValuesSQL())) {
+            $this->_uncacheRecord();
+            $this->_id = null;
+            $this->values = false;
+            $this->isGotten = false;
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Getting Entity from DB by ID
      *
@@ -139,6 +161,20 @@ abstract class AbstractEntity
     }
 
     /**
+     * Getting SQL string for deleting Entity from DB
+     *
+     * @return string
+     * @throws Exception
+     */
+    protected function _delEntityValuesSQL(): string
+    {
+        if (is_null($this->_id)) {
+            throw new Exception('Entity has no ID');
+        }
+        return 'DELETE FROM ' . $this->_dbtable . ' WHERE id = ' . $this->_id;
+    }
+
+    /**
      * Getting SQL string for filling Entity values query
      *
      * @return string
@@ -147,7 +183,7 @@ abstract class AbstractEntity
     protected function _getEntityValuesSQL(): string
     {
         if (is_null($this->_id)) {
-            throw new Exception('Entity has not ID');
+            throw new Exception('Entity has no ID');
         }
         return 'SELECT * FROM ' . $this->_dbtable . ' WHERE id = ' . $this->_id;
     }
