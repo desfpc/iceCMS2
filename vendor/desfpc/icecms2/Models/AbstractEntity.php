@@ -88,7 +88,28 @@ abstract class AbstractEntity
         return $this->_settings->db->name . '_tableCols_' . $this->_dbtable;
     }
 
-    //удаление записи из БД
+    /**
+     * Save Entity
+     *
+     * @return bool
+     */
+    public function save(): bool
+    {
+        if (!empty($this->values)) {
+            if ($res = $this->_DB->queryBinded($this->_getEntitySaveSQL(), $this->_getEntitySaveValues())) {
+                if (is_null($this->_id)) {
+                    if (is_int($res)) {
+                        $this->_id = $res;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //TODO _getEntitySaveSQL
+    //TODO _getEntitySaveValues
 
     /**
      * Delete Entity

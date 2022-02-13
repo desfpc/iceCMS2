@@ -275,7 +275,7 @@ class MySql implements DBInterface
     /**
      * @inheritDoc
      */
-    public function query(string $query, $isFree = true, $isCnt = false, $isForced = false)
+    public function query(string $query, $isFree = true, $isCnt = false, $isForced = false): bool|array|int
     {
         if ($this->_isConnected || $isForced) {
             try {
@@ -313,8 +313,9 @@ class MySql implements DBInterface
      * @param \mysqli_result|\mysqli_stmt|bool $res
      * @param bool $isCnt
      * @param bool $isFree
+     * @return bool|array|int
      */
-    private function _queryRes(string $query, \mysqli_result|\mysqli_stmt|bool $res, bool $isCnt, bool $isFree)
+    private function _queryRes(string $query, \mysqli_result|\mysqli_stmt|bool $res, bool $isCnt, bool $isFree): bool|array|int
     {
         // Query is SELECT, SHOW or WITH RECURSIVE
         if (preg_match("/^select/i", trim($query)) || preg_match("/^show/i", trim($query)) || preg_match("/^with recursive/i", trim($query))) {
@@ -340,6 +341,9 @@ class MySql implements DBInterface
         }
 
         // Other queryes
+        if ($res->insert_id > 0) {
+            return $res->insert_id;
+        }
         return true;
     }
 
