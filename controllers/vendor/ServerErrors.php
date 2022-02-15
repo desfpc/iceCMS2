@@ -8,7 +8,7 @@ declare(strict_types=1);
  * Not Found Error Class
  */
 
-namespace app\Controllers;
+namespace app\Controllers\vendor;
 
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;

@@ -9,7 +9,7 @@ declare(strict_types=1);
  */
 
 $settings = [
-    'path' => 'text/path',
+    'path' => str_replace('settings', '', dirname(__FILE__)),
     'template' => 'ice',
     'dev' => true,
     'secret' => 'verySecretSecret',
@@ -53,7 +53,8 @@ $settings = [
         'redisPort' => 6379,
     ],
     'routes' => [
-        '404' => '404',
-        '500' => '500',
+        '500' => ['controller' => 'ServerErrors', 'method' => 'serverError', 'useVendor' => true],
+        '404' => ['controller' => 'ServerErrors', 'method' => 'serverError', 'useVendor' => true],
+        '' => ['controller' => 'Main', 'method' => 'main', 'useVendor' => true],
     ],
 ];

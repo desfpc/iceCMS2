@@ -96,7 +96,8 @@ abstract class AbstractEntity
     public function save(): bool
     {
         if (!empty($this->values)) {
-            if ($res = $this->_DB->queryBinded($this->_getEntitySaveSQL(), $this->_getEntitySaveValues())) {
+            [$prepariedSQL, $prepariedValues] = $this->_getEntitySaveData();
+            if ($res = $this->_DB->queryBinded($prepariedSQL, $prepariedValues)) {
                 if (is_null($this->_id)) {
                     if (is_int($res)) {
                         $this->_id = $res;
@@ -108,8 +109,16 @@ abstract class AbstractEntity
         return false;
     }
 
-    //TODO _getEntitySaveSQL
-    //TODO _getEntitySaveValues
+    /**
+     * Get data for Entity save SQL query
+     *
+     * @return array<string, array>
+     */
+    private function _getEntitySaveData(): array
+    {
+
+        return [$sql, $values];
+    }
 
     /**
      * Delete Entity

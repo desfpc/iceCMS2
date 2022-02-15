@@ -8,12 +8,11 @@ declare(strict_types=1);
  * Main Controller Class
  */
 
-namespace app\Controllers;
+namespace app\Controllers\vendor;
 
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 
 class Main extends AbstractController implements ControllerInterface
 {
-
 }

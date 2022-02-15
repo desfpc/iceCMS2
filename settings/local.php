@@ -53,8 +53,8 @@ $settings = [
         'redisPort' => 6379,
     ],
     'routes' => [
-        '500' => ['controller' => 'ServerErrors', 'method' => 'serverError'],
-        '404' => ['controller' => 'ServerErrors', 'method' => 'serverError'],
-        '' => 'Main',
+        '500' => ['controller' => 'ServerErrors', 'method' => 'serverError', 'useVendor' => true],
+        '404' => ['controller' => 'ServerErrors', 'method' => 'serverError', 'useVendor' => true],
+        '' => ['controller' => 'Main', 'method' => 'main', 'useVendor' => true],
     ],
 ];

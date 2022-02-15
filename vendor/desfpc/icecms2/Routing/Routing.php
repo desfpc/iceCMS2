@@ -32,6 +32,7 @@ class Routing
     public array $route = [
         'controller' => 'ServerErrors',
         'method' => 'main',
+        'useVendor' => false,
         'parts' => [],
     ];
 
@@ -131,6 +132,9 @@ class Routing
                     if (isset($route['value']['method'])) {
                         $this->route['method'] = $route['value']['method'];
                     }
+                    if (isset($route['value']['useVendor'])) {
+                        $this->route['useVendor'] = $route['value']['useVendor'];
+                    }
                 } else {
                     $this->route['controller'] = $route['value'];
                 }
@@ -140,6 +144,7 @@ class Routing
         }
         if ($this->route['controller'] === 'ServerErrors' && $this->route['method'] === 'main') {
             $this->route['method'] = 'notFound';
+            $this->route['useVendor'] = true;
         }
     }
 

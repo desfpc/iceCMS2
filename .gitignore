@@ -3,4 +3,8 @@ composer.lock
 vendor/
 !vendor/desfpc/icecms2
 !tests/vendor
+!controllers/vendor
+!templates/vendor
+settings/local.php
+settings/product.php
 .phpunit.result.cache

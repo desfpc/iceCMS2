@@ -208,7 +208,7 @@ class MySql implements DBInterface
     /**
      * @inheritDoc
      */
-    public function queryBinded(string $query, array $values, $isCnt = false, $isForced = false)
+    public function queryBinded(string $query, array $values, $isCnt = false, $isForced = false): bool|array|int
     {
         if ($this->_isConnected || $isForced) {
             try {

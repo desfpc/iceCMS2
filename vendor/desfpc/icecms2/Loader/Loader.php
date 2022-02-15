@@ -55,12 +55,24 @@ class Loader
             $this->routing->route['method'] = $controllerMethod;
         }
 
-        $controllerFile = $this->settings->path . 'controllers' . DIRECTORY_SEPARATOR . $controllerName . '.php';
+        if (isset($this->routing->route['useVendor'])) {
+            $useVendor = $this->routing->route['useVendor'];
+        } else {
+            $useVendor = false;
+        }
+
+        if ($useVendor) {
+            $controllerFile = $this->settings->path . 'controllers' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . $controllerName . '.php';
+            $controllerClassName = 'app\Controllers\vendor\\' . $controllerName;
+        } else {
+            $controllerFile = $this->settings->path . 'controllers' . DIRECTORY_SEPARATOR . $controllerName . '.php';
+            $controllerClassName = 'app\Controllers\\' . $controllerName;
+        }
 
         if (!include_once ($controllerFile)){
             throw new Exception('Can\'t load controller file: ' . $controllerFile);
         } else {
-            $controllerClassName = 'app\Controllers\\' . $controllerName;
+
             if (!class_exists($controllerClassName)) {
                 throw new Exception('Class not found: ' . $controllerClassName.'; ');
             } else {
