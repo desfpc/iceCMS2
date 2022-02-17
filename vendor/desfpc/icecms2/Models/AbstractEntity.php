@@ -105,17 +105,18 @@ abstract class AbstractEntity
      *
      * @param string|array $keyOrValues
      * @param string|int|float|bool|null $value
+     * @param bool $checkKey
      * @return void
      * @throws Exception
      */
-    public function set(string|array $keyOrValues, string|int|float|bool|null $value = null): void
+    public function set(string|array $keyOrValues, string|int|float|bool|null $value = null, bool $checkKey = true): void
     {
         if (is_string($keyOrValues)) {
-            $this->_setByKeyAndValue($keyOrValues, $value);
+            $this->_setByKeyAndValue($keyOrValues, $value, $checkKey);
         } else {
             if (!empty($keyOrValues)) {
                 foreach ($keyOrValues as $key => $value) {
-                    $this->_setByKeyAndValue($key, $value);
+                    $this->_setByKeyAndValue($key, $value, $checkKey);
                 }
             }
         }
@@ -126,11 +127,12 @@ abstract class AbstractEntity
      *
      * @param string $key
      * @param string|int|float|bool|null $value
+     * @param bool $checkKey
      * @throws Exception
      */
-    private function _setByKeyAndValue(string $key, string|int|float|bool|null $value = null): void
+    private function _setByKeyAndValue(string $key, string|int|float|bool|null $value = null, bool $checkKey = true): void
     {
-        if (!isset($this->_cols[$key])) {
+        if ($checkKey && !isset($this->_cols[$key])) {
             throw new Exception('Field "' . $key . '" missing in table "' . $this->_dbtable . '"');
         }
         if (!isset($this->_values[$key]) || $this->_values[$key] !== $value) {
@@ -184,7 +186,7 @@ abstract class AbstractEntity
      */
     public function save(): bool
     {
-        if (!empty($this->_values)) {
+        if ($this->isDirty && !empty($this->_values)) {
             [$prepariedSQL, $prepariedValues] = $this->_getEntitySaveData();
             if ($res = $this->_DB->queryBinded($prepariedSQL, $prepariedValues)) {
                 if (is_null($this->_id)) {
@@ -211,16 +213,18 @@ abstract class AbstractEntity
         $updateStr = '';
         $i = 0;
         foreach ($this->_dirtyValues as $key => $val) {
-            ++$i;
-            if ($i > 1) {
-                $keys .= ', ';
-                $bindedKeys .= ', ';
-                $updateStr .= ', ';
+            if (isset($this->_cols[$key])) {
+                ++$i;
+                if ($i > 1) {
+                    $keys .= ', ';
+                    $bindedKeys .= ', ';
+                    $updateStr .= ', ';
+                }
+                $keys .= '`' . $key . '`';
+                $bindedKeys .= '?';
+                $updateStr .= '`' . $key . '`' . ' = ?';
+                $binded[':' . $key] = $value;
             }
-            $keys .= '`' . $key . '`';
-            $bindedKeys .= '?';
-            $updateStr .= '`' . $key . '`' . ' = ?';
-            $binded[':' . $key] = $value;
         }
         if (is_null($this->_id)) {
             $sql = 'INSERT INTO `' . $this->_dbtable . '` (' . $keys . ') VALUES (' . $bindedKeys . ')';
