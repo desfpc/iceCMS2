@@ -21,22 +21,36 @@ abstract class AbstractEntity
 {
     /** @var string[] Entity errors */
     public array $errors = [];
+
     /** @var ?array<string, mixed> Entity values */
-    public ?array $values = null;
+    protected ?array $_values = null;
+
+    /** @var ?array<string, mixed> Entity values that have been changed but not saved */
+    protected ?array $_dirtyValues = null;
+
     /** @var bool If Entity gotten from DB flag */
-    public bool $isGotten = false;
+    public bool $isLoaded = false;
+    
+    /** @var bool If Entity have dirty values */
+    public bool $isDirty = false;
+
     /** @var DBInterface DB Resource */
-    private DBInterface $_DB;
+    protected DBInterface $_DB;
+
     /** @var CachingInterface Cacher */
-    private CachingInterface $_cacher;
+    protected CachingInterface $_cacher;
+
     /** @var Settings App settings */
-    private Settings $_settings;
+    protected Settings $_settings;
+
     /** @var string Entity DB table name */
-    private string $_dbtable;
+    protected string $_dbtable;
+
     /** @var int|null Entity ID */
-    private ?int $_id = null;
+    protected ?int $_id = null;
+
     /** @var array|null Entity DB columns */
-    private ?array $_cols = null;
+    protected ?array $_cols = null;
 
     /**
      * Entity constructor class
@@ -52,6 +66,78 @@ abstract class AbstractEntity
         $this->_cacher = CachingFactory::instance($this->_settings);
 
         $this->_getTableCols();
+
+        if (!empty($id)) {
+            $this->load();
+        }
+    }
+
+    /**
+     * Getting Entity value/values
+     *
+     * @param string|null $key
+     * @return mixed|mixed[]|null
+     * @throws Exception
+     */
+    public function get(?string $key = null)
+    {
+        if (is_null($key)) {
+            return $this->_values;
+        }
+        if (!isset($this->_values[$key])) {
+            throw new Exception('Field "' . $key . '" missing in table "' . $this->_dbtable . '"');
+        }
+        return $this->_values[$key];
+    }
+
+    /**
+     * Getting Entity dirty values
+     *
+     * @return mixed[]|null
+     */
+    public function getDirty()
+    {
+        return $this->_dirtyValues;
+    }
+
+    /**
+     * Setting new Entity value/values
+     *
+     * @param string|array $keyOrValues
+     * @param string|int|float|bool|null $value
+     * @return void
+     * @throws Exception
+     */
+    public function set(string|array $keyOrValues, string|int|float|bool|null $value = null): void
+    {
+        if (is_string($keyOrValues)) {
+            $this->_setByKeyAndValue($keyOrValues, $value);
+        } else {
+            if (!empty($keyOrValues)) {
+                foreach ($keyOrValues as $key => $value) {
+                    $this->_setByKeyAndValue($key, $value);
+                }
+            }
+        }
+    }
+
+    /**
+     * Setting new Entity value
+     *
+     * @param string $key
+     * @param string|int|float|bool|null $value
+     * @throws Exception
+     */
+    private function _setByKeyAndValue(string $key, string|int|float|bool|null $value = null): void
+    {
+        if (!isset($this->_cols[$key])) {
+            throw new Exception('Field "' . $key . '" missing in table "' . $this->_dbtable . '"');
+        }
+        if (!isset($this->_values[$key]) || $this->_values[$key] !== $value) {
+            $this->isDirty = true;
+            $this->_dirtyValues[$key] = !isset($this->_values[$key]) ? null : $this->_values[$key];
+            $this->_values[$key] = $value;
+        }
     }
 
     /**
@@ -71,7 +157,10 @@ abstract class AbstractEntity
 
             if ($res = $this->_DB->query($query)) {
                 if (count($res) > 0) {
-                    $this->_cols = $res;
+                    $this->_cols = [];
+                    foreach ($res as $row) {
+                        $this->_cols[$row['Field']] = $row;
+                    }
                     $this->_cacher->set($key, json_encode($this->_cols));
                 }
             }
@@ -95,7 +184,7 @@ abstract class AbstractEntity
      */
     public function save(): bool
     {
-        if (!empty($this->values)) {
+        if (!empty($this->_values)) {
             [$prepariedSQL, $prepariedValues] = $this->_getEntitySaveData();
             if ($res = $this->_DB->queryBinded($prepariedSQL, $prepariedValues)) {
                 if (is_null($this->_id)) {
@@ -116,8 +205,30 @@ abstract class AbstractEntity
      */
     private function _getEntitySaveData(): array
     {
+        $binded = [];
+        $keys = '';
+        $bindedKeys = '';
+        $updateStr = '';
+        $i = 0;
+        foreach ($this->_dirtyValues as $key => $val) {
+            ++$i;
+            if ($i > 1) {
+                $keys .= ', ';
+                $bindedKeys .= ', ';
+                $updateStr .= ', ';
+            }
+            $keys .= '`' . $key . '`';
+            $bindedKeys .= '?';
+            $updateStr .= '`' . $key . '`' . ' = ?';
+            $binded[':' . $key] = $value;
+        }
+        if (is_null($this->_id)) {
+            $sql = 'INSERT INTO `' . $this->_dbtable . '` (' . $keys . ') VALUES (' . $bindedKeys . ')';
+        } else {
+            $sql = 'UPDATE `' . $this->_dbtable . '` SET ' . $updateStr . ' WHERE `id` = ' . $this->_id;
+        }
 
-        return [$sql, $values];
+        return [$sql, $binded];
     }
 
     /**
@@ -133,8 +244,8 @@ abstract class AbstractEntity
         if ($res = $this->DB->query($this->_delEntityValuesSQL())) {
             $this->_uncacheRecord();
             $this->_id = null;
-            $this->values = false;
-            $this->isGotten = false;
+            $this->_values = false;
+            $this->isLoaded = false;
             return true;
         }
         return false;
@@ -146,10 +257,12 @@ abstract class AbstractEntity
      * @param int|null $id
      * @return bool
      */
-    public function get(?int $id = null): bool
+    public function load(?int $id = null): bool
     {
-        $this->isGotten = false;
-        $this->values = null;
+        $this->isDirty = false;
+        $this->_dirtyValues = null;
+        $this->isLoaded = false;
+        $this->_values = null;
 
         if (!is_null($id)) {
             $this->_id = id;
@@ -161,15 +274,15 @@ abstract class AbstractEntity
         $key = $this->_getCacheKey();
 
         if ($this->_cacher->has($key) && $values = $this->_cacher->get($key, true)) {
-            $this->values = $values;
-            $this->isGotten = true;
+            $this->_values = $values;
+            $this->isLoaded = true;
             return true;
         } elseif ($res = $this->_DB->query($this->_getEntityValuesSQL()) && count($res) > 0) {
-            $this->values = $res[0];
+            $this->_values = $res[0];
             $this->_afterGet();
             $this->_cacheRecord();
 
-            $this->isGotten = true;
+            $this->isLoaded = true;
             return true;
         }
         return false;
@@ -235,7 +348,7 @@ abstract class AbstractEntity
      */
     private function _cacheRecord(int $expired = 30 * 24 * 60 * 60)
     {
-        $this->_cacher->set($this->_getCacheKey(), json_encode($this->values), $expired);
+        $this->_cacher->set($this->_getCacheKey(), json_encode($this->_values), $expired);
     }
 
     /**
