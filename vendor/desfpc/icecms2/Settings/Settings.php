@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * Settings Class
+ * Settings Class (make Settings object from $settings array in /Settings/ directory)
  */
 
 namespace iceCMS2\Settings;

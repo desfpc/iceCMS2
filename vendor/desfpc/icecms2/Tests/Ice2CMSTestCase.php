@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * TestCase class
+ * TestCase class - setup site settings and test DB (if const DB_TABLES not empty in test class)
  */
 
 namespace iceCMS2\Tests;
