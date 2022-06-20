@@ -17,7 +17,6 @@ require_once '../vendor/desfpc/visualijoper/src/Visualijoper.php';
 /** @var array $settings Settings array from settingsSelector.php */
 require_once '../settings/settingsSelector.php';
 
-use desfpc\visualijoper\Visualijoper;
 use iceCMS2\Loader\Loader;
 
 $app = new Loader($settings);
@@ -26,5 +25,3 @@ try {
 } catch (Exception $e) {
     $app->loadController('ServerErrors', 'serverError');
 }
-
-Visualijoper::visualijop($app);

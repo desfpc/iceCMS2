@@ -1,0 +1,48 @@
+.footer {
+    color: rgba(255, 255, 255, 0.55);
+    padding: 10px 0;
+    font-size: 1em;
+}
+.footer a {
+    text-decoration: none;
+    color: rgba(255,255,255,0.88);
+    font-size: 1em;
+}
+.footer a:hover {
+    color: rgba(255,255,255,0.55);
+}
+.developed {
+    font-size: 0.6em;
+}
+.developer_mode {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: auto;
+}
+.developer_mode .content {
+    display: none;
+    max-width: 100%;
+    max-height: 100%;
+    background: #ffffff;
+    padding: 5px;
+    border: 1px solid rgb(41, 41, 41);;
+}
+.developer_mode .content.active {
+    display: block;
+}
+.developer_mode .dev_btn {
+    padding: 8px;
+    border-width: 1px 0 0 1px;
+    border-color: rgb(41, 41, 41);
+    border-style: solid;
+    border-radius: 12px 0 0 0;
+    background-color: rgb(21, 21, 21);
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.55);
+}
+.developer_mode .dev_btn:hover {
+    background-color: rgb(32, 32, 32);
+}
