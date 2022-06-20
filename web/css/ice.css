@@ -46,3 +46,6 @@
 .developer_mode .dev_btn:hover {
     background-color: rgb(32, 32, 32);
 }
+.alert {
+    margin: 0.1rem 0;
+}

@@ -10,6 +10,11 @@ declare(strict_types=1);
  * @var iceCMS2\Controller\AbstractController $this
  */
 
+$fullTitle = $this->settings->site->title;
+if ($this->title !== '') {
+    $fullTitle .= ' | ' . $this->title;
+}
+
 $this->_echoHeaders(); ?>
 <!doctype html>
 <html lang="en">
@@ -25,7 +30,7 @@ $this->_echoHeaders(); ?>
     <link href="/css/ice.css" rel="stylesheet">
     <?php $this->_echoCSS(); ?>
 
-    <title><?= $this->title ?></title>
+    <title><?= $fullTitle ?></title>
 </head>
 <body class="d-flex flex-column min-vh-100">
 <?php include '_mainMenu.php'; ?>

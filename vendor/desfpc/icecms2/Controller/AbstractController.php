@@ -17,6 +17,9 @@ use iceCMS2\Tools\Exception;
 
 abstract class AbstractController implements ControllerInterface
 {
+    /** @var array Site alerts from FlashVars */
+    public array $alerts;
+
     /** @var array<string, mixed> Data for template */
     public array $templateData = [];
 
@@ -58,6 +61,22 @@ abstract class AbstractController implements ControllerInterface
     {
         $this->routing = $routing;
         $this->settings = $settings;
+        $this->readAlerts();
+    }
+
+    /**
+     * Read alerts from FlashVars
+     *
+     * @return void
+     */
+    protected function readAlerts()
+    {
+        $flashVars = new FlashVars();
+        $this->alerts = [
+            'success' => $flashVars->get('success'),
+            'error' => $flashVars->get('error'),
+            'notice' => $flashVars->get('notice'),
+        ];
     }
 
     /** Default main method - only render default template */
@@ -133,8 +152,18 @@ abstract class AbstractController implements ControllerInterface
      */
     protected function _getFullTemplatePath(string $template): string
     {
+        return $this->_getTemplatePath() . $this->routing->route['controller'] . DIRECTORY_SEPARATOR . $template . '.php';
+    }
+
+    /**
+     * Get template files patch
+     *
+     * @return string
+     */
+    protected function _getTemplatePath(): string
+    {
         return $this->settings->path . $this->_getTemplateName() . DIRECTORY_SEPARATOR . $this->settings->template
-            . DIRECTORY_SEPARATOR . $this->routing->route['controller'] . DIRECTORY_SEPARATOR . $template . '.php';
+            . DIRECTORY_SEPARATOR;
     }
 
     /** Echo Template File Body */

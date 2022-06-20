@@ -15,4 +15,5 @@ use iceCMS2\Controller\ControllerInterface;
 
 class Main extends AbstractController implements ControllerInterface
 {
+    public string $title = 'Main';
 }

@@ -16,9 +16,7 @@ use iceCMS2\Controller\AbstractController;
 <div class="container">
     <div class="row">
         <div class="col">
-            <div class="mt-5 alert alert-success" role="alert">
-                <h1 class="display-1">IceCMS2 is running!</h1>
-            </div>
+            <?php include($this->_getTemplatePath() . 'layouts/_alerts.php'); ?>
         </div>
     </div>
 </div>
