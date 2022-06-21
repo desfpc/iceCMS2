@@ -1,3 +1,18 @@
+<?php
+declare(strict_types=1);
+/**
+ * iceCMS2 v0.1a
+ * Created by Sergey Peshalov https://github.com/desfpc
+ * https://github.com/desfpc/iceCMS2
+ *
+ * MainMenu template file
+ *
+ * @var AbstractController $this
+ */
+
+use iceCMS2\Controller\AbstractController;
+
+?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
         <a class="navbar-brand" href="/">
@@ -9,10 +24,14 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">Home</a>
+                    <a class="nav-link <?php if ($this->routing->route['controller'] === 'Main'){
+                        echo 'active';
+                    } ?>" aria-current="page" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/user/">User</a>
+                    <a class="nav-link <?php if ($this->routing->route['controller'] === 'User'){
+                        echo 'active';
+                    } ?>" href="/user/">User</a>
                 </li>
             </ul>
         </div>

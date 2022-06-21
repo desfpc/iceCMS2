@@ -56,5 +56,6 @@ $settings = [
         '500' => ['controller' => 'ServerErrors', 'method' => 'serverError', 'useVendor' => true],
         '404' => ['controller' => 'ServerErrors', 'method' => 'serverError', 'useVendor' => true],
         '' => ['controller' => 'Main', 'method' => 'main', 'useVendor' => true],
+        'user' => ['controller' => 'User', 'method' => 'main', 'useVendor' => true],
     ],
 ];

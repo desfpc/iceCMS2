@@ -8,7 +8,7 @@ use iceCMS2\Controller\AbstractController;
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * Default templates layout file
+ * User main template file
  *
  * @var AbstractController $this
  */
@@ -18,8 +18,7 @@ use iceCMS2\Controller\AbstractController;
         <div class="col">
             <?php include($this->_getTemplatePath() . 'layouts/_alerts.php'); ?>
             <p>&nbsp;</p>
-            <h1>IceCMS2</h1>
-            <h4>Fast and Light framework and CMS (under construction)</h4>
+            <h1>User</h1>
         </div>
     </div>
 </div>

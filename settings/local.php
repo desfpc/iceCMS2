@@ -15,11 +15,11 @@ $settings = [
     'secret' => 'verySecretSecret',
     'db' => [
         'type' => 'MySQL',
-        'name' => 'icecms2',
+        'name' => 'ice2',
         'host' => '127.0.0.1',
         'port' => '3306',
         'login' => 'root',
-        'pass' => 'root',
+        'pass' => 'localRoot',
         'encoding' => 'UTF8',
     ],
     'db_test' => [
@@ -56,5 +56,6 @@ $settings = [
         '500' => ['controller' => 'ServerErrors', 'method' => 'serverError', 'useVendor' => true],
         '404' => ['controller' => 'ServerErrors', 'method' => 'serverError', 'useVendor' => true],
         '' => ['controller' => 'Main', 'method' => 'main', 'useVendor' => true],
+        'user' => ['controller' => 'User', 'method' => 'main', 'useVendor' => true],
     ],
 ];

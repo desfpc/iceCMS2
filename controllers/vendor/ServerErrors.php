@@ -24,6 +24,7 @@ class ServerErrors extends AbstractController implements ControllerInterface
      */
     public function serverError()
     {
+        $this->title = 'Server Error';
         $this->templateData[Exception::EXEPTION_FLASHVARS_KEY] = (new FlashVars())->get(Exception::EXEPTION_FLASHVARS_KEY);
         $this->templateData[Exception::DEBUG_BACKTRACE_FLASHVARS_KEY] = (new FlashVars())->get(Exception::DEBUG_BACKTRACE_FLASHVARS_KEY);
         $this->_headers = $this->_getDefaultHeaders();
@@ -39,6 +40,7 @@ class ServerErrors extends AbstractController implements ControllerInterface
      */
     public function notFound()
     {
+        $this->title = 'Page not found';
         $this->_headers = $this->_getDefaultHeaders();
         $this->_headers[] = 'HTTP/1.0 404 Not Found';
         $this->_headers[] = 'Status: 404 Not Found';

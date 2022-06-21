@@ -256,7 +256,7 @@ abstract class AbstractEntity
     }
 
     /**
-     * Getting Entity from DB by ID
+     * Load Entity from DB by ID
      *
      * @param int|null $id
      * @return bool
@@ -283,13 +283,37 @@ abstract class AbstractEntity
             return true;
         } elseif ($res = $this->_DB->query($this->_getEntityValuesSQL()) && count($res) > 0) {
             $this->_values = $res[0];
-            $this->_afterGet();
+            $this->_afterLoad();
             $this->_cacheRecord();
 
             $this->isLoaded = true;
             return true;
         }
         return false;
+    }
+
+    /**
+     * Load last Entity from DB by Parameter and Value
+     *
+     * @param string $param
+     * @param string|int|float|bool|null $value
+     * @return bool
+     * @throws Exception
+     */
+    public function loadByParam(string $param, string|int|float|bool|null $value = null): bool
+    {
+        if (!isset($this->_values[$param])) {
+            throw new Exception('Field "' . $param . '" missing in table "' . $this->_dbtable . '"');
+        }
+
+        $sql = 'SELECT max(`id`) `id` FROM `' . $this->_dbtable . '` WHERE `' . $param . '` = ?';
+        $res = $this->_DB->queryBinded($sql, [':'.$param => $value]);
+        if ($res === false) {
+            return false;
+        }
+        $id = $res[0]['id'];
+
+        return $this->load($id);
     }
 
     /**
@@ -336,11 +360,11 @@ abstract class AbstractEntity
     }
 
     /**
-     * Some logics after Entity get() method. Fore extend in child classes.
+     * Some logics after Entity load() method. Fore extend in child classes.
      *
      * @return void
      */
-    protected function _afterGet(): void
+    protected function _afterLoad(): void
     {
     }
 
