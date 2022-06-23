@@ -23,7 +23,7 @@ class Icecms2CreateFilesTable extends AbstractMigration
         return "
 CREATE TABLE IF NOT EXISTS `files`
 (
-    `id`           int auto_increment comment 'ID' primary key,
+    `id`           int unsigned auto_increment comment 'ID' primary key,
     `name`         varchar(255)                  not null,
     `filename`     varchar(255)                  not null,
     `extension`    varchar(12)                   not null,
