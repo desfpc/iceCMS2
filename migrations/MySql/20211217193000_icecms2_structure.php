@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `migrations_test` (
   `value_mtype` int(11) NULL DEFAULT NULL,
   PRIMARY KEY (`version`) USING BTREE,
   INDEX `migrations_test_name_idx`(`name`) USING BTREE
-) ENGINE = InnoDB ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB ROW_FORMAT = Dynamic CHARACTER SET utf8 COLLATE utf8_general_ci;
 ';
     }
 
