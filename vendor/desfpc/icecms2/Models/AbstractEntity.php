@@ -44,7 +44,7 @@ abstract class AbstractEntity
     protected Settings $_settings;
 
     /** @var string Entity DB table name */
-    protected string $_dbtable;
+    protected string $_dbtable = '';
 
     /** @var int|null Entity ID */
     protected ?int $_id = null;
@@ -56,11 +56,12 @@ abstract class AbstractEntity
      * Entity constructor class
      *
      * @param Settings $settings App settings
+     * @param int|null $id Entity ID
+     * @throws \Exception
      */
-    public function __construct(Settings $settings, string $dtable, ?int $id = null)
+    public function __construct(Settings $settings, ?int $id = null)
     {
         $this->_id = $id;
-        $this->_dbtable = $dtable;
         $this->_settings = $settings;
         $this->_DB = DBFactory::get($this->_settings);
         $this->_cacher = CachingFactory::instance($this->_settings);

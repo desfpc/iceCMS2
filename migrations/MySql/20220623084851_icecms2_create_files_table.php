@@ -33,8 +33,9 @@ CREATE TABLE IF NOT EXISTS `files`
     `url`          varchar(255)                  not null,
     `image_width`  smallint unsigned             null,
     `image_height` smallint unsigned             null,
-    `user_id`      int unsigned                  not null,
+    `user_id`      int unsigned                  null,
     `private`      smallint unsigned default '0' not null,
+    `created_time` timestamp                     not null comment 'File created time',
     constraint `files_users_fk`
         foreign key (`user_id`) references `users` (`id`)
 ) ENGINE = InnoDB ROW_FORMAT = Dynamic CHARACTER SET utf8 COLLATE utf8_general_ci;
