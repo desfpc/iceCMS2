@@ -10,22 +10,79 @@ declare(strict_types=1);
 
 namespace iceCMS2\Models;
 
+use iceCMS2\Tools\Exception;
+
 class File extends AbstractEntity
 {
     /** @var string Entity DB table name */
     protected string $_dbtable = 'files';
 
     /**
+     * Getting file extension
+     *
+     * @param string $filename
+     * @return string
+     */
+    public static function getFileExtension(string $filename): string
+    {
+        $path_info = pathinfo($filename);
+        if (!isset($path_info['extension'])) {
+            return '';
+        }
+        return $path_info['extension'];
+    }
+
+    /**
      * Set Entity from POST value
      *
-     * @param string $postValue
+     * @param string $paramName
      * @param int|null $userId
      * @param bool|null $private
      * @return bool
+     * @throws Exception
      */
-    public function saveFromPost(string $postValue, string $filetype = 'file', ?int $userId = null, ?bool $private = false): bool
+    public function saveFromPost(string $paramName, string $filetype = 'auto', ?int $userId = null, bool $private = false): bool
     {
+        if ($paramName == '' || empty($_FILES[$paramName])) {
+            return false;
+        }
+
+        $tmp_name = $_FILES[$paramName]["tmp_name"];
+        $name = $_FILES[$paramName]['name'];
+        $extension = File::getFileExtension($name);
+        $size = $_FILES[$paramName]['size'];
+        list($width, $height, $imgtype, $attr) = getimagesize($tmp_name);
         
+        if (is_null($imgtype) && $filetype === 'image') {
+            throw new Exception('Transferred file is not an image');
+        }
+
+        if ($filetype === 'auto' && is_null($imgtype)) {
+            $filetype = 'file';
+        } else {
+            $filetype = 'image';
+        }
+
+        //Check real extension of image file
+        if ($filetype == 'image') {
+            switch ($imgtype) {
+                case '2':
+                    $extension = 'jpg';
+                    break;
+                case '3':
+                    $extension = 'png';
+                    break;
+                case '1':
+                    $extension = 'gif';
+                    break;
+                default:
+                    $this->errors[] = 'Transferred file is not an image or its format is not supported';
+                    return false;
+                    break;
+            }
+        }
+
+        $url = $this->_createPath($private);
     }
 
     /**
@@ -85,5 +142,32 @@ class File extends AbstractEntity
     public function getUrl(?int $x = null, ?int $y = null, ?int $waterMark = null): string
     {
 
+    }
+
+    /**
+     *  Create file patch directory
+     *
+     * @param bool $private
+     * @return string
+     */
+    private function _createPath(bool $private = false): string
+    {
+        $url = '/files/';
+        if ($private) {
+            $url .= 'private/';
+        }
+
+        $url .= date('Ym') . '/';
+        $dirpatch = $this->_settings->path . '/web' . $url;
+
+        if (!is_dir($dirpatch)) {
+            if (!$private) {
+                mkdir($dirpatch, 0750);
+            } else {
+                mkdir($dirpatch, 0640);
+            }
+        }
+
+        return $url;
     }
 }

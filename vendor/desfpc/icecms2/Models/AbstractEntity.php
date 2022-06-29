@@ -188,7 +188,7 @@ abstract class AbstractEntity
     public function save(): bool
     {
         if ($this->isDirty && !empty($this->_values)) {
-            [$prepariedSQL, $prepariedValues] = $this->_getEntitySaveData();
+            list($prepariedSQL, $prepariedValues) = $this->_getEntitySaveData();
             if ($res = $this->_DB->queryBinded($prepariedSQL, $prepariedValues)) {
                 if (is_null($this->_id)) {
                     if (is_int($res)) {
