@@ -5,11 +5,12 @@ declare(strict_types=1);
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * TestCase class - setup site settings and test DB (if const DB_TABLES not empty in test class)
+ * TestCase class - setup site settings and test DB (if static $_dbTables not empty in test class)
  */
 
 namespace iceCMS2\Tests;
 
+use desfpc\Visualijoper\Visualijoper;
 use iceCMS2\DB\DBFactory;
 use iceCMS2\DB\DBInterface;
 use iceCMS2\Settings\Settings;
@@ -21,7 +22,7 @@ abstract class Ice2CMSTestCase extends TestCase
     /**
      * DB Tables used for testing
      */
-    protected const DB_TABLES = [];
+    protected static array $_dbTables = [];
 
     /**
      * @var Settings App settings
@@ -55,51 +56,57 @@ abstract class Ice2CMSTestCase extends TestCase
             $dir .= $value;
         }
 
-        require $dir . DIRECTORY_SEPARATOR . 'settings' . DIRECTORY_SEPARATOR . 'settingsSelector.php';
-        /** @var array $settings */
-        static::$_settings = new Settings($settings);
-        static::$_realDB = (new DBFactory(static::$_settings))->DB;
-        static::$_settings->db = static::$_settings->db_test;
-        static::$_DB = (new DBFactory(static::$_settings))->DB;
+        if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+            $dir = DIRECTORY_SEPARATOR . $dir;
+        }
 
-        //Copy Tables structure from real DB to test DB
-        if (!empty(static::DB_TABLES)) {
-            static::$_realDB->connect();
-            static::$_DB->connect();
-            foreach (static::DB_TABLES as $table) {
-                if ($createTableSQL = static::$_realDB->query('SHOW CREATE TABLE `' . $table . '`;')) {
-                    $createTableSQL = $createTableSQL[0]['Create Table'];
-                    if (static::$_DB->query($createTableSQL)) {
-                        echo "\nTest table " . $table . ' created';
+        $settings = [];
+        require $dir . DIRECTORY_SEPARATOR . 'settings' . DIRECTORY_SEPARATOR . 'settingsSelector.php';
+        if (!empty($settings)) {
+            static::$_settings = new Settings($settings);
+            static::$_realDB = (new DBFactory(static::$_settings))->DB;
+            static::$_settings->db = static::$_settings->db_test;
+            static::$_DB = (new DBFactory(static::$_settings))->DB;
+
+            //Copy Tables structure from real DB to test DB
+            if (!empty(static::$_dbTables)) {
+                static::$_realDB->connect();
+                static::$_DB->connect();
+                foreach (static::$_dbTables as $table) {
+                    if ($createTableSQL = static::$_realDB->query('SHOW CREATE TABLE `' . $table . '`;')) {
+                        $createTableSQL = $createTableSQL[0]['Create Table'];
+                        if (static::$_DB->query($createTableSQL)) {
+                            echo "\nTest table " . $table . ' created';
+                        }
                     }
-                }
-                //Insert test Data - find static::DB_TABLES json file for insert
-                if ($data = file_get_contents(static::_getPath() . DIRECTORY_SEPARATOR . $table . '.json')) {
-                    if ($data = json_decode($data, true)) {
-                        foreach ($data as $row) {
-                            $values = '';
-                            $binded = [];
-                            $query = 'INSERT INTO `' . $table . '`(';
-                            $i = 0;
-                            foreach ($row as $key => $value) {
-                                ++$i;
-                                if ($i > 1) {
-                                    $query .= ', ';
+                    //Insert test Data - find static::$_dbTables json file for insert
+                    if ($data = file_get_contents(static::_getPath() . DIRECTORY_SEPARATOR . $table . '.json')) {
+                        if ($data = json_decode($data, true)) {
+                            foreach ($data as $row) {
+                                $values = '';
+                                $binded = [];
+                                $query = 'INSERT INTO `' . $table . '`(';
+                                $i = 0;
+                                foreach ($row as $key => $value) {
+                                    ++$i;
+                                    if ($i > 1) {
+                                        $query .= ', ';
+                                    }
+                                    $query .= '`' . $key . '`';
+                                    if ($values !== '') {
+                                        $values .= ', ';
+                                    }
+                                    $values .= '?';
+                                    $binded[':' . $key] = $value;
                                 }
-                                $query .= '`' . $key . '`';
-                                if ($values !== '') {
-                                    $values .= ', ';
-                                }
-                                $values .= '?';
-                                $binded[':' . $key] = $value;
+                                $query .= ') VALUES(' . $values . ')';
+                                static::$_DB->queryBinded($query, $binded);
                             }
-                            $query .= ') VALUES(' . $values . ')';
-                            static::$_DB->queryBinded($query, $binded);
                         }
                     }
                 }
+                static::$_realDB->disconnect();
             }
-            static::$_realDB->disconnect();
         }
     }
 
@@ -108,8 +115,8 @@ abstract class Ice2CMSTestCase extends TestCase
      */
     public static function tearDownAfterClass(): void
     {
-        if (!empty(static::DB_TABLES)) {
-            foreach (static::DB_TABLES as $table) {
+        if (!empty(static::$_dbTables)) {
+            foreach (static::$_dbTables as $table) {
                 static::$_DB->query('DROP TABLE IF EXISTS `' . $table . '`');
             }
         }

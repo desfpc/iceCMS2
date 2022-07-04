@@ -18,7 +18,14 @@ class DBTest extends Ice2CMSTestCase
     /**
      * DB Tables used for testing
      */
-    protected const DB_TABLES = ['migrations'];
+    protected static array $_dbTables = ['migrations'];
+
+    /** @inheritdoc */
+    public function __construct(?string $name = null, array $data = [], $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+        parent::$_dbTables = self::$_dbTables;
+    }
 
     /**
      * Test iceCMS2\DB

@@ -20,6 +20,7 @@ require_once '../settings/settingsSelector.php';
 use iceCMS2\Loader\Loader;
 
 $app = new Loader($settings);
+
 try {
     $app->loadController();
 } catch (Exception $e) {

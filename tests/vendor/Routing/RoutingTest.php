@@ -91,7 +91,7 @@ class RoutingTest extends TestCase
             'controller' => 'ServerErrors',
             'method' => 'notFound',
             'parts' => [],
-            'useVendor' => false
+            'useVendor' => true
         ], $routing->route
         );
 
@@ -102,7 +102,7 @@ class RoutingTest extends TestCase
             'controller' => 'controller2',
             'method' => 'main',
             'parts' => [],
-            'useVendor' => false
+            'useVendor' => true
         ], $routing->route
         );
 
@@ -116,7 +116,7 @@ class RoutingTest extends TestCase
                 0 => 'test3',
                 1 => 'test2',
             ],
-            'useVendor' => false
+            'useVendor' => true
         ], $routing->route
         );
 
@@ -136,7 +136,7 @@ class RoutingTest extends TestCase
             'controller' => 'main',
             'method' => 'main',
             'parts' => [],
-            'useVendor' => false
+            'useVendor' => true
         ], $routing->route
         );
 
@@ -147,7 +147,7 @@ class RoutingTest extends TestCase
             'controller' => 'controller1',
             'method' => 'get',
             'parts' => [],
-            'useVendor' => false
+            'useVendor' => true
         ], $routing->route
         );
         $this->assertEquals([
@@ -177,7 +177,7 @@ class RoutingTest extends TestCase
             'controller' => 'controller5',
             'method' => 'set',
             'parts' => [],
-            'useVendor' => false
+            'useVendor' => true
         ], $routing->route
         );
     }

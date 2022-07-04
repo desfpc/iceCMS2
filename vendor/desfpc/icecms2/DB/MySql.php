@@ -318,7 +318,11 @@ class MySql implements DBInterface
     private function _queryRes(string $query, \mysqli_result|\mysqli_stmt|bool $res, bool $isCnt, bool $isFree): bool|array|int
     {
         // Query is SELECT, SHOW or WITH RECURSIVE
-        if (preg_match("/^select/i", trim($query)) || preg_match("/^show/i", trim($query)) || preg_match("/^with recursive/i", trim($query))) {
+        if (
+            preg_match("/^select/i", trim($query))
+            || preg_match("/^show/i", trim($query))
+            || preg_match("/^with recursive/i", trim($query))
+        ) {
             if (!$isCnt) {
                 $result = [];
                 if (get_class($res) === 'mysqli_stmt') {
@@ -341,7 +345,7 @@ class MySql implements DBInterface
         }
 
         // Other queryes
-        if ($res->insert_id > 0) {
+        if (!is_bool($res) && $res->insert_id > 0) {
             return $res->insert_id;
         }
         return true;

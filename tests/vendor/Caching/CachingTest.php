@@ -17,6 +17,18 @@ use iceCMS2\Tests\Ice2CMSTestCase;
 class CachingTest extends Ice2CMSTestCase
 {
     /**
+     * DB Tables used for testing
+     */
+    protected static array $_dbTables = [];
+
+    /** @inheritdoc */
+    public function __construct(?string $name = null, array $data = [], $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+        parent::$_dbTables = self::$_dbTables;
+    }
+
+    /**
      * Test Redis Caching system
      *
      * @return void

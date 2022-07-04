@@ -24,11 +24,11 @@ $settings = [
     ],
     'db_test' => [
         'type' => 'MySQL',
-        'name' => 'icecms2_test',
+        'name' => 'ice2_test',
         'host' => '127.0.0.1',
         'port' => '3306',
         'login' => 'root',
-        'pass' => 'root',
+        'pass' => 'localRoot',
         'encoding' => 'UTF8',
     ],
     'email' => [
