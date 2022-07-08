@@ -12,7 +12,7 @@ namespace iceCMS2\Models;
 
 use iceCMS2\Tools\Exception;
 
-//TODO refactor for parent File -> childs ImageFile/DocumentFile classes
+//TODO refactor for parent File -> childs FileImage/FileDocument classes
 class File extends AbstractEntity
 {
     /** @var string Entity DB table name */
