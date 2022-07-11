@@ -198,6 +198,7 @@ abstract class AbstractEntity
                         $this->_id = $res;
                     }
                 }
+                $this->load();
                 return true;
             }
         }
@@ -247,6 +248,8 @@ abstract class AbstractEntity
      */
     public function del(?int $id = null): bool
     {
+        $this->_needLoaded();
+
         $this->id = $id;
 
         if ($this->_beforeDel() && $res = $this->DB->query($this->_delEntityValuesSQL())) {
@@ -424,5 +427,17 @@ abstract class AbstractEntity
         $key = $this->_getTableColsKey();
         $this->_cacher->del($key);
         $this->_getTableCols();
+    }
+
+    /**
+     * Function, calling before publick methods
+     *
+     * @return void
+     */
+    protected function _needLoaded(): void
+    {
+        if (!$this->isLoaded) {
+            throw new Exception('You must load entity before calling this method');
+        }
     }
 }

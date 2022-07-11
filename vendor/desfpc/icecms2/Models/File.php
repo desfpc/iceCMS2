@@ -53,6 +53,7 @@ class File extends AbstractEntity
      */
     protected function _beforeDel()
     {
+        unlink($this->getPath());
         
         return true;
     }
@@ -114,7 +115,6 @@ class File extends AbstractEntity
         }
 
         //Updating file Entity URL
-        $this->isLoaded = true;
         $this->_setByKeyAndValue('url', $this->getUrl());
         if (!$this->save()) {
             $this->del();
@@ -125,23 +125,17 @@ class File extends AbstractEntity
     }
 
     /**
-     * Getting favicon image url
-     *
-     * @return string
-     */
-    public function getFaviconUrl(): string
-    {
-
-    }
-
-    /**
      * Getting file path in OS
      *
      * @return string
      */
     public function getPath(): string
     {
-        
+        $this->_needLoaded();
+
+        $dirs = $this->_getPathDirectory($this->_values['private'], date('Ym', $this->_values['created_time']));
+
+        return $dirs[1];
     }
 
     /**
@@ -151,9 +145,7 @@ class File extends AbstractEntity
      */
     public function getUrl(): string
     {
-        if (!$this->isLoaded) {
-            throw new Exception('File is not loaded! Load file entry from DB first.');
-        }
+        $this->_needLoaded();
 
         $url = $this->_getUrlDirectory(
             $this->_values['private'],
@@ -193,6 +185,21 @@ class File extends AbstractEntity
     }
 
     /**
+     * Getting url and path directories array
+     *
+     * @param bool $private
+     * @param string|null $date
+     * @return array
+     */
+    private function _getPathDirectory(bool $private = false, ?string $date = null): array
+    {
+        $url = $this->_getUrlDirectory($private, $date);
+        $dirpatch = $this->_settings->path . '/web' . $url;
+
+        return [$url, $dirpatch];
+    }
+
+    /**
      *  Create file patch directory
      *
      * @param bool $private
@@ -200,8 +207,7 @@ class File extends AbstractEntity
      */
     private function _createPath(bool $private = false): string
     {
-        $url = $this->_getUrlDirectory($private);
-        $dirpatch = $this->_settings->path . '/web' . $url;
+        [$url, $dirpatch] = $this->_getPathDirectory($private);
 
         if (!is_dir($dirpatch)) {
             if (!$private) {
