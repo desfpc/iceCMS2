@@ -83,12 +83,12 @@ class Files
     }
 
     /**
-     * Formated file size string
+     * Getting formated file size string
      *
      * @param int $size
      * @return string
      */
-    public static function formatedSize(File $file): string
+    public static function getFormatedSize(File $file): string
     {
         $size = $file->get('size');
 
