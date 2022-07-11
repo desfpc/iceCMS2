@@ -131,7 +131,7 @@ abstract class AbstractEntity
      * @param bool $checkKey
      * @throws Exception
      */
-    private function _setByKeyAndValue(string $key, string|int|float|bool|null $value = null, bool $checkKey = true): void
+    protected function _setByKeyAndValue(string $key, string|int|float|bool|null $value = null, bool $checkKey = true): void
     {
         if ($checkKey && !isset($this->_cols[$key])) {
             throw new Exception('Field "' . $key . '" missing in table "' . $this->_dbtable . '"');

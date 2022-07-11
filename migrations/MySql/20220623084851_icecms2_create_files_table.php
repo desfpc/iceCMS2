@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `files`
     `anons`        varchar(2048)                 null,
     `filetype`     enum ('file', 'image')        not null,
     `size`         int unsigned                  not null,
-    `url`          varchar(255)                  not null,
+    `url`          varchar(255)                  null,
     `image_width`  smallint unsigned             null,
     `image_height` smallint unsigned             null,
     `user_id`      int unsigned                  null,

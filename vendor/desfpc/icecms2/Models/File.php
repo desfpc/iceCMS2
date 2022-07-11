@@ -12,7 +12,6 @@ namespace iceCMS2\Models;
 
 use iceCMS2\Tools\Exception;
 
-//TODO refactor for parent File -> childs FileImage/FileDocument classes
 class File extends AbstractEntity
 {
     /** @var string Entity DB table name */
@@ -34,6 +33,17 @@ class File extends AbstractEntity
     }
 
     /**
+     * Check POST file for class specification
+     *
+     * @param array $file
+     * @return bool
+     */
+    protected function _checkFileType(array $file): bool
+    {
+        return true;
+    }
+
+    /**
      * Set Entity from POST value
      *
      * @param string $paramName
@@ -42,79 +52,43 @@ class File extends AbstractEntity
      * @return bool
      * @throws Exception
      */
-    public function saveFromPost(string $paramName, string $filetype = 'auto', ?int $userId = null, bool $private = false): bool
+    public function saveFromPost(string $paramName, ?int $userId = null, bool $private = false): bool
     {
         if ($paramName == '' || empty($_FILES[$paramName])) {
             return false;
         }
 
-        $tmp_name = $_FILES[$paramName]["tmp_name"];
-        $name = $_FILES[$paramName]['name'];
-        $extension = File::getFileExtension($name);
-        $size = $_FILES[$paramName]['size'];
-        list($width, $height, $imgtype, $attr) = getimagesize($tmp_name);
+        $file = $_FILES[$paramName];
+
+        $tmp_name = $file["tmp_name"];
+
+        //Setting entity params from File
+        $this->_setByKeyAndValue('name', $file['name'], false);
+        $this->_setByKeyAndValue('extension', File::getFileExtension($file['name']), false);
+        $this->_setByKeyAndValue('size', (int)$file['size'], false);
+
+        //Setting entity params from POST values
+        $this->set($_POST, null, false);
         
-        if (is_null($imgtype) && $filetype === 'image') {
-            throw new Exception('Transferred file is not an image');
-        }
-
-        if ($filetype === 'auto' && is_null($imgtype)) {
-            $filetype = 'file';
-        } else {
-            $filetype = 'image';
-        }
-
-        //Check real extension of image file
-        if ($filetype == 'image') {
-            switch ($imgtype) {
-                case '2':
-                    $extension = 'jpg';
-                    break;
-                case '3':
-                    $extension = 'png';
-                    break;
-                case '1':
-                    $extension = 'gif';
-                    break;
-                default:
-                    $this->errors[] = 'Transferred file is not an image or its format is not supported';
-                    return false;
-                    break;
-            }
+        if (!$this->_checkFileType($file)) {
+            throw new Exception('Transferred file have incorrect type');
         }
 
         $url = $this->_createPath($private);
+        if (!$this->save()) {
+            throw new Exception('Error in saving File Entity');
+        }
+        
+        $this->_setByKeyAndValue('url', $url . $this->_id);
+        
     }
 
     /**
-     * Getting File/Image favicon image url
+     * Getting favicon image url
      *
      * @return string
      */
     public function getFaviconUrl(): string
-    {
-
-    }
-
-    /**
-     * Create favicon for image file
-     *
-     * @return bool
-     */
-    public function createFavicon(): bool
-    {
-
-    }
-
-    /**
-     * Creating image variant by width/height/waterMark
-     *
-     * @param int|null $x
-     * @param int|null $y
-     * @param int|null $waterMark
-     * @return bool
-     */
-    public function createImageSize(?int $x = null, ?int $y = null, ?int $waterMark = null): bool
     {
 
     }
