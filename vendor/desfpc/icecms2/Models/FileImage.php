@@ -12,6 +12,9 @@ namespace iceCMS2\Models;
 
 class FileImage extends File
 {
+    /** @var string File Type (enum: file, image, document) */
+    protected string $_filetype = 'image';
+
     /**
      * Create favicon for image file
      *
@@ -57,6 +60,19 @@ class FileImage extends File
      * @return string
      */
     public function getUrl(?int $x = null, ?int $y = null, ?int $waterMark = null): string
+    {
+
+    }
+
+    /**
+     * Getting image file path in OS
+     *
+     * @param int|null $x Width of image file
+     * @param int|null $y Height of image file
+     * @param int|null $waterMark Image WaterMark file ID
+     * @return string
+     */
+    public function getPath(?int $x = null, ?int $y = null, ?int $waterMark = null): string
     {
 
     }

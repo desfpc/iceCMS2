@@ -17,6 +17,9 @@ class File extends AbstractEntity
     /** @var string Entity DB table name */
     protected string $_dbtable = 'files';
 
+    /** @var string File Type (enum: file, image, document) */
+    protected string $_filetype = 'file';
+
     /**
      * Getting file extension
      *
@@ -75,8 +78,16 @@ class File extends AbstractEntity
 
         //Setting entity params from File
         $this->_setByKeyAndValue('name', $file['name'], false);
+        $this->_setByKeyAndValue('filename', $file['name'], false);
         $this->_setByKeyAndValue('extension', File::getFileExtension($file['name']), false);
         $this->_setByKeyAndValue('size', (int)$file['size'], false);
+        $this->_setByKeyAndValue('filetype', $this->_filetype, false);
+        $this->_setByKeyAndValue('private', (int)$private, false);
+        $this->_setByKeyAndValue('created_time', time(), false);
+
+        if (!is_null($userId)) {
+            $this->_setByKeyAndValue('user_id', $userId, false);
+        }
 
         //Setting entity params from POST values
         $this->set($_POST, null, true);
@@ -103,8 +114,12 @@ class File extends AbstractEntity
         }
 
         //Updating file Entity URL
+        $this->isLoaded = true;
         $this->_setByKeyAndValue('url', $this->getUrl());
-        $this->save();
+        if (!$this->save()) {
+            $this->del();
+            throw new Exception('Error in saving Entity');
+        }
 
         return true;
     }
@@ -122,12 +137,9 @@ class File extends AbstractEntity
     /**
      * Getting file path in OS
      *
-     * @param int|null $x Width of image file
-     * @param int|null $y Height of image file
-     * @param int|null $waterMark Image WaterMark file ID
      * @return string
      */
-    public function getPath(?int $x = null, ?int $y = null, ?int $waterMark = null): string
+    public function getPath(): string
     {
         
     }
@@ -139,7 +151,45 @@ class File extends AbstractEntity
      */
     public function getUrl(): string
     {
-        
+        if (!$this->isLoaded) {
+            throw new Exception('File is not loaded! Load file entry from DB first.');
+        }
+
+        $url = $this->_getUrlDirectory(
+            $this->_values['private'],
+            date('Ym', $this->_values['created_time'])
+        );
+
+        $url .= $this->_id;
+
+        if (!empty($this->_values['extension'])) {
+            $url .= '.' . $this->_values['extension'];
+        }
+
+        return $url;
+    }
+
+    /**
+     * Getting directory for URL and Path
+     *
+     * @param bool $private
+     * @param string|null $date
+     * @return string
+     */
+    private function _getUrlDirectory(bool $private = false, ?string $date = null): string
+    {
+        $url = '/files/';
+        if ($private) {
+            $url .= 'private/';
+        }
+
+        if (is_null($date)) {
+            $date = date('Ym');
+        }
+
+        $url .= $date . '/';
+
+        return $url;
     }
 
     /**
@@ -150,12 +200,7 @@ class File extends AbstractEntity
      */
     private function _createPath(bool $private = false): string
     {
-        $url = '/files/';
-        if ($private) {
-            $url .= 'private/';
-        }
-
-        $url .= date('Ym') . '/';
+        $url = $this->_getUrlDirectory($private);
         $dirpatch = $this->_settings->path . '/web' . $url;
 
         if (!is_dir($dirpatch)) {
