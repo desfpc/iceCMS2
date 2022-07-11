@@ -117,6 +117,9 @@ abstract class AbstractEntity
         } else {
             if (!empty($keyOrValues)) {
                 foreach ($keyOrValues as $key => $value) {
+                    if ($checkKey && !isset($this->_cols[$key])) {
+                        continue;
+                    }
                     $this->_setByKeyAndValue($key, $value, $checkKey);
                 }
             }
@@ -246,7 +249,7 @@ abstract class AbstractEntity
     {
         $this->id = $id;
 
-        if ($res = $this->DB->query($this->_delEntityValuesSQL())) {
+        if ($this->_beforeDel() && $res = $this->DB->query($this->_delEntityValuesSQL())) {
             $this->_uncacheRecord();
             $this->_id = null;
             $this->_values = false;
@@ -254,6 +257,16 @@ abstract class AbstractEntity
             return true;
         }
         return false;
+    }
+
+    /**
+     * Function before delete
+     *
+     * @return bool
+     */
+    protected function _beforeDel()
+    {
+        return true;
     }
 
     /**

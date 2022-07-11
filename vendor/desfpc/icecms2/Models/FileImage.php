@@ -49,6 +49,19 @@ class FileImage extends File
     }
 
     /**
+     * Getting image file URL for web
+     *
+     * @param int|null $x Width of image file
+     * @param int|null $y Height of image file
+     * @param int|null $waterMark Image WaterMark file ID
+     * @return string
+     */
+    public function getUrl(?int $x = null, ?int $y = null, ?int $waterMark = null): string
+    {
+
+    }
+
+    /**
      * Creating image variant by width/height/waterMark
      *
      * @param int|null $x

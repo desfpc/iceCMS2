@@ -44,6 +44,17 @@ class File extends AbstractEntity
     }
 
     /**
+     * Function before delete
+     *
+     * @return bool
+     */
+    protected function _beforeDel()
+    {
+        
+        return true;
+    }
+
+    /**
      * Set Entity from POST value
      *
      * @param string $paramName
@@ -52,7 +63,7 @@ class File extends AbstractEntity
      * @return bool
      * @throws Exception
      */
-    public function saveFromPost(string $paramName, ?int $userId = null, bool $private = false): bool
+    public function savePostFile(string $paramName, ?int $userId = null, bool $private = false): bool
     {
         if ($paramName == '' || empty($_FILES[$paramName])) {
             return false;
@@ -68,19 +79,34 @@ class File extends AbstractEntity
         $this->_setByKeyAndValue('size', (int)$file['size'], false);
 
         //Setting entity params from POST values
-        $this->set($_POST, null, false);
+        $this->set($_POST, null, true);
         
         if (!$this->_checkFileType($file)) {
             throw new Exception('Transferred file have incorrect type');
         }
 
-        $url = $this->_createPath($private);
+        //Creating a file record in DB
         if (!$this->save()) {
             throw new Exception('Error in saving File Entity');
         }
-        
-        $this->_setByKeyAndValue('url', $url . $this->_id);
-        
+
+        //Creating a server route for storing file
+        $fileVsPath = $this->_createPath($private) . $this->_id;
+        if (!empty($this->_values['extension'])) {
+            $fileVsPath .= '.' . $this->_values['extension'];
+        }
+
+        //Store file on server
+        if (!move_uploaded_file($tmp_name, $fileVsPath)) {
+            $this->del();
+            throw new Exception('Error in saving File on server');
+        }
+
+        //Updating file Entity URL
+        $this->_setByKeyAndValue('url', $this->getUrl());
+        $this->save();
+
+        return true;
     }
 
     /**
@@ -109,14 +135,11 @@ class File extends AbstractEntity
     /**
      * Getting file URL for web
      *
-     * @param int|null $x Width of image file
-     * @param int|null $y Height of image file
-     * @param int|null $waterMark Image WaterMark file ID
      * @return string
      */
-    public function getUrl(?int $x = null, ?int $y = null, ?int $waterMark = null): string
+    public function getUrl(): string
     {
-
+        
     }
 
     /**
