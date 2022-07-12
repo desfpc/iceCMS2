@@ -84,18 +84,22 @@ abstract class Ice2CMSTestCase extends TestCase
             if (!empty(static::$_dbTables)) {
                 static::$_realDB->connect();
                 static::$_DB->connect();
+                static::$_DB->query('SET foreign_key_checks = 0;');
                 foreach (static::$_dbTables as $table) {
                     echo PHP_EOL . 'Creating table ' . $table . '...';
                     if ($createTableSQL = static::$_realDB->query('SHOW CREATE TABLE `' . $table . '`;')) {
                         $createTableSQL = $createTableSQL[0]['Create Table'];
                         if (static::$_DB->query($createTableSQL)) {
                             echo "\nTest table " . $table . ' created';
+                        } else {
+                            print_r(static::$_DB);
                         }
                     } else {
                         print_r(static::$_realDB);
                     }
                     //Insert test Data - find static::$_dbTables json file for insert
-                    if ($data = file_get_contents(static::_getPath() . DIRECTORY_SEPARATOR . $table . '.json')) {
+                    $testDataFilePath = static::_getPath() . DIRECTORY_SEPARATOR . $table . '.json';
+                    if (file_exists($testDataFilePath) && $data = file_get_contents($testDataFilePath)) {
                         if ($data = json_decode($data, true)) {
                             foreach ($data as $row) {
                                 $values = '';
@@ -120,6 +124,7 @@ abstract class Ice2CMSTestCase extends TestCase
                         }
                     }
                 }
+                static::$_DB->query('SET foreign_key_checks = 1;');
                 static::$_realDB->disconnect();
             }
         } else {
