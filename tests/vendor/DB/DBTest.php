@@ -1,6 +1,5 @@
 <?php
 declare(strict_types=1);
-
 /**
  * iceCMS2 v0.1a
  * Created by Sergey Peshalov https://github.com/desfpc
@@ -20,13 +19,6 @@ class DBTest extends Ice2CMSTestCase
      */
     protected static array $_dbTables = ['migrations'];
 
-    /** @inheritdoc */
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-        parent::$_dbTables = self::$_dbTables;
-    }
-
     /**
      * Test iceCMS2\DB
      *
@@ -34,7 +26,7 @@ class DBTest extends Ice2CMSTestCase
      */
     public function testConnect(): void
     {
-        $this->assertEquals(true, self::$_DB->getConnected());
+        $this->assertEquals(true, static::$_DB->getConnected());
     }
 
     /**
@@ -42,10 +34,10 @@ class DBTest extends Ice2CMSTestCase
      */
     public function testSetUpBeforeClass(): void
     {
-        $res = self::$_DB->query('SHOW CREATE TABLE `migrations`;');
+        $res = static::$_DB->query('SHOW CREATE TABLE `migrations`;');
         $this->assertEquals('migrations', $res[0]['Table']);
 
-        $res = self::$_DB->query('SELECT * FROM `migrations`;');
+        $res = static::$_DB->query('SELECT * FROM `migrations`;');
         $this->assertEquals([
             0 => [
                 'version' => '20211217193000',
@@ -61,7 +53,7 @@ class DBTest extends Ice2CMSTestCase
             ],
         ], $res);
 
-        $res = self::$_DB->queryBinded('SELECT * FROM `migrations` WHERE `version` = ?', [
+        $res = static::$_DB->queryBinded('SELECT * FROM `migrations` WHERE `version` = ?', [
             0 => 20211217193000
         ]);
         $this->assertEquals([

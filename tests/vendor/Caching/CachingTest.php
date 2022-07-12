@@ -21,13 +21,6 @@ class CachingTest extends Ice2CMSTestCase
      */
     protected static array $_dbTables = [];
 
-    /** @inheritdoc */
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-        parent::$_dbTables = self::$_dbTables;
-    }
-
     /**
      * Test Redis Caching system
      *

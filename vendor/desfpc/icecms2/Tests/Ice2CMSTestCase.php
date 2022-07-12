@@ -25,9 +25,14 @@ abstract class Ice2CMSTestCase extends TestCase
     protected static array $_dbTables = [];
 
     /**
-     * @var Settings App settings
+     * @var Settings|null App settings
      */
-    protected static Settings $_settings;
+    protected static ?Settings $_settings;
+
+    /**
+     * @var Settings|null App settings
+     */
+    protected static ?Settings $_testSettings;
 
     /**
      * @var DBInterface|null test DB instance
@@ -44,6 +49,7 @@ abstract class Ice2CMSTestCase extends TestCase
      */
     public static function setUpBeforeClass(): void
     {
+        echo PHP_EOL . 'setUpBeforeClass for class ' . static::class . PHP_EOL;
         $dir = '';
         $dirArr = explode(DIRECTORY_SEPARATOR, __DIR__);
         foreach ($dirArr as $value) {
@@ -60,24 +66,33 @@ abstract class Ice2CMSTestCase extends TestCase
             $dir = DIRECTORY_SEPARATOR . $dir;
         }
 
-        $settings = [];
-        require $dir . DIRECTORY_SEPARATOR . 'settings' . DIRECTORY_SEPARATOR . 'settingsSelector.php';
-        if (!empty($settings)) {
-            static::$_settings = new Settings($settings);
-            static::$_realDB = (new DBFactory(static::$_settings))->DB;
-            static::$_settings->db = static::$_settings->db_test;
-            static::$_DB = (new DBFactory(static::$_settings))->DB;
+        if (empty(self::$_settings)) {
+            $settings = [];
+            require $dir . DIRECTORY_SEPARATOR . 'settings' . DIRECTORY_SEPARATOR . 'settingsSelector.php';
+            if (!empty($settings)) {
+                self::$_settings = new Settings($settings);
+                self::$_testSettings = clone self::$_settings;
+                self::$_testSettings->db = self::$_testSettings->db_test;
+            }
+        }
+
+        if (!empty(self::$_settings)) {
+            static::$_realDB = (new DBFactory(self::$_settings))->DB;
+            static::$_DB = (new DBFactory(self::$_testSettings))->DB;
 
             //Copy Tables structure from real DB to test DB
             if (!empty(static::$_dbTables)) {
                 static::$_realDB->connect();
                 static::$_DB->connect();
                 foreach (static::$_dbTables as $table) {
+                    echo PHP_EOL . 'Creating table ' . $table . '...';
                     if ($createTableSQL = static::$_realDB->query('SHOW CREATE TABLE `' . $table . '`;')) {
                         $createTableSQL = $createTableSQL[0]['Create Table'];
                         if (static::$_DB->query($createTableSQL)) {
                             echo "\nTest table " . $table . ' created';
                         }
+                    } else {
+                        print_r(static::$_realDB);
                     }
                     //Insert test Data - find static::$_dbTables json file for insert
                     if ($data = file_get_contents(static::_getPath() . DIRECTORY_SEPARATOR . $table . '.json')) {
@@ -107,6 +122,8 @@ abstract class Ice2CMSTestCase extends TestCase
                 }
                 static::$_realDB->disconnect();
             }
+        } else {
+            echo PHP_EOL . 'Empty Settings!';
         }
     }
 
@@ -115,6 +132,7 @@ abstract class Ice2CMSTestCase extends TestCase
      */
     public static function tearDownAfterClass(): void
     {
+        echo PHP_EOL . 'tearDownAfterClass for class ' . static::class . PHP_EOL;
         if (!empty(static::$_dbTables)) {
             foreach (static::$_dbTables as $table) {
                 static::$_DB->query('DROP TABLE IF EXISTS `' . $table . '`');
