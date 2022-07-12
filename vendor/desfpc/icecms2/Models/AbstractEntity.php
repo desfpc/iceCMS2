@@ -57,7 +57,7 @@ abstract class AbstractEntity
      *
      * @param Settings $settings App settings
      * @param int|null $id Entity ID
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(Settings $settings, ?int $id = null)
     {
@@ -286,7 +286,7 @@ abstract class AbstractEntity
         $this->_values = null;
 
         if (!is_null($id)) {
-            $this->_id = id;
+            $this->_id = $id;
         }
         if (is_null($this->_id)) {
             return false;

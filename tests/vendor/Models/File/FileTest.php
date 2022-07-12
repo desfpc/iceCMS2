@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace vendor\Models\File;
 
+use iceCMS2\Tools\Exception;
+use iceCMS2\Models\File;
 use iceCMS2\Tests\Ice2CMSTestCase;
 
 class FileTest extends Ice2CMSTestCase
@@ -19,9 +21,16 @@ class FileTest extends Ice2CMSTestCase
      */
     protected static array $_dbTables = ['users', 'files'];
 
-    public function testConnect(): void
+    /**
+     *
+     *
+     * @throws Exception
+     */
+    public function testCreatingFileFromPost(): void
     {
-        $this->assertEquals(true, static::$_DB->getConnected());
+        $file = new File(self::$_testSettings);
+        $this->assertEquals(false, $file->isLoaded);
+        $this->assertFalse($file->load(1));
     }
 
 }

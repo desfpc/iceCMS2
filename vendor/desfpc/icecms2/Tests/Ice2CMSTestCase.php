@@ -49,7 +49,6 @@ abstract class Ice2CMSTestCase extends TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        echo PHP_EOL . 'setUpBeforeClass for class ' . static::class . PHP_EOL;
         $dir = '';
         $dirArr = explode(DIRECTORY_SEPARATOR, __DIR__);
         foreach ($dirArr as $value) {
@@ -86,12 +85,9 @@ abstract class Ice2CMSTestCase extends TestCase
                 static::$_DB->connect();
                 static::$_DB->query('SET foreign_key_checks = 0;');
                 foreach (static::$_dbTables as $table) {
-                    echo PHP_EOL . 'Creating table ' . $table . '...';
                     if ($createTableSQL = static::$_realDB->query('SHOW CREATE TABLE `' . $table . '`;')) {
                         $createTableSQL = $createTableSQL[0]['Create Table'];
-                        if (static::$_DB->query($createTableSQL)) {
-                            echo "\nTest table " . $table . ' created';
-                        } else {
+                        if (!static::$_DB->query($createTableSQL)) {
                             print_r(static::$_DB);
                         }
                     } else {
@@ -137,11 +133,12 @@ abstract class Ice2CMSTestCase extends TestCase
      */
     public static function tearDownAfterClass(): void
     {
-        echo PHP_EOL . 'tearDownAfterClass for class ' . static::class . PHP_EOL;
         if (!empty(static::$_dbTables)) {
+            static::$_DB->query('SET foreign_key_checks = 0;');
             foreach (static::$_dbTables as $table) {
                 static::$_DB->query('DROP TABLE IF EXISTS `' . $table . '`');
             }
+            static::$_DB->query('SET foreign_key_checks = 1;');
         }
     }
 
