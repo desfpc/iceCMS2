@@ -75,7 +75,7 @@ class File extends AbstractEntity
 
         $file = $_FILES[$paramName];
 
-        $tmp_name = $file["tmp_name"];
+        $tmp_name = $file['tmp_name'];
 
         //Setting entity params from File
         $this->_setByKeyAndValue('name', $file['name'], false);
@@ -92,24 +92,27 @@ class File extends AbstractEntity
 
         //Setting entity params from POST values
         $this->set($_POST, null, true);
-        
+
         if (!$this->_checkFileType($file)) {
             throw new Exception('Transferred file have incorrect type');
         }
 
         //Creating a file record in DB
         if (!$this->save()) {
+            print_r($this->_DB);
             throw new Exception('Error in saving File Entity');
         }
 
         //Creating a server route for storing file
         $fileVsPath = $this->_createPath($private) . $this->_id;
+        print_r($this->_values);
         if (!empty($this->_values['extension'])) {
             $fileVsPath .= '.' . $this->_values['extension'];
         }
 
         //Store file on server
-        if (!move_uploaded_file($tmp_name, $fileVsPath)) {
+        if (!move_uploaded_file($tmp_name, '/dffg/' . $fileVsPath)) {
+            print_r([$tmp_name, $fileVsPath]);
             $this->del();
             throw new Exception('Error in saving File on server');
         }
@@ -194,7 +197,7 @@ class File extends AbstractEntity
     private function _getPathDirectory(bool $private = false, ?string $date = null): array
     {
         $url = $this->_getUrlDirectory($private, $date);
-        $dirpatch = $this->_settings->path . '/web' . $url;
+        $dirpatch = $this->_settings->path . 'web' . $url;
 
         return [$url, $dirpatch];
     }
@@ -217,6 +220,6 @@ class File extends AbstractEntity
             }
         }
 
-        return $url;
+        return $dirpatch;
     }
 }

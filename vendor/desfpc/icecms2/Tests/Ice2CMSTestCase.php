@@ -45,6 +45,17 @@ abstract class Ice2CMSTestCase extends TestCase
     protected static ?DBInterface $_realDB;
 
     /**
+     * @return string
+     */
+    public function getTestClassDir(): string
+    {
+        $childRef = new \ReflectionClass(get_class($this));
+        $fileName = $childRef->getFileName();
+        $lastSlashPos = mb_strripos($fileName, '/', 0, 'UTF8');
+        return mb_substr($childRef->getFileName(), 0, $lastSlashPos + 1, 'UTF8');
+    }
+
+    /**
      * This method is called before the first test of this test class is run.
      */
     public static function setUpBeforeClass(): void

@@ -30,7 +30,9 @@ class DBTest extends Ice2CMSTestCase
     }
 
     /**
-     * TestSetUpBeforeClass
+     * Test SetUpBeforeClass
+     *
+     * @return void
      */
     public function testSetUpBeforeClass(): void
     {
@@ -64,5 +66,27 @@ class DBTest extends Ice2CMSTestCase
                 'end_time' => '2021-12-23 19:40:45',
             ],
         ], $res);
+
+        static::$_DB->queryBinded(
+            'INSERT INTO `migrations`(`version`, `name`, `start_time`, `end_time`) 
+' . "VALUES(?, ?, ?, ?);",
+            [
+                0 => 20220623130057,
+                1 => 'Icecms2CreateFilesTable',
+                3 => '2022-07-04 21:11:50',
+                4 => '2022-07-04 21:11:50',
+            ]
+        );
+
+        $res = static::$_DB->queryBinded('SELECT * FROM `migrations` WHERE `version` = ?', [
+            0 => 20220623130057
+        ]);
+
+        $this->assertEquals([
+            'version' => 20220623130057,
+            'name' => 'Icecms2CreateFilesTable',
+            'start_time' => '2022-07-04 21:11:50',
+            'end_time' => '2022-07-04 21:11:50',
+            ], $res[0]);
     }
 }

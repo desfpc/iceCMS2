@@ -22,7 +22,16 @@ class FileTest extends Ice2CMSTestCase
     protected static array $_dbTables = ['users', 'files'];
 
     /**
-     *
+     * @inheritdoc
+     */
+    public function __construct()
+    {
+        session_start();
+        parent::__construct();
+    }
+
+    /**
+     * Create File Entity from $_POST and $_FILE global arrays
      *
      * @throws Exception
      */
@@ -31,6 +40,17 @@ class FileTest extends Ice2CMSTestCase
         $file = new File(self::$_testSettings);
         $this->assertEquals(false, $file->isLoaded);
         $this->assertFalse($file->load(1));
+        $this->assertFalse($file->savePostFile('testFile'));
+
+        $testFilePath = self::getTestClassDir() . 'LICENSE.txt';
+        $_FILES['testFile'] = [
+            'tmp_name' => $testFilePath,
+            'name' => 'LICENSE.txt',
+            'size' => filesize($testFilePath),
+        ];
+
+        $file = new File(self::$_testSettings);
+        $this->assertTrue($file->savePostFile('testFile'));
     }
 
 }

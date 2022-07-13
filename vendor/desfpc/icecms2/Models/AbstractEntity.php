@@ -23,7 +23,7 @@ abstract class AbstractEntity
     public array $errors = [];
 
     /** @var ?array<string, mixed> Entity values */
-    protected ?array $_values = null;
+    protected array $_values = [];
 
     /** @var ?array<string, mixed> Entity values that have been changed but not saved */
     protected ?array $_dirtyValues = null;
@@ -64,6 +64,7 @@ abstract class AbstractEntity
         $this->_id = $id;
         $this->_settings = $settings;
         $this->_DB = DBFactory::get($this->_settings);
+        $this->_DB->connect();
         $this->_cacher = CachingFactory::instance($this->_settings);
 
         $this->_getTableCols();
@@ -140,6 +141,9 @@ abstract class AbstractEntity
             throw new Exception('Field "' . $key . '" missing in table "' . $this->_dbtable . '"');
         }
         if (!isset($this->_values[$key]) || $this->_values[$key] !== $value) {
+            if (is_null($this->_values)) {
+                $this->_values = [];
+            }
             $this->isDirty = true;
             $this->_dirtyValues[$key] = !isset($this->_values[$key]) ? null : $this->_values[$key];
             $this->_values[$key] = $value;
@@ -192,13 +196,18 @@ abstract class AbstractEntity
     {
         if ($this->isDirty && !empty($this->_values)) {
             list($prepariedSQL, $prepariedValues) = $this->_getEntitySaveData();
+            print_r([$prepariedSQL, $prepariedValues]);
             if ($res = $this->_DB->queryBinded($prepariedSQL, $prepariedValues)) {
                 if (is_null($this->_id)) {
                     if (is_int($res)) {
                         $this->_id = $res;
                     }
                 }
-                $this->load();
+                print_r($this->_DB->query('SELECT * FROM files'));
+
+                if (!$this->load()) {
+                    return false;
+                }
                 return true;
             }
         }
@@ -228,7 +237,7 @@ abstract class AbstractEntity
                 $keys .= '`' . $key . '`';
                 $bindedKeys .= '?';
                 $updateStr .= '`' . $key . '`' . ' = ?';
-                $binded[':' . $key] = $value;
+                $binded[':' . $key] = $this->_values[$key];
             }
         }
         if (is_null($this->_id)) {
@@ -255,7 +264,7 @@ abstract class AbstractEntity
         if ($this->_beforeDel() && $res = $this->DB->query($this->_delEntityValuesSQL())) {
             $this->_uncacheRecord();
             $this->_id = null;
-            $this->_values = false;
+            $this->_values = null;
             $this->isLoaded = false;
             return true;
         }
@@ -283,7 +292,7 @@ abstract class AbstractEntity
         $this->isDirty = false;
         $this->_dirtyValues = null;
         $this->isLoaded = false;
-        $this->_values = null;
+        $this->_values = [];
 
         if (!is_null($id)) {
             $this->_id = $id;

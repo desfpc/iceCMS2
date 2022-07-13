@@ -212,6 +212,7 @@ class MySql implements DBInterface
     {
         if ($this->_isConnected || $isForced) {
             try {
+                /** @var \mysqli_stmt $stmt */
                 $stmt = $this->_mysqli->prepare($query);
                 if (!empty($values)) {
                     if (empty($values['types'])) {
