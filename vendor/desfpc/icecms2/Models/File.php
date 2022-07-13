@@ -10,7 +10,9 @@ declare(strict_types=1);
 
 namespace iceCMS2\Models;
 
+use Cassandra\Date;
 use iceCMS2\Tools\Exception;
+use iceCMS2\Types\UnixTime;
 
 class File extends AbstractEntity
 {
@@ -53,7 +55,10 @@ class File extends AbstractEntity
      */
     protected function _beforeDel()
     {
-        unlink($this->getPath());
+        $path = $this->getPath();
+        if (file_exists($path)) {
+            unlink($path);
+        }
         
         return true;
     }
@@ -84,7 +89,7 @@ class File extends AbstractEntity
         $this->_setByKeyAndValue('size', (int)$file['size'], false);
         $this->_setByKeyAndValue('filetype', $this->_filetype, false);
         $this->_setByKeyAndValue('private', (int)$private, false);
-        $this->_setByKeyAndValue('created_time', time(), false);
+        $this->_setByKeyAndValue('created_time', new UnixTime(), false);
 
         if (!is_null($userId)) {
             $this->_setByKeyAndValue('user_id', $userId, false);
@@ -99,20 +104,17 @@ class File extends AbstractEntity
 
         //Creating a file record in DB
         if (!$this->save()) {
-            print_r($this->_DB);
             throw new Exception('Error in saving File Entity');
         }
 
         //Creating a server route for storing file
         $fileVsPath = $this->_createPath($private) . $this->_id;
-        print_r($this->_values);
         if (!empty($this->_values['extension'])) {
             $fileVsPath .= '.' . $this->_values['extension'];
         }
 
         //Store file on server
-        if (!move_uploaded_file($tmp_name, '/dffg/' . $fileVsPath)) {
-            print_r([$tmp_name, $fileVsPath]);
+        if (!rename($tmp_name, $fileVsPath)) {
             $this->del();
             throw new Exception('Error in saving File on server');
         }
@@ -136,9 +138,15 @@ class File extends AbstractEntity
     {
         $this->_needLoaded();
 
-        $dirs = $this->_getPathDirectory($this->_values['private'], date('Ym', $this->_values['created_time']));
+        $unixTime = new UnixTime($this->_values['created_time']);
+        $dirs = $this->_getPathDirectory((bool)$this->_values['private'], date('Ym', $unixTime->get()));
 
-        return $dirs[1];
+        $path = $dirs[1] . $this->_id;
+        if (!empty($this->_values['extension'])) {
+            $path .= '.' . $this->_values['extension'];
+        }
+
+        return $path;
     }
 
     /**
@@ -149,10 +157,11 @@ class File extends AbstractEntity
     public function getUrl(): string
     {
         $this->_needLoaded();
+        $unixTime = new UnixTime($this->_values['created_time']);
 
         $url = $this->_getUrlDirectory(
-            $this->_values['private'],
-            date('Ym', $this->_values['created_time'])
+            (bool)$this->_values['private'],
+            date('Ym', $unixTime->get())
         );
 
         $url .= $this->_id;

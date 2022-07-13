@@ -38,19 +38,29 @@ class FileTest extends Ice2CMSTestCase
     public function testCreatingFileFromPost(): void
     {
         $file = new File(self::$_testSettings);
-        $this->assertEquals(false, $file->isLoaded);
+        $this->assertFalse($file->isLoaded);
+        $file->load(1);
+        $file->clearCache();
         $this->assertFalse($file->load(1));
         $this->assertFalse($file->savePostFile('testFile'));
 
         $testFilePath = self::getTestClassDir() . 'LICENSE.txt';
+        $testFilePathNew = self::getTestClassDir() . 'LICENSENEW.txt';
+
+        copy($testFilePath, $testFilePathNew);
+        chmod($testFilePathNew, 0666);
+
         $_FILES['testFile'] = [
-            'tmp_name' => $testFilePath,
+            'tmp_name' => $testFilePathNew,
             'name' => 'LICENSE.txt',
             'size' => filesize($testFilePath),
         ];
 
         $file = new File(self::$_testSettings);
         $this->assertTrue($file->savePostFile('testFile'));
+        $path = $file->getPath();
+        $this->assertTrue($file->del());
+        $this->assertFalse($file->isLoaded);
+        $this->assertFalse(file_exists($path));
     }
-
 }

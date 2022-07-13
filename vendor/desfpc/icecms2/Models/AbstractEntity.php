@@ -16,6 +16,7 @@ use iceCMS2\DB\DBInterface;
 use iceCMS2\Caching\CachingInterface;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
+use iceCMS2\Types\UnixTime;
 
 abstract class AbstractEntity
 {
@@ -135,7 +136,7 @@ abstract class AbstractEntity
      * @param bool $checkKey
      * @throws Exception
      */
-    protected function _setByKeyAndValue(string $key, string|int|float|bool|null $value = null, bool $checkKey = true): void
+    protected function _setByKeyAndValue(string $key, string|int|float|bool|UnixTime|null $value = null, bool $checkKey = true): void
     {
         if ($checkKey && !isset($this->_cols[$key])) {
             throw new Exception('Field "' . $key . '" missing in table "' . $this->_dbtable . '"');
@@ -196,14 +197,12 @@ abstract class AbstractEntity
     {
         if ($this->isDirty && !empty($this->_values)) {
             list($prepariedSQL, $prepariedValues) = $this->_getEntitySaveData();
-            print_r([$prepariedSQL, $prepariedValues]);
             if ($res = $this->_DB->queryBinded($prepariedSQL, $prepariedValues)) {
                 if (is_null($this->_id)) {
                     if (is_int($res)) {
                         $this->_id = $res;
                     }
                 }
-                print_r($this->_DB->query('SELECT * FROM files'));
 
                 if (!$this->load()) {
                     return false;
@@ -235,8 +234,15 @@ abstract class AbstractEntity
                     $updateStr .= ', ';
                 }
                 $keys .= '`' . $key . '`';
-                $bindedKeys .= '?';
-                $updateStr .= '`' . $key . '`' . ' = ?';
+
+                if ($this->_values[$key] instanceof UnixTime) {
+                    $symbol = 'FROM_UNIXTIME(?)';
+                } else {
+                    $symbol = '?';
+                }
+
+                $bindedKeys .= $symbol;
+                $updateStr .= '`' . $key . '`' . ' = ' . $symbol;
                 $binded[':' . $key] = $this->_values[$key];
             }
         }
@@ -261,10 +267,10 @@ abstract class AbstractEntity
 
         $this->id = $id;
 
-        if ($this->_beforeDel() && $res = $this->DB->query($this->_delEntityValuesSQL())) {
+        if ($this->_beforeDel() && $res = $this->_DB->query($this->_delEntityValuesSQL())) {
             $this->_uncacheRecord();
             $this->_id = null;
-            $this->_values = null;
+            $this->_values = [];
             $this->isLoaded = false;
             return true;
         }
@@ -307,13 +313,15 @@ abstract class AbstractEntity
             $this->_values = $values;
             $this->isLoaded = true;
             return true;
-        } elseif ($res = $this->_DB->query($this->_getEntityValuesSQL()) && count($res) > 0) {
-            $this->_values = $res[0];
-            $this->_afterLoad();
-            $this->_cacheRecord();
+        } elseif ($res = $this->_DB->query($this->_getEntityValuesSQL())) {
+            if (count($res) > 0) {
+                $this->_values = $res[0];
+                $this->_afterLoad();
+                $this->_cacheRecord();
 
-            $this->isLoaded = true;
-            return true;
+                $this->isLoaded = true;
+                return true;
+            }
         }
         return false;
     }
@@ -398,7 +406,7 @@ abstract class AbstractEntity
      * Cache Entity values
      *
      * @param int|float $expired
-     * @throws \Exception
+     * @throws Exception
      */
     private function _cacheRecord(int $expired = 30 * 24 * 60 * 60)
     {
@@ -408,7 +416,7 @@ abstract class AbstractEntity
     /**
      * Clear (refresh) Entity Cache
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function clearCache()
     {
@@ -419,7 +427,7 @@ abstract class AbstractEntity
     /**
      * Uncache Entity values
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function _uncacheRecord()
     {
@@ -429,7 +437,7 @@ abstract class AbstractEntity
     /**
      * Refresh Entity table columns data
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function _refreshTableCols(): void
     {

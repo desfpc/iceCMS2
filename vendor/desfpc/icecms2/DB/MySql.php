@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace iceCMS2\DB;
 
+use iceCMS2\Types\UnixTime;
+
 class MySql implements DBInterface
 {
     /** @var stdClass|null DB Connection settings */
@@ -239,12 +241,19 @@ class MySql implements DBInterface
                                 case 'NULL':
                                     $types .= 'i';
                                     break;
+                                case 'object':
+                                    if ($value instanceof UnixTime) {
+                                        $types .= 'i';
+                                        $values[$key] = ($values[$key])->get();
+                                    }
+                                    break;
                                 default:
                                     throw new \Exception('Wrong value type "' . gettype($value) . '" for 
                                     auto-generate "types" string for mysqli params bindidg. Specify $values["types"] 
                                     with a valid type string. https://www.php.net/manual/en/mysqli-stmt.bind-param.php');
                                     break;
                             }
+
                         }
                     } else {
                         $types = $values['types'];

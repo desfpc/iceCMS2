@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace iceCMS2\Caching;
 
+use iceCMS2\Tools\Exception;
+
 interface CachingInterface
 {
     /**
@@ -17,7 +19,7 @@ interface CachingInterface
      *
      * @param string $key
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function has(string $key): bool;
 
@@ -35,7 +37,7 @@ interface CachingInterface
      * @param string $key
      * @param bool $decode
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function get(string $key, bool $decode = false): mixed;
 
@@ -46,7 +48,7 @@ interface CachingInterface
      * @param mixed $value
      * @param int|null $expired
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function set(string $key, mixed $value, ?int $expired = null): bool;
 
@@ -55,7 +57,7 @@ interface CachingInterface
      *
      * @param string $key
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function del(string $key): bool;
 }
