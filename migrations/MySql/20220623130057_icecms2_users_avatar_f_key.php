@@ -21,7 +21,8 @@ class Icecms2UsersAvatarFKey extends AbstractMigration
     public function up(): string
     {
         return 'ALTER TABLE `users` 
-ADD CONSTRAINT `users_avatar_fk` FOREIGN KEY (`avatar`) REFERENCES `files` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;';
+ADD rtgrtg rtg rtg CONSTRAINT `users_avatar_fk` FOREIGN KEY (`avatar`) REFERENCES `files` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;';
+
     }
 
     /**
