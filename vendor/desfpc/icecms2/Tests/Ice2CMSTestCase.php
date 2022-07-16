@@ -87,6 +87,7 @@ abstract class Ice2CMSTestCase extends TestCase
         }
 
         if (!empty(self::$_settings)) {
+            static::$_testSettings->testMode = true;
             static::$_realDB = (new DBFactory(self::$_settings))->DB;
             static::$_DB = (new DBFactory(self::$_testSettings))->DB;
 

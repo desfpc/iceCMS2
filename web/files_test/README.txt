@@ -1,0 +1,1 @@
+Directory for storing files while testing. Make sure PHP can write to it in developer mode.

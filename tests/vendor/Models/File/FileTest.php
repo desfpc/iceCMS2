@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace vendor\Models\File;
 
+use iceCMS2\Helpers\Files;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Models\File;
 use iceCMS2\Tests\Ice2CMSTestCase;
@@ -76,12 +77,18 @@ class FileTest extends Ice2CMSTestCase
             'anons' => 'File description text',
             'filetype' => 'file',
             'size' => '11357',
-            'url' => '/files/202207/1.txt',
+            'url' => '/files_test/202207/1.txt',
             'image_width' => null,
             'image_height' => null,
             'user_id' => null,
             'private' => '0',
         ], $fileValues);
+
+        //Testing Helpers\Files class
+        $this->assertEquals('text', Files::getIconClass($file));
+        $this->assertEquals('<strong>11.1</strong>Kb', Files::getFormatedSize($file));
+        $this->assertEquals('<div class="file-icon text"></div>', Files::getIconHtml($file));
+
         $this->assertTrue($file->del());
         $this->assertFalse($file->isLoaded);
         $this->assertFalse(file_exists($path));

@@ -1,0 +1,1 @@
+Directory for storing files. Make sure PHP can write to it.

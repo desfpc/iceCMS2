@@ -183,7 +183,12 @@ class File extends AbstractEntity
      */
     private function _getUrlDirectory(bool $private = false, ?string $date = null): string
     {
-        $url = '/files/';
+        if (isset($this->_settings->testMode)) {
+            $url = '/files_test/';
+        } else {
+            $url = '/files/';
+        }
+
         if ($private) {
             $url .= 'private/';
         }
