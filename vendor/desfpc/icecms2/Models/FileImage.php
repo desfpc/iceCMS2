@@ -12,6 +12,15 @@ namespace iceCMS2\Models;
 
 class FileImage extends File
 {
+    /** @var string Favicon postfix in file name */
+    protected const FAVICON_NAME = 'favicon';
+    /** @var int Favicon image width */
+    protected const FAVICON_WIDTH = 32;
+    /** @var int Favicon image height */
+    protected const FAVICON_HEIGHT = 32;
+    /** @var string Default image extension (webp recommended) */
+    protected const DEFAULT_IMG_FORMAT = 'webp';
+
     /** @var string File Type (enum: file, image, document) */
     protected string $_filetype = 'image';
 
@@ -61,7 +70,9 @@ class FileImage extends File
      */
     public function getUrl(?int $x = null, ?int $y = null, ?int $waterMark = null): string
     {
-
+        if (is_null($x) && is_null($y) && is_null($waterMark)) {
+            return parent::getUrl();
+        }
     }
 
     /**
@@ -74,7 +85,9 @@ class FileImage extends File
      */
     public function getPath(?int $x = null, ?int $y = null, ?int $waterMark = null): string
     {
-
+        if (is_null($x) && is_null($y) && is_null($waterMark)) {
+            return parent::getPath();
+        }
     }
 
     /**
