@@ -121,6 +121,7 @@ class File extends AbstractEntity
 
         //Updating file Entity URL
         $this->_setByKeyAndValue('url', $this->getUrl());
+
         if (!$this->save()) {
             $this->del();
             throw new Exception('Error in saving Entity');

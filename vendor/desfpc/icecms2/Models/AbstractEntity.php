@@ -195,6 +195,7 @@ abstract class AbstractEntity
      */
     public function save(): bool
     {
+        $this->_cacher->del($this->_getCacheKey());
         if ($this->isDirty && !empty($this->_values)) {
             list($prepariedSQL, $prepariedValues) = $this->_getEntitySaveData();
             if ($res = $this->_DB->queryBinded($prepariedSQL, $prepariedValues)) {

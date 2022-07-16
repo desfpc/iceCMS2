@@ -50,15 +50,38 @@ class FileTest extends Ice2CMSTestCase
         copy($testFilePath, $testFilePathNew);
         chmod($testFilePathNew, 0666);
 
+        //Simulating File transfer
         $_FILES['testFile'] = [
             'tmp_name' => $testFilePathNew,
             'name' => 'LICENSE.txt',
             'size' => filesize($testFilePath),
         ];
 
+        //Simulating POST transfer
+        $_POST = [
+            'noInTableKey' => 'someValue',
+            'anons' => 'File description text',
+        ];
+
         $file = new File(self::$_testSettings);
         $this->assertTrue($file->savePostFile('testFile'));
         $path = $file->getPath();
+        $fileValues = $file->get();
+        unset($fileValues['created_time']);
+        $this->assertEquals([
+            'id' => 1,
+            'name' => 'LICENSE.txt',
+            'filename' => 'LICENSE.txt',
+            'extension' => 'txt',
+            'anons' => 'File description text',
+            'filetype' => 'file',
+            'size' => '11357',
+            'url' => '/files/202207/1.txt',
+            'image_width' => null,
+            'image_height' => null,
+            'user_id' => null,
+            'private' => '0',
+        ], $fileValues);
         $this->assertTrue($file->del());
         $this->assertFalse($file->isLoaded);
         $this->assertFalse(file_exists($path));
