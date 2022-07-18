@@ -13,9 +13,21 @@
     <rule ref="rulesets/controversial.xml">
         <exclude name="Superglobals"/>
         <exclude name="CamelCasePropertyName"/>
+        <exclude name="CamelCaseMethodName"/>
     </rule>
 
     <rule ref="rulesets/controversial.xml/CamelCasePropertyName">
+        <properties>
+            <property name="allow-underscore"
+                      description="Allow an optional, single underscore at the beginning."
+                      value="true" />
+            <property name="allow-underscore-test"
+                      description="Is it allowed to have underscores in test method names."
+                      value="true" />
+        </properties>
+    </rule>
+
+    <rule ref="rulesets/controversial.xml/CamelCaseMethodName">
         <properties>
             <property name="allow-underscore"
                       description="Allow an optional, single underscore at the beginning."
