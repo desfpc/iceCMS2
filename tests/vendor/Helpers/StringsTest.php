@@ -46,9 +46,9 @@ class StringsTest extends TestCase
             'thirdCamelXxl',
             'UpperCamel',
         ], [
-            Strings::snakeToCamel('first_camel', true),
-            Strings::snakeToCamel('second_camel', true),
-            Strings::snakeToCamel('third_camel_xxl', true),
+            Strings::snakeToCamel('first_camel'),
+            Strings::snakeToCamel('second_camel'),
+            Strings::snakeToCamel('third_camel_xxl'),
             Strings::snakeToCamel('upperCamel', false),
         ]);
     }

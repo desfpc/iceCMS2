@@ -1,6 +1,5 @@
 <?php
 declare(strict_types=1);
-
 /**
  * iceCMS2 v0.1a
  * Created by Sergey Peshalov https://github.com/desfpc
@@ -9,9 +8,11 @@ declare(strict_types=1);
  * icecms2CreateFileImageSizesTable DB Migration
  */
 
+namespace app\migrations\MySql;
+
 use iceCMS2\Cli\AbstractMigration;
 
-class icecms2CreateFileImageSizesTable extends AbstractMigration
+class Icecms2CreateFileImageSizesTable extends AbstractMigration
 {
     /**
      * Execute migration query
