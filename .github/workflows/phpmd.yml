@@ -46,11 +46,5 @@ jobs:
           tools: phpmd
 
       - name: Run PHPMD
-        run: phpmd . sarif /ruleset.xml
-        continue-on-error: true
-
-      - name: Upload analysis results to GitHub
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: /phpmd-results.sarif
-          wait-for-processing: true
+        run: phpmd . github /ruleset.xml
+        continue-on-error: false
