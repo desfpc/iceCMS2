@@ -15,9 +15,9 @@ class FileImage extends File
     /** @var string Favicon postfix in file name */
     protected const FAVICON_NAME = 'favicon';
     /** @var int Favicon image width */
-    protected const FAVICON_WIDTH = 32;
+    protected const FAVICON_WIDTH = 64;
     /** @var int Favicon image height */
-    protected const FAVICON_HEIGHT = 32;
+    protected const FAVICON_HEIGHT = 64;
     /** @var string Default image extension (webp recommended) */
     protected const DEFAULT_IMG_FORMAT = 'webp';
 
@@ -31,7 +31,7 @@ class FileImage extends File
      */
     private function _createFavicon(): bool
     {
-
+        
     }
 
     /**
@@ -100,6 +100,6 @@ class FileImage extends File
      */
     public function createImageSize(?int $x = null, ?int $y = null, ?int $waterMark = null): bool
     {
-
+ 
     }
 }
