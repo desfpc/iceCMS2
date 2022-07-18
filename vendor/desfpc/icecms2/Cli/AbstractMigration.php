@@ -41,14 +41,14 @@ abstract class AbstractMigration
     /**
      * Class constructor
      *
-     * @param DBInterface $DB
+     * @param DBInterface $dateBase
      */
-    public function __construct(DBInterface $DB, string $version, string $name)
+    public function __construct(DBInterface $dateBase, string $version, string $name)
     {
         //properties initialization
         $this->_version = $version;
         $this->_name = $name;
-        $this->_db = $DB;
+        $this->_db = $dateBase;
 
         //DB connection
         if (!$this->_db->getConnected()) {
@@ -59,7 +59,7 @@ abstract class AbstractMigration
             $this->_errorText = 'DB Connection error: ' . $this->_db->getErrorText();
         } else {
             //Check and create migrations table if needed
-            if (!$res = $this->_db->query('SELECT count(`version`) `mcnt` FROM `migrations`')) {
+            if (!$this->_db->query('SELECT count(`version`) `mcnt` FROM `migrations`')) {
                 if (!$this->_db->createMigrationTable()) {
                     $this->_isConnectionError = true;
                     $this->_errorText = 'Creating migration table error: ' . $this->_db->getWarningText();

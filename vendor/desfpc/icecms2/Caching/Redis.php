@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace iceCMS2\Caching;
 
 use desfpc\Redka\Redka;
+use iceCMS2\Tools\Exception;
 
 class Redis implements CachingInterface
 {
@@ -46,7 +47,7 @@ class Redis implements CachingInterface
             if ($this->redis->status == 1) {
                 $this->connected = true;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->errors[] = $e->getMessage();
         }
     }
@@ -59,7 +60,7 @@ class Redis implements CachingInterface
         if ($this->connected) {
             return ($this->redis->has($key));
         }
-        throw new \Exception('No Redis connection');
+        throw new Exception('No Redis connection');
     }
 
     /**
@@ -70,7 +71,7 @@ class Redis implements CachingInterface
         if ($this->connected) {
             return ($this->redis->findKeys($pattern));
         }
-        throw new \Exception('No Redis connection');
+        throw new Exception('No Redis connection');
     }
 
     /**
@@ -87,7 +88,7 @@ class Redis implements CachingInterface
             }
             return ($this->value);
         }
-        throw new \Exception('No Redis connection');
+        throw new Exception('No Redis connection');
     }
 
     /**
@@ -106,7 +107,7 @@ class Redis implements CachingInterface
             }
             return false;
         }
-        throw new \Exception('No Redis connection');
+        throw new Exception('No Redis connection');
     }
 
     /**
@@ -122,6 +123,6 @@ class Redis implements CachingInterface
             }
             return false;
         }
-        throw new \Exception('No Redis connection');
+        throw new Exception('No Redis connection');
     }
 }
