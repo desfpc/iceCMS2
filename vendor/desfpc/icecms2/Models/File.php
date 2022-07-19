@@ -30,11 +30,11 @@ class File extends AbstractEntity
      */
     public static function getFileExtension(string $filename): string
     {
-        $path_info = pathinfo($filename);
-        if (!isset($path_info['extension'])) {
+        $pathInfo = pathinfo($filename);
+        if (!isset($pathInfo['extension'])) {
             return '';
         }
-        return $path_info['extension'];
+        return $pathInfo['extension'];
     }
 
     /**
@@ -42,6 +42,8 @@ class File extends AbstractEntity
      *
      * @param array $file
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameters)
      */
     protected function _checkFileType(array $file): bool
     {
@@ -80,7 +82,7 @@ class File extends AbstractEntity
 
         $file = $_FILES[$paramName];
 
-        $tmp_name = $file['tmp_name'];
+        $tmpName = $file['tmp_name'];
 
         //Setting entity params from File
         $this->_setByKeyAndValue('name', $file['name'], false);
@@ -114,7 +116,7 @@ class File extends AbstractEntity
         }
 
         //Store file on server
-        if (!rename($tmp_name, $fileVsPath)) {
+        if (!rename($tmpName, $fileVsPath)) {
             $this->del();
             throw new Exception('Error in saving File on server');
         }
@@ -222,6 +224,8 @@ class File extends AbstractEntity
      *
      * @param bool $private
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     private function _createPath(bool $private = false): string
     {

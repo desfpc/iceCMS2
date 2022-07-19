@@ -36,7 +36,7 @@ abstract class AbstractEntity
     public bool $isDirty = false;
 
     /** @var DBInterface DB Resource */
-    protected DBInterface $_DB;
+    protected DBInterface $_db;
 
     /** @var CachingInterface Cacher */
     protected CachingInterface $_cacher;
@@ -64,8 +64,8 @@ abstract class AbstractEntity
     {
         $this->_id = $id;
         $this->_settings = $settings;
-        $this->_DB = DBFactory::get($this->_settings);
-        $this->_DB->connect();
+        $this->_db = DBFactory::get($this->_settings);
+        $this->_db->connect();
         $this->_cacher = CachingFactory::instance($this->_settings);
 
         $this->_getTableCols();
@@ -163,7 +163,7 @@ abstract class AbstractEntity
         } else {
             $query = 'SHOW COLUMNS FROM ' . $this->_dbtable;
 
-            if ($res = $this->_DB->query($query)) {
+            if ($res = $this->_db->query($query)) {
                 if (count($res) > 0) {
                     $this->_cols = [];
                     foreach ($res as $row) {
@@ -200,7 +200,7 @@ abstract class AbstractEntity
              * @var array $prepariedValues
              */
             [$preparedSQL, $prepariedValues] = $this->_getEntitySaveData();
-            if ($res = $this->_DB->queryBinded($preparedSQL, $prepariedValues)) {
+            if ($res = $this->_db->queryBinded($preparedSQL, $prepariedValues)) {
                 if (is_null($this->_id)) {
                     if (is_int($res)) {
                         $this->_id = $res;
@@ -275,7 +275,7 @@ abstract class AbstractEntity
             $this->_id = $id;
         }
 
-        if ($this->_beforeDel() && $this->_DB->query($this->_delEntityValuesSQL())) {
+        if ($this->_beforeDel() && $this->_db->query($this->_delEntityValuesSQL())) {
             $this->_uncacheRecord();
             $this->_id = null;
             $this->_values = [];
@@ -322,7 +322,7 @@ abstract class AbstractEntity
             $this->_values = $values;
             $this->isLoaded = true;
             return true;
-        } elseif ($res = $this->_DB->query($this->_getEntityValuesSQL())) {
+        } elseif ($res = $this->_db->query($this->_getEntityValuesSQL())) {
             if (count($res) > 0) {
                 $this->_values = $res[0];
                 $this->_afterLoad();
@@ -350,7 +350,7 @@ abstract class AbstractEntity
         }
 
         $sql = 'SELECT max(`id`) `id` FROM `' . $this->_dbtable . '` WHERE `' . $param . '` = ?';
-        $res = $this->_DB->queryBinded($sql, [':'.$param => $value]);
+        $res = $this->_db->queryBinded($sql, [':'.$param => $value]);
         if ($res === false) {
             return false;
         }

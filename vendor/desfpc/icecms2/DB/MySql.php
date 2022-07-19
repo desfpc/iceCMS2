@@ -11,11 +11,18 @@ declare(strict_types=1);
 namespace iceCMS2\DB;
 
 use iceCMS2\Types\UnixTime;
+use iceCMS2\Tools\Exception;
+use mysqli;
+use mysqli_result;
+use mysqli_sql_exception;
+use mysqli_stmt;
+use \stdClass;
+use Throwable;
 
 class MySql implements DBInterface
 {
     /** @var stdClass|null DB Connection settings */
-    private ?\stdClass $_settings = null;
+    private ?stdClass $_settings = null;
 
     /** @var bool DB error flag */
     private bool $_isError = false;
@@ -30,7 +37,7 @@ class MySql implements DBInterface
     private ?array $_warningText = null;
 
     /** @var mysqli|false|null mysqli resourse */
-    private $_mysqli = null;
+    private mysqli|null|false $_mysqli = null;
 
     /** @var bool connecting flag */
     private bool $_isConnected = false;
@@ -43,7 +50,7 @@ class MySql implements DBInterface
      *
      * @param \stdClass|null $dbSettings
      */
-    public function __construct(?\stdClass $dbSettings)
+    public function __construct(?stdClass $dbSettings)
     {
         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
         $this->_settings = $dbSettings;
@@ -159,7 +166,7 @@ class MySql implements DBInterface
     /**
      * @inheritDoc
      */
-    public function multiQuery(string $query)
+    public function multiQuery(string $query): bool|array
     {
         if ($this->_isConnected) {
 
@@ -181,15 +188,15 @@ class MySql implements DBInterface
                     return true;
                 }
                 return $results;
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 $this->_isWarning = true;
                 if (is_null($this->_warningText)) {
                     $this->_warningText = [];
                 }
-                $this->_warningText[] = 'Error in request query: ' . $query;
-                return false;
+                $this->_warningText[] = $exception->getMessage() . ': Error in request query: ' . $query;
             }
         }
+        return false;
     }
 
     /**
@@ -214,7 +221,7 @@ class MySql implements DBInterface
     {
         if ($this->_isConnected || $isForced) {
             try {
-                /** @var \mysqli_stmt $stmt */
+                /** @var mysqli_stmt $stmt */
                 $stmt = $this->_mysqli->prepare($query);
                 if (!empty($values)) {
                     if (empty($values['types'])) {
@@ -229,6 +236,7 @@ class MySql implements DBInterface
                                     }
                                     $types .= 'i';
                                     break;
+                                case 'NULL':
                                 case 'integer':
                                     $types .= 'i';
                                     break;
@@ -238,20 +246,16 @@ class MySql implements DBInterface
                                 case 'string':
                                     $types .= 's';
                                     break;
-                                case 'NULL':
-                                    $types .= 'i';
-                                    break;
                                 case 'object':
                                     if ($value instanceof UnixTime) {
                                         $types .= 'i';
-                                        $values[$key] = ($values[$key])->get();
+                                        $values[$key] = ($value)->get();
                                     }
                                     break;
                                 default:
-                                    throw new \Exception('Wrong value type "' . gettype($value) . '" for 
+                                    throw new Exception('Wrong value type "' . gettype($value) . '" for 
                                     auto-generate "types" string for mysqli params bindidg. Specify $values["types"] 
                                     with a valid type string. https://www.php.net/manual/en/mysqli-stmt.bind-param.php');
-                                    break;
                             }
 
                         }
@@ -266,7 +270,7 @@ class MySql implements DBInterface
                     $stmt->bind_param($types, ...$stmtValues);
                     $stmt->execute();
                 }
-            } catch (\mysqli_sql_exception $exception) {
+            } catch (mysqli_sql_exception $exception) {
                 return $this->_queryException($exception, $query);
             }
             catch (\Exception $exception) {
@@ -291,7 +295,7 @@ class MySql implements DBInterface
             try {
                 /** @var mysqli_result|bool $res */
                 $res = $this->_mysqli->query($query);
-            } catch (\Exception $exception) {
+            } catch (Exception|mysqli_sql_exception $exception) {
                 return $this->_queryException($exception, $query);
             }
             return $this->_queryRes($query, $res, $isCnt, $isFree);
@@ -302,17 +306,18 @@ class MySql implements DBInterface
     /**
      * Query exception processing
      *
-     * @param \Exception $exception
+     * @param Exception|mysqli_sql_exception $exception
      * @param string $query
      * @return bool
      */
-    private function _queryException(\Exception $exception, string $query): bool
+    private function _queryException(Exception|mysqli_sql_exception $exception, string $query): bool
     {
         $this->_isWarning = true;
         if (is_null($this->_warningText)) {
             $this->_warningText = [];
         }
-        $this->_warningText[] = 'Error in request query (' . $query . '): ' . $this->_mysqli->error;
+        $this->_warningText[] = $exception->getMessage() . ': Error in request query (' . $query . '): '
+            . $this->_mysqli->error;
         return false;
     }
 
@@ -320,12 +325,12 @@ class MySql implements DBInterface
      * Query result processing
      *
      * @param string $query
-     * @param \mysqli_result|\mysqli_stmt|bool $res
+     * @param mysqli_result|mysqli_stmt|bool $res
      * @param bool $isCnt
      * @param bool $isFree
      * @return bool|array|int
      */
-    private function _queryRes(string $query, \mysqli_result|\mysqli_stmt|bool $res, bool $isCnt, bool $isFree): bool|array|int
+    private function _queryRes(string $query, mysqli_result|mysqli_stmt|bool $res, bool $isCnt, bool $isFree): bool|array|int
     {
         // Query is SELECT, SHOW or WITH RECURSIVE
         if (
@@ -348,7 +353,7 @@ class MySql implements DBInterface
             }
 
             $result = $res->num_rows;
-            if ($free) {
+            if ($isFree) {
                 $res->free();
             }
             return $result;

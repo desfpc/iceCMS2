@@ -22,7 +22,7 @@ $settings = [
         'pass' => 'localRoot',
         'encoding' => 'UTF8',
     ],
-    'db_test' => [
+    'dbTest' => [
         'type' => 'MySQL',
         'name' => 'ice2_test',
         'host' => '127.0.0.1',

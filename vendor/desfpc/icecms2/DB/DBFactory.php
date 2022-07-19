@@ -27,7 +27,7 @@ class DBFactory
      *
      * @var ?DBInterface
      */
-    public ?DBInterface $DB = null;
+    public ?DBInterface $db = null;
 
     /**
      * Class Constructor for new connections
@@ -39,7 +39,7 @@ class DBFactory
     {
         switch ($settings->db->type) {
             case 'MySQL':
-                $this->DB = new MySql($settings->db);
+                $this->db = new MySql($settings->db);
                 break;
             default:
                 throw new Exception("Unknown DB type " . $settings->db->type);
@@ -51,12 +51,13 @@ class DBFactory
      *
      * @param Settings $settings
      * @return DBInterface|null
+     * @throws Exception
      */
     public static function get(Settings $settings): ?DBInterface
     {
         if (is_null(self::$_singleDB)) {
             $connection = new self($settings);
-            self::$_singleDB = $connection->DB;
+            self::$_singleDB = $connection->db;
         }
         return self::$_singleDB;
     }

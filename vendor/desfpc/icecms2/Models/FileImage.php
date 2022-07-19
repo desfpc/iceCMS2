@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace iceCMS2\Models;
 
+use iceCMS2\Tools\Exception;
+
 class FileImage extends File
 {
     /** @var string Favicon postfix in file name */
@@ -20,29 +22,26 @@ class FileImage extends File
     protected const FAVICON_HEIGHT = 64;
     /** @var string Default image extension (webp recommended) */
     protected const DEFAULT_IMG_FORMAT = 'webp';
-
     /** @var string File Type (enum: file, image, document) */
     protected string $_filetype = 'image';
-
-    /**
-     * Create favicon for image file
-     *
-     * @return bool
-     */
-    private function _createFavicon(): bool
-    {
-        
-    }
 
     /**
      * Check POST file for image
      *
      * @param array $file
      * @return bool
+     * @throws Exception
+     *
+     * @SuppressWarnings(PHPMD.UnusedLocalVariables)
      */
     protected function _checkFileType(array $file): bool
     {
-        switch ($imgtype) {
+        [$width, $height, $type, $attr] = getimagesize($file['tmp_name']);
+
+        $this->_setByKeyAndValue('width', (int)$width);
+        $this->_setByKeyAndValue('height', (int)$height);
+
+        switch ($type) {
             case '2':
                 $extension = 'jpg';
                 break;
@@ -52,11 +51,19 @@ class FileImage extends File
             case '1':
                 $extension = 'gif';
                 break;
+            case '6':
+                $extension = 'bmp';
+                break;
+            case '18':
+                $extension = 'webp';
+                break;
             default:
                 $this->errors[] = 'Transferred file is not an image or its format is not supported';
                 return false;
                 break;
         }
+        $this->_setByKeyAndValue('extension', $extension);
+
         return true;
     }
 
@@ -97,9 +104,11 @@ class FileImage extends File
      * @param int|null $y
      * @param int|null $waterMark
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameters)
      */
     public function createImageSize(?int $x = null, ?int $y = null, ?int $waterMark = null): bool
     {
- 
+        return false;
     }
 }

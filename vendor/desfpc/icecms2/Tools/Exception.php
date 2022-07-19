@@ -5,16 +5,16 @@ declare(strict_types=1);
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * Exeption class
+ * Exception class
  */
 
 namespace iceCMS2\Tools;
 
-use iceCMS2\Tools\FlashVars;
+use Throwable;
 
 class Exception extends \Exception
 {
-    /** @var string FlashVars key for Exeption */
+    /** @var string FlashVars key for Exception */
     public const EXEPTION_FLASHVARS_KEY = 'ControllerErrors';
     /** @var string FlashVars key for backtrace */
     public const DEBUG_BACKTRACE_FLASHVARS_KEY = 'DebugBacktrace';

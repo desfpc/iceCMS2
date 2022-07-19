@@ -41,7 +41,7 @@ class SettingsTest extends TestCase
                 'pass' => 'testPass',
                 'encoding' => 'UTF8',
             ],
-            'db_test' => [
+            'dbTest' => [
                 'type' => 'MySQL',
                 'name' => 'testDB',
                 'host' => '127.0.0.1',

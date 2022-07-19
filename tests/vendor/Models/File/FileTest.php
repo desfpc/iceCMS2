@@ -86,7 +86,7 @@ class FileTest extends Ice2CMSTestCase
 
         //Testing Helpers\Files class
         $this->assertEquals('text', Files::getIconClass($file));
-        $this->assertEquals('<strong>11.1</strong>Kb', Files::getFormatedSize($file));
+        $this->assertEquals('<strong>11.1</strong>Kb', Files::getFormattedSize($file));
         $this->assertEquals('<div class="file-icon text"></div>', Files::getIconHtml($file));
 
         $this->assertTrue($file->del());

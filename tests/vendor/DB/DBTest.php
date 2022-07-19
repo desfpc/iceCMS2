@@ -26,7 +26,7 @@ class DBTest extends Ice2CMSTestCase
      */
     public function testConnect(): void
     {
-        $this->assertEquals(true, static::$_DB->getConnected());
+        $this->assertEquals(true, static::$_db->getConnected());
     }
 
     /**
@@ -36,10 +36,10 @@ class DBTest extends Ice2CMSTestCase
      */
     public function testSetUpBeforeClass(): void
     {
-        $res = static::$_DB->query('SHOW CREATE TABLE `migrations`;');
+        $res = static::$_db->query('SHOW CREATE TABLE `migrations`;');
         $this->assertEquals('migrations', $res[0]['Table']);
 
-        $res = static::$_DB->query('SELECT * FROM `migrations`;');
+        $res = static::$_db->query('SELECT * FROM `migrations`;');
         $this->assertEquals([
             0 => [
                 'version' => '20211217193000',
@@ -55,7 +55,7 @@ class DBTest extends Ice2CMSTestCase
             ],
         ], $res);
 
-        $res = static::$_DB->queryBinded('SELECT * FROM `migrations` WHERE `version` = ?', [
+        $res = static::$_db->queryBinded('SELECT * FROM `migrations` WHERE `version` = ?', [
             0 => 20211217193000
         ]);
         $this->assertEquals([
@@ -67,7 +67,7 @@ class DBTest extends Ice2CMSTestCase
             ],
         ], $res);
 
-        static::$_DB->queryBinded(
+        static::$_db->queryBinded(
             'INSERT INTO `migrations`(`version`, `name`, `start_time`, `end_time`) 
 ' . "VALUES(?, ?, ?, ?);",
             [
@@ -78,7 +78,7 @@ class DBTest extends Ice2CMSTestCase
             ]
         );
 
-        $res = static::$_DB->queryBinded('SELECT * FROM `migrations` WHERE `version` = ?', [
+        $res = static::$_db->queryBinded('SELECT * FROM `migrations` WHERE `version` = ?', [
             0 => 20220623130057
         ]);
 

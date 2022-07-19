@@ -18,7 +18,7 @@ use iceCMS2\Settings\Settings;
 abstract class AbstractEntityList
 {
     /** @var DBInterface DB Resource */
-    protected DBInterface $_DB;
+    protected DBInterface $_db;
 
     /** @var CachingInterface Cacher */
     protected CachingInterface $_cacher;
@@ -57,7 +57,7 @@ abstract class AbstractEntityList
     public function __construct(Settings $settings, string $dtable, array $conditions = [], array $order = [], int $page = 1, int $size = 10)
     {
         $this->_settings = $settings;
-        $this->_DB = DBFactory::get($this->_settings);
+        $this->_db = DBFactory::get($this->_settings);
         $this->_dbtable = $dtable;
         $this->_conditions = $conditions;
         $this->_order = $order;
@@ -73,7 +73,7 @@ abstract class AbstractEntityList
     public function getCnt(): int|bool
     {
         [$query, $bindedParams] = $this->_getFullQuery(true);
-        if ($res = $this->_DB->queryBinded($query, $bindedParams)) {
+        if ($res = $this->_db->queryBinded($query, $bindedParams)) {
             return $res[0]['cnt'];
         }
         return false;
@@ -87,7 +87,7 @@ abstract class AbstractEntityList
     public function get(): array
     {
         [$query, $bindedParams] = $this->_getFullQuery();
-        return $this->_DB->queryBinded($query, $bindedParams);
+        return $this->_db->queryBinded($query, $bindedParams);
     }
 
     /**
@@ -170,7 +170,7 @@ abstract class AbstractEntityList
         $query = 'WHERE 1 = 1';
         $bindedParams = [];
 
-        if (is_array($this->_conditions) && !empty($this->_conditions)) {
+        if (!empty($this->_conditions)) {
             foreach ($this->_conditions as $param => $value) {
                 $query .= ' AND ' . $param .= ' = ?';
                 $bindedParams[':' . $param] = $value;
@@ -189,7 +189,7 @@ abstract class AbstractEntityList
     {
         $order = '';
 
-        if (is_array($this->_order) && !empty($this->_order)) {
+        if (!empty($this->_order)) {
             foreach ($this->_order as $param => $type) {
                 if ($order !== '') {
                     $order .= ', ';

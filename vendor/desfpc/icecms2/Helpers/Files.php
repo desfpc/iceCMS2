@@ -12,6 +12,7 @@ namespace iceCMS2\Helpers;
 
 use iceCMS2\Models\File;
 use iceCMS2\Settings\Settings;
+use iceCMS2\Tools\Exception;
 
 class Files
 {
@@ -48,6 +49,7 @@ class Files
      *
      * @param File $file
      * @return string
+     * @throws Exception
      */
     public static function getIconClass(File $file): string
     {
@@ -55,26 +57,28 @@ class Files
             return '';
         }
 
-        $extension_type = self::EXTENSION_OTHER_TYPE;
-        $file_extension = $file->get('extension');
+        $extensionType = self::EXTENSION_OTHER_TYPE;
+        $fileExtension = $file->get('extension');
 
-        if ($file_extension !== '') {
+        if ($fileExtension !== '') {
             foreach (self::EXTENSION_TYPES as $type => $extensions) {
-                if (in_array($file_extension, $extensions)) {
-                    $extension_type = $type;
+                if (in_array($fileExtension, $extensions)) {
+                    $extensionType = $type;
                     break;
                 }
             }
         }
 
-        return $extension_type;
+        return $extensionType;
     }
 
     /**
      * Getting file icon html
      *
      * @param File $file
+     * @param string $moreClasses
      * @return string
+     * @throws Exception
      */
     public static function getIconHtml(File $file, string $moreClasses = ''): string
     {
@@ -83,12 +87,13 @@ class Files
     }
 
     /**
-     * Getting formated file size string
+     * Getting formatted file size string
      *
-     * @param int $size
+     * @param File $file
      * @return string
+     * @throws Exception
      */
-    public static function getFormatedSize(File $file): string
+    public static function getFormattedSize(File $file): string
     {
         $size = $file->get('size');
 

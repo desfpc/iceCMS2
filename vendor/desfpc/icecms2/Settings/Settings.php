@@ -38,7 +38,7 @@ class Settings
             'pass' => 1,
             'encoding' => 1,
         ],
-        'db_test' => [
+        'dbTest' => [
             'type' => 0,
             'name' => 0,
             'host' => 0,
@@ -75,7 +75,7 @@ class Settings
     public ?stdClass $db = null;
 
     /** @var stdClass|null Test DataBase settings */
-    public ?stdClass $db_test = null;
+    public ?stdClass $dbTest = null;
 
     /** @var stdClass|null default email settings */
     public ?stdClass $email = null;

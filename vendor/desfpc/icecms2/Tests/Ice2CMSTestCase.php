@@ -10,10 +10,10 @@ declare(strict_types=1);
 
 namespace iceCMS2\Tests;
 
-use desfpc\Visualijoper\Visualijoper;
 use iceCMS2\DB\DBFactory;
 use iceCMS2\DB\DBInterface;
 use iceCMS2\Settings\Settings;
+use iceCMS2\Tools\Exception;
 use PHPUnit\Framework\TestCase;
 use \ReflectionClass;
 
@@ -37,7 +37,7 @@ abstract class Ice2CMSTestCase extends TestCase
     /**
      * @var DBInterface|null test DB instance
      */
-    protected static ?DBInterface $_DB;
+    protected static ?DBInterface $_db;
 
     /**
      * @var DBInterface|null DB instance (for creating data in test DB instance)
@@ -49,7 +49,7 @@ abstract class Ice2CMSTestCase extends TestCase
      */
     public function getTestClassDir(): string
     {
-        $childRef = new \ReflectionClass(get_class($this));
+        $childRef = new ReflectionClass(get_class($this));
         $fileName = $childRef->getFileName();
         $lastSlashPos = mb_strripos($fileName, '/', 0, 'UTF8');
         return mb_substr($childRef->getFileName(), 0, $lastSlashPos + 1, 'UTF8');
@@ -57,6 +57,7 @@ abstract class Ice2CMSTestCase extends TestCase
 
     /**
      * This method is called before the first test of this test class is run.
+     * @throws Exception
      */
     public static function setUpBeforeClass(): void
     {
@@ -82,25 +83,25 @@ abstract class Ice2CMSTestCase extends TestCase
             if (!empty($settings)) {
                 self::$_settings = new Settings($settings);
                 self::$_testSettings = clone self::$_settings;
-                self::$_testSettings->db = self::$_testSettings->db_test;
+                self::$_testSettings->db = self::$_testSettings->dbTest;
             }
         }
 
         if (!empty(self::$_settings)) {
             static::$_testSettings->testMode = true;
-            static::$_realDB = (new DBFactory(self::$_settings))->DB;
-            static::$_DB = (new DBFactory(self::$_testSettings))->DB;
+            static::$_realDB = (new DBFactory(self::$_settings))->db;
+            static::$_db = (new DBFactory(self::$_testSettings))->db;
 
             //Copy Tables structure from real DB to test DB
             if (!empty(static::$_dbTables)) {
                 static::$_realDB->connect();
-                static::$_DB->connect();
-                static::$_DB->query('SET foreign_key_checks = 0;');
+                static::$_db->connect();
+                static::$_db->query('SET foreign_key_checks = 0;');
                 foreach (static::$_dbTables as $table) {
                     if ($createTableSQL = static::$_realDB->query('SHOW CREATE TABLE `' . $table . '`;')) {
                         $createTableSQL = $createTableSQL[0]['Create Table'];
-                        if (!static::$_DB->query($createTableSQL)) {
-                            print_r(static::$_DB);
+                        if (!static::$_db->query($createTableSQL)) {
+                            print_r(static::$_db);
                         }
                     } else {
                         print_r(static::$_realDB);
@@ -127,12 +128,12 @@ abstract class Ice2CMSTestCase extends TestCase
                                     $binded[':' . $key] = $value;
                                 }
                                 $query .= ') VALUES(' . $values . ')';
-                                static::$_DB->queryBinded($query, $binded);
+                                static::$_db->queryBinded($query, $binded);
                             }
                         }
                     }
                 }
-                static::$_DB->query('SET foreign_key_checks = 1;');
+                static::$_db->query('SET foreign_key_checks = 1;');
                 static::$_realDB->disconnect();
             }
         } else {
@@ -146,11 +147,11 @@ abstract class Ice2CMSTestCase extends TestCase
     public static function tearDownAfterClass(): void
     {
         if (!empty(static::$_dbTables)) {
-            static::$_DB->query('SET foreign_key_checks = 0;');
+            static::$_db->query('SET foreign_key_checks = 0;');
             foreach (static::$_dbTables as $table) {
-                static::$_DB->query('DROP TABLE IF EXISTS `' . $table . '`');
+                static::$_db->query('DROP TABLE IF EXISTS `' . $table . '`');
             }
-            static::$_DB->query('SET foreign_key_checks = 1;');
+            static::$_db->query('SET foreign_key_checks = 1;');
         }
     }
 

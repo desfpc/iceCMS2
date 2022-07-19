@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace iceCMS2\Cli;
 
 use iceCMS2\Settings\Settings;
+use iceCMS2\Tools\Exception;
 
 class App
 {
@@ -25,18 +26,19 @@ class App
      *
      * @param array $settings
      * @param array $argv
+     * @throws Exception
      */
     public function __construct(array $settings, array $argv)
     {
         $this->_settings = new Settings($settings);
         if ($this->_settings->errors->flag === 1) {
-            die ($this->_settings->errors->text);
+            throw new Exception($this->_settings->errors->text);
         }
         if (!empty($argv)) {
             unset($argv[0]);
         }
         if (empty($argv)) {
-            die('No command found. Type "php cli.php help" for command help.');
+            throw new Exception('No command found. Type "php cli.php help" for command help.');
         }
         $this->_argv = $argv;
         $this->_requestParsing();

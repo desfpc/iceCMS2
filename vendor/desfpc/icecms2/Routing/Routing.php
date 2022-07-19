@@ -13,6 +13,7 @@ namespace iceCMS2\Routing;
 use iceCMS2\Caching\CachingFactory;
 use iceCMS2\Helpers\Strings;
 use iceCMS2\Settings\Settings;
+use iceCMS2\Tools\Exception;
 
 class Routing
 {
@@ -41,6 +42,9 @@ class Routing
      *
      * @param Settings $settings
      * @param bool $useCache
+     * @throws Exception
+     *
+     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function getRoute(Settings $settings, bool $useCache = true): void
     {
@@ -54,14 +58,13 @@ class Routing
                 $rouresTree = $cacher->get($rouresTreeKey, true);
             } else {
                 $rouresTree = [];
-                $i = -1;
                 foreach ($settings->routes as $route => $value)
                 {
                     $routeParts = explode('/', (string)$route);
+                    $realPartsCnt = 0;
+                    $realRouteKey = '';
+                    $routeReal = [];
                     if (!empty($routeParts)) {
-                        $routeReal = [];
-                        $realPartsCnt = 0;
-                        $realRouteKey = '';
                         foreach ($routeParts as $part) {
                             if (mb_substr($part, 0, 1, 'UTF-8') === '$') {
                                 $routeReal[] = [
@@ -96,37 +99,35 @@ class Routing
             }
 
             // Finding a Match between a Request Query String and a Route
-            $lastRoute = null;
             foreach ($rouresTree as $route) {
                 $this->route['method'] = 'main';
                 $this->route['parts'] = [];
                 $addedQueryVars = [];
                 $i = -1;
-                foreach ($this->pathInfo['call_parts'] as $call_part) {
+                foreach ($this->pathInfo['call_parts'] as $callPart) {
                     ++$i;
                     if (!isset($route['parts'][$i])) {
                         if ($this->route['method'] === 'main') {
-                            $this->route['method'] = Strings::snakeToCamel($call_part);
+                            $this->route['method'] = Strings::snakeToCamel($callPart);
                         } else {
-                            $this->route['parts'][] = $call_part;
+                            $this->route['parts'][] = $callPart;
                         }
                         continue;
                     }
                     $part = $route['parts'][$i];
 
                     if($part['type'] === 'route') {
-                        if (mb_strtolower($call_part, 'UTF-8') !== $part['partName']) {
+                        if (mb_strtolower($callPart, 'UTF-8') !== $part['partName']) {
                             continue(2);
                         }
                     } else {
-                        $addedQueryVars[$part['partName']] = $call_part;
+                        $addedQueryVars[$part['partName']] = $callPart;
                     }
                 }
                 if (isset($route['parts'][$i+1])) {
                     continue;
                 }
 
-                $lastRoute = $route;
                 if (is_array($route['value'])) {
                     $this->route['controller'] = $route['value']['controller'];
                     if (isset($route['value']['method'])) {
@@ -158,10 +159,10 @@ class Routing
         $path = [];
 
         if (!empty($_SERVER['REQUEST_URI'])) {
-            $request_path = explode('?', $_SERVER['REQUEST_URI']);
+            $requestPath = explode('?', $_SERVER['REQUEST_URI']);
 
             $path['base'] = rtrim(dirname($_SERVER['SCRIPT_NAME']), '\/');
-            $path['call_utf8'] = substr(urldecode($request_path[0]), strlen($path['base']) + 1);
+            $path['call_utf8'] = substr(urldecode($requestPath[0]), strlen($path['base']) + 1);
             $path['call'] = utf8_decode($path['call_utf8']);
             if ($path['call'] == basename($_SERVER['PHP_SELF'])) {
                 $path['call'] = '';
@@ -173,9 +174,9 @@ class Routing
                 }
             }
 
-            if (isset($request_path[1])) {
-                $path['query_utf8'] = urldecode($request_path[1]);
-                $path['query'] = utf8_decode(urldecode($request_path[1]));
+            if (isset($requestPath[1])) {
+                $path['query_utf8'] = urldecode($requestPath[1]);
+                $path['query'] = utf8_decode(urldecode($requestPath[1]));
             } else {
                 $path['query_utf8'] = '';
                 $path['query'] = '';

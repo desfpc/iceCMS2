@@ -17,7 +17,7 @@ abstract class AbstractMigration
     /** @var ?string migration SQL for executing */
     public ?string $sql = null;
 
-    /** @var string */
+    /** @var ?string */
     protected ?string $_errorText = '';
 
     /** @var bool */
@@ -42,6 +42,8 @@ abstract class AbstractMigration
      * Class constructor
      *
      * @param DBInterface $dateBase
+     * @param string $version
+     * @param string $name
      */
     public function __construct(DBInterface $dateBase, string $version, string $name)
     {
@@ -64,7 +66,7 @@ abstract class AbstractMigration
                     $this->_isConnectionError = true;
                     $this->_errorText = 'Creating migration table error: ' . $this->_db->getWarningText();
                 }
-            };
+            }
         }
     }
 
@@ -86,6 +88,7 @@ abstract class AbstractMigration
      */
     public function up(): string
     {
+        return '';
     }
 
     /**
@@ -127,6 +130,7 @@ abstract class AbstractMigration
      */
     public function down(): string
     {
+        return '';
     }
 
     /**
@@ -145,7 +149,7 @@ abstract class AbstractMigration
      * @param string $sql
      * @return string
      */
-    protected function _makeFullUpSQL(string $sql)
+    protected function _makeFullUpSQL(string $sql): string
     {
         return "INSERT INTO `migrations`(`version`, `name`) \n"
             . "VALUES(" . $this->_version . ", '" . $this->_name . "');"
@@ -159,7 +163,7 @@ abstract class AbstractMigration
      * @param string $sql
      * @return string
      */
-    protected function _makeFullDownSQL(string $sql)
+    protected function _makeFullDownSQL(string $sql): string
     {
         return $sql . "\nDELETE FROM `migrations` WHERE `version` = " . $this->_version . ';';
     }
