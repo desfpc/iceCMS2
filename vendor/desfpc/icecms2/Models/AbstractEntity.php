@@ -79,10 +79,10 @@ abstract class AbstractEntity
      * Getting Entity value/values
      *
      * @param string|null $key
-     * @return mixed|mixed[]|null
+     * @return mixed|array|null
      * @throws Exception
      */
-    public function get(?string $key = null)
+    public function get(?string $key = null): mixed
     {
         if (is_null($key)) {
             return $this->_values;
@@ -96,9 +96,9 @@ abstract class AbstractEntity
     /**
      * Getting Entity dirty values
      *
-     * @return mixed[]|null
+     * @return array|null
      */
-    public function getDirty()
+    public function getDirty(): ?array
     {
         return $this->_dirtyValues;
     }
@@ -142,9 +142,6 @@ abstract class AbstractEntity
             throw new Exception('Field "' . $key . '" missing in table "' . $this->_dbtable . '"');
         }
         if (!isset($this->_values[$key]) || $this->_values[$key] !== $value) {
-            if (is_null($this->_values)) {
-                $this->_values = [];
-            }
             $this->isDirty = true;
             $this->_dirtyValues[$key] = !isset($this->_values[$key]) ? null : $this->_values[$key];
             $this->_values[$key] = $value;
@@ -155,11 +152,11 @@ abstract class AbstractEntity
      * Getting Entity DB table columns
      *
      * @return void
+     * @throws Exception
      */
     private function _getTableCols(): void
     {
         $key = $this->_getTableColsKey();
-        $cols = [];
 
         if ($this->_cacher->has($key) && $cols = $this->_cacher->get($key, true)) {
             $this->_cols = $cols;
@@ -192,13 +189,18 @@ abstract class AbstractEntity
      * Save Entity
      *
      * @return bool
+     * @throws Exception
      */
     public function save(): bool
     {
         $this->_cacher->del($this->_getCacheKey());
         if ($this->isDirty && !empty($this->_values)) {
-            list($prepariedSQL, $prepariedValues) = $this->_getEntitySaveData();
-            if ($res = $this->_DB->queryBinded($prepariedSQL, $prepariedValues)) {
+            /**
+             * @var string $preparedSQL
+             * @var array $prepariedValues
+             */
+            [$preparedSQL, $prepariedValues] = $this->_getEntitySaveData();
+            if ($res = $this->_DB->queryBinded($preparedSQL, $prepariedValues)) {
                 if (is_null($this->_id)) {
                     if (is_int($res)) {
                         $this->_id = $res;
@@ -218,6 +220,8 @@ abstract class AbstractEntity
      * Get data for Entity save SQL query
      *
      * @return array<string, array>
+     *
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     private function _getEntitySaveData(): array
     {
@@ -261,14 +265,17 @@ abstract class AbstractEntity
      *
      * @param int|null $id
      * @return bool
+     * @throws Exception
      */
     public function del(?int $id = null): bool
     {
         $this->_needLoaded();
 
-        $this->id = $id;
+        if (!is_null($id)) {
+            $this->_id = $id;
+        }
 
-        if ($this->_beforeDel() && $res = $this->_DB->query($this->_delEntityValuesSQL())) {
+        if ($this->_beforeDel() && $this->_DB->query($this->_delEntityValuesSQL())) {
             $this->_uncacheRecord();
             $this->_id = null;
             $this->_values = [];
@@ -283,7 +290,7 @@ abstract class AbstractEntity
      *
      * @return bool
      */
-    protected function _beforeDel()
+    protected function _beforeDel(): bool
     {
         return true;
     }
@@ -293,6 +300,7 @@ abstract class AbstractEntity
      *
      * @param int|null $id
      * @return bool
+     * @throws Exception
      */
     public function load(?int $id = null): bool
     {
@@ -406,10 +414,10 @@ abstract class AbstractEntity
     /**
      * Cache Entity values
      *
-     * @param int|float $expired
+     * @param int $expired
      * @throws Exception
      */
-    private function _cacheRecord(int $expired = 30 * 24 * 60 * 60)
+    private function _cacheRecord(int $expired = 30 * 24 * 60 * 60): void
     {
         $this->_cacher->set($this->_getCacheKey(), json_encode($this->_values), $expired);
     }
@@ -419,7 +427,7 @@ abstract class AbstractEntity
      *
      * @throws Exception
      */
-    public function clearCache()
+    public function clearCache(): void
     {
         $this->_uncacheRecord();
         $this->_refreshTableCols();
@@ -430,7 +438,7 @@ abstract class AbstractEntity
      *
      * @throws Exception
      */
-    private function _uncacheRecord()
+    private function _uncacheRecord(): void
     {
         $this->_cacher->del($this->_getCacheKey());
     }
@@ -451,6 +459,7 @@ abstract class AbstractEntity
      * Function, calling before publick methods
      *
      * @return void
+     * @throws Exception
      */
     protected function _needLoaded(): void
     {

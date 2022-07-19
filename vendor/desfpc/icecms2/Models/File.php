@@ -53,7 +53,7 @@ class File extends AbstractEntity
      *
      * @return bool
      */
-    protected function _beforeDel()
+    protected function _beforeDel(): bool
     {
         $path = $this->getPath();
         if (file_exists($path)) {
