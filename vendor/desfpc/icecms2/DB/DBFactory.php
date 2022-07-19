@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace iceCMS2\DB;
 
 use iceCMS2\Settings\Settings;
+use iceCMS2\Tools\Exception;
 
 class DBFactory
 {
@@ -32,6 +33,7 @@ class DBFactory
      * Class Constructor for new connections
      *
      * @param Settings $settings
+     * @throws Exception
      */
     public function __construct(Settings $settings)
     {
@@ -39,6 +41,8 @@ class DBFactory
             case 'MySQL':
                 $this->DB = new MySql($settings->db);
                 break;
+            default:
+                throw new Exception("Unknown DB type " . $settings->db->type);
         }
     }
 
@@ -62,7 +66,7 @@ class DBFactory
      */
     public function __wakeup()
     {
-        throw new \Exception("Cannot unserialize a connection.");
+        throw new Exception("Cannot unserialize a connection.");
     }
 
     private function __clone()

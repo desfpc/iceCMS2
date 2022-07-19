@@ -15,7 +15,6 @@
         <exclude name="CamelCasePropertyName"/>
         <exclude name="CamelCaseMethodName"/>
     </rule>
-
     <rule ref="rulesets/controversial.xml/CamelCasePropertyName">
         <properties>
             <property name="allow-underscore"
@@ -26,7 +25,6 @@
                       value="true" />
         </properties>
     </rule>
-
     <rule ref="rulesets/controversial.xml/CamelCaseMethodName">
         <properties>
             <property name="allow-underscore"
@@ -44,14 +42,13 @@
         <exclude name="ExcessiveMethodLength"/>
         <exclude name="CyclomaticComplexity"/>
         <exclude name="NPathComplexity"/>
+        <exclude name="ExcessiveClassComplexity" />
     </rule>
-
     <rule ref="rulesets/codesize.xml/ExcessiveMethodLength">
         <properties>
             <property name="minimum" description="The method size reporting threshold" value="150"/>
         </properties>
     </rule>
-
     <rule ref="rulesets/codesize.xml/CyclomaticComplexity">
         <properties>
             <property name="reportLevel" description="The Cyclomatic Complexity reporting threshold"  value="25"/>
@@ -63,10 +60,14 @@
                       value="true"/>
         </properties>
     </rule>
-
     <rule ref="rulesets/codesize.xml/NPathComplexity">
         <properties>
             <property name="minimum" description="The npath reporting threshold" value="1000"/>
+        </properties>
+    </rule>
+    <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity">
+        <properties>
+            <property name="maximum" description="The maximum WMC tolerable for a class." value="100"/>
         </properties>
     </rule>
 
