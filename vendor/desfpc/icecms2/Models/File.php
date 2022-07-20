@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace iceCMS2\Models;
 
-use Cassandra\Date;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Types\UnixTime;
 

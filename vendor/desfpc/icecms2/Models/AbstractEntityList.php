@@ -14,6 +14,7 @@ use iceCMS2\Caching\CachingInterface;
 use iceCMS2\DB\DBFactory;
 use iceCMS2\DB\DBInterface;
 use iceCMS2\Settings\Settings;
+use iceCMS2\Tools\Exception;
 
 abstract class AbstractEntityList
 {
@@ -53,12 +54,12 @@ abstract class AbstractEntityList
      * @param array $order
      * @param int $page
      * @param int $size
+     * @throws Exception
      */
-    public function __construct(Settings $settings, string $dtable, array $conditions = [], array $order = [], int $page = 1, int $size = 10)
+    public function __construct(Settings $settings, array $conditions = [], array $order = [], int $page = 1, int $size = 10)
     {
         $this->_settings = $settings;
         $this->_db = DBFactory::get($this->_settings);
-        $this->_dbtable = $dtable;
         $this->_conditions = $conditions;
         $this->_order = $order;
         $this->_page = $page;
@@ -80,7 +81,7 @@ abstract class AbstractEntityList
     }
 
     /**
-     * Getting array of entityes
+     * Getting array of entity's
      *
      * @return array
      */
@@ -103,7 +104,7 @@ abstract class AbstractEntityList
         $bindedParams = $conditions['bindedParams'];
         $query .= ' ' . $conditions['query'];
 
-        if ($ifCnt) {
+        if (!$ifCnt) {
             $query .= ' ' . $this->_getOrderQuery() . ' ' . $this->_getLimitQuery();
         }
 
