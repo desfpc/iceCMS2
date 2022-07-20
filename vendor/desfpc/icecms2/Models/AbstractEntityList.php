@@ -49,7 +49,6 @@ abstract class AbstractEntityList
      * Entity list constructor
      *
      * @param Settings $settings
-     * @param string $dtable
      * @param array $conditions
      * @param array $order
      * @param int $page
@@ -83,11 +82,12 @@ abstract class AbstractEntityList
     /**
      * Getting array of entity's
      *
-     * @return array
+     * @return array|bool
      */
-    public function get(): array
+    public function get(): array|bool
     {
         [$query, $bindedParams] = $this->_getFullQuery();
+
         return $this->_db->queryBinded($query, $bindedParams);
     }
 
@@ -108,7 +108,7 @@ abstract class AbstractEntityList
             $query .= ' ' . $this->_getOrderQuery() . ' ' . $this->_getLimitQuery();
         }
 
-        return ['query' => $query, 'bindedParams' => $bindedParams];
+        return [$query, $bindedParams];
     }
 
     /**
@@ -210,6 +210,6 @@ abstract class AbstractEntityList
     protected function _getLimitQuery(): string
     {
         $offset = ($this->_page - 1) * $this->_size;
-        return 'LIMIT ' . $offset . ' ' . $this->_size;
+        return 'LIMIT ' . $offset . ', ' . $this->_size;
     }
 }

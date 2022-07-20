@@ -222,7 +222,9 @@ class MySql implements DBInterface
         if ($this->_isConnected || $isForced) {
             try {
                 /** @var mysqli_stmt $stmt */
-                $stmt = $this->_mysqli->prepare($query);
+                if (!$stmt = $this->_mysqli->prepare($query)) {
+                    throw new Exception('Wrong query: ' . $query);
+                }
                 if (!empty($values)) {
                     if (empty($values['types'])) {
                         $types = '';
@@ -268,8 +270,8 @@ class MySql implements DBInterface
                         $stmtValues[] = $value;
                     }
                     $stmt->bind_param($types, ...$stmtValues);
-                    $stmt->execute();
                 }
+                $stmt->execute();
             } catch (mysqli_sql_exception $exception) {
                 return $this->_queryException($exception, $query);
             }
@@ -281,7 +283,9 @@ class MySql implements DBInterface
                 $this->_warningText[] = $exception->getMessage();
                 return false;
             }
-            return $this->_queryRes($query, $stmt, $isCnt, false);
+            $res = $this->_queryRes($query, $stmt, $isCnt, false);
+            $stmt->free_result();
+            return $res;
         }
         return false;
     }
@@ -341,14 +345,17 @@ class MySql implements DBInterface
             if (!$isCnt) {
                 $result = [];
                 if (get_class($res) === 'mysqli_stmt') {
+                    $resStmt = $res;
                     $res = $res->get_result();
+                    $resStmt->free_result();
                 }
                 while ($row = $res->fetch_assoc()) {
                     $result[] = $row;
                 }
                 if ($isFree) {
-                    $res->free();
+                    //$res->free();
                 }
+                $res->free_result();
                 return $result;
             }
 
@@ -356,12 +363,17 @@ class MySql implements DBInterface
             if ($isFree) {
                 $res->free();
             }
+            $res->free_result();
             return $result;
         }
 
         // Other queryes
         if (!is_bool($res) && $res->insert_id > 0) {
+            $res->free_result();
             return $res->insert_id;
+        }
+        if (!is_bool($res)) {
+            $res->free_result();
         }
         return true;
     }

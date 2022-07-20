@@ -135,6 +135,7 @@ class File extends AbstractEntity
      * Getting file path in OS
      *
      * @return string
+     * @throws Exception
      */
     public function getPath(): string
     {
