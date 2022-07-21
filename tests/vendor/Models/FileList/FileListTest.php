@@ -87,9 +87,30 @@ class FileListTest extends Ice2CMSTestCase
         $this->assertEquals(3, $cnt);
 
         $rows = $fileList->get();
-        $this->assertEquals(3, count($rows));
+        $this->assertCount(3, $rows);
 
         //TODO check FileList with $conditions, $order, $page and $size
+        $conditions = ['id' => 2];
+        $fileList = new FileList(self::$_testSettings, $conditions);
+        $rows = $fileList->get();
+        $this->assertCount(1, $rows);
+
+        $conditions = ['name' =>
+            [
+                'logic' => 'AND',
+                'sign' => 'LIKE',
+                'value' => '%SE%',
+            ]
+        ];
+        $order = ['name' => 'DESC', 'id' => 'ASC'];
+        $fileList = new FileList(self::$_testSettings, $conditions, $order);
+        $rows = $fileList->get();
+        $this->assertCount(3, $rows);
+
+        $fileList = new FileList(self::$_testSettings, $conditions, $order, 1, 2);
+        $rows = $fileList->get();
+        $this->assertCount(2, $rows);
+        $this->assertEquals('LICENSE3.txt', $rows[0]['name']);
 
         $this->assertTrue($file1->del());
         $this->assertTrue($file2->del());

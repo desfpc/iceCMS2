@@ -173,8 +173,31 @@ abstract class AbstractEntityList
 
         if (!empty($this->_conditions)) {
             foreach ($this->_conditions as $param => $value) {
-                $query .= ' AND ' . $param .= ' = ?';
-                $bindedParams[':' . $param] = $value;
+                unset($logic, $sign, $bindedValue);
+                if (is_array($value)) {
+                    if (!empty($value['logic'])) {
+                        $logic = $value['logic'];
+                    }
+                    if (!empty($value['sign'])) {
+                        $sign = $value['sign'];
+                    }
+                    if (!empty($value['value'])) {
+                        $bindedValue = $value['value'];
+                    }
+                }
+
+                if (!isset($logic)) {
+                    $logic = 'AND';
+                }
+                if (!isset($sign)) {
+                    $sign = '=';
+                }
+                if (!isset($bindedValue)) {
+                    $bindedValue = $value;
+                }
+
+                $query .= ' ' . $logic . ' ' . $param .= ' ' . $sign . ' ?';
+                $bindedParams[':' . $param] = $bindedValue;
             }
         }
 
@@ -188,18 +211,19 @@ abstract class AbstractEntityList
      */
     protected function _getOrderQuery(): string
     {
-        $order = '';
-
-        if (!empty($this->_order)) {
-            foreach ($this->_order as $param => $type) {
-                if ($order !== '') {
-                    $order .= ', ';
-                }
-                $order .= $param . ' ' . $type;
-            }
+        if (empty($this->_order)) {
+            return '';
         }
 
-        return $order;
+        $order = '';
+        foreach ($this->_order as $param => $type) {
+            if ($order !== '') {
+                $order .= ', ';
+            }
+            $order .= $param . ' ' . $type;
+        }
+
+        return 'ORDER BY ' . $order;
     }
 
     /**
