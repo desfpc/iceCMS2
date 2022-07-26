@@ -76,6 +76,17 @@ abstract class AbstractEntity
     }
 
     /**
+     * Getting entity's class key (class name by default)
+     * For example to link image sizes with the type of the current object
+     *
+     * @return string
+     */
+    public function getKeyString(): string
+    {
+        return static::class;
+    }
+
+    /**
      * Getting Entity value/values
      *
      * @param string|null $key
@@ -456,7 +467,7 @@ abstract class AbstractEntity
     }
 
     /**
-     * Function, calling before publick methods
+     * Function, calling before public methods
      *
      * @return void
      * @throws Exception

@@ -94,5 +94,7 @@ class FileTest extends Ice2CMSTestCase
         $this->assertTrue($file->del());
         $this->assertFalse($file->isLoaded);
         $this->assertFalse(file_exists($path));
+
+        $this->assertEquals('iceCMS2\Models\File', $file->getKeyString());
     }
 }
