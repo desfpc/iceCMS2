@@ -53,6 +53,7 @@ class File extends AbstractEntity
      * Function before delete
      *
      * @return bool
+     * @throws Exception
      */
     protected function _beforeDel(): bool
     {
@@ -61,6 +62,16 @@ class File extends AbstractEntity
             unlink($path);
         }
         
+        return true;
+    }
+
+    /**
+     * Method after success file saving via POST request ($this->savePostFile)
+     *
+     * @return bool
+     */
+    protected function _afterSavePostFile(): bool
+    {
         return true;
     }
 
@@ -128,6 +139,11 @@ class File extends AbstractEntity
             throw new Exception('Error in saving Entity');
         }
 
+        if (!$this->_afterSavePostFile()) {
+            $this->del();
+            throw new Exception('Error in saving Entity (after save function)');
+        }
+
         return true;
     }
 
@@ -156,6 +172,7 @@ class File extends AbstractEntity
      * Getting file URL for web
      *
      * @return string
+     * @throws Exception
      */
     public function getUrl(): string
     {

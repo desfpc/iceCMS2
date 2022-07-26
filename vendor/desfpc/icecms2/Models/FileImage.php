@@ -60,7 +60,6 @@ class FileImage extends File
             default:
                 $this->errors[] = 'Transferred file is not an image or its format is not supported';
                 return false;
-                break;
         }
         $this->_setByKeyAndValue('extension', $extension);
 
@@ -68,47 +67,73 @@ class FileImage extends File
     }
 
     /**
-     * Getting image file URL for web
+     * Method after success file saving via POST request ($this->savePostFile)
      *
-     * @param int|null $x Width of image file
-     * @param int|null $y Height of image file
-     * @param int|null $waterMark Image WaterMark file ID
-     * @return string
+     * @return bool
      */
-    public function getUrl(?int $x = null, ?int $y = null, ?int $waterMark = null): string
+    protected function _afterSavePostFile(): bool
     {
-        if (is_null($x) && is_null($y) && is_null($waterMark)) {
+        return $this->_makeFavicon();
+    }
+
+    /**
+     * TODO Making image favicon file
+     *
+     * @return bool
+     */
+    private function _makeFavicon(): bool
+    {
+        return false;
+    }
+
+    /**
+     * TODO Getting image file URL for web
+     *
+     * @param int|null $imageSize
+     * @return string
+     * @throws Exception
+     */
+    public function getUrl(?int $imageSize = null): string
+    {
+        if (is_null($imageSize)) {
             return parent::getUrl();
         }
     }
 
     /**
-     * Getting image file path in OS
+     * TODO Getting image file path in OS
      *
-     * @param int|null $x Width of image file
-     * @param int|null $y Height of image file
-     * @param int|null $waterMark Image WaterMark file ID
+     * @param int|null $imageSize
      * @return string
+     * @throws Exception
      */
-    public function getPath(?int $x = null, ?int $y = null, ?int $waterMark = null): string
+    public function getPath(?int $imageSize = null): string
     {
-        if (is_null($x) && is_null($y) && is_null($waterMark)) {
+        if (is_null($imageSize)) {
             return parent::getPath();
         }
     }
 
     /**
-     * Creating image variant by width/height/waterMark
+     * TODO Creating image variant by imageSize ID
      *
-     * @param int|null $x
-     * @param int|null $y
-     * @param int|null $waterMark
+     * @param int $imageSize
      * @return bool
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameters)
      */
-    public function createImageSize(?int $x = null, ?int $y = null, ?int $waterMark = null): bool
+    public function createImageSize(int $imageSize): bool
     {
         return false;
+    }
+
+    /**
+     * TODO Getting created image sizes
+     *
+     * @return array
+     */
+    public function getImageSizes(): array
+    {
+        return [];
     }
 }

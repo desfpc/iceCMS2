@@ -89,7 +89,7 @@ class FileListTest extends Ice2CMSTestCase
         $rows = $fileList->get();
         $this->assertCount(3, $rows);
 
-        //TODO check FileList with $conditions, $order, $page and $size
+        //check FileList with $conditions, $order, $page and $size
         $conditions = ['id' => 2];
         $fileList = new FileList(self::$_testSettings, $conditions);
         $rows = $fileList->get();
