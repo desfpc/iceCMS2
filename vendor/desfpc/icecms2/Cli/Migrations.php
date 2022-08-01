@@ -14,7 +14,6 @@ use iceCMS2\DB\DBInterface;
 use iceCMS2\DB\DBFactory;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Helpers\Strings;
-use PhpParser\Error;
 
 class Migrations
 {
@@ -108,7 +107,7 @@ class Migrations
                 if (!$this->_isMigrationExecuted($migration['version'])) {
                     echo "\n" . 'Executing migration ' . $file;
                     include_once($this->_migrationsFolder . $file);
-                    $mName = $migration['name'];
+                    $mName = $this->_getFullClassName($migration['name']);
                     /** @var AbstractMigration $mObj */
                     $mObj = new $mName($this->_db, $migration['version'], $migration['name']);
                     if ($mObj->exec()) {
@@ -122,6 +121,17 @@ class Migrations
             }
         }
         return true;
+    }
+
+    /**
+     * Getting migration class name vs namespace
+     *
+     * @param $name
+     * @return string
+     */
+    private function _getFullClassName($name): string
+    {
+        return 'app\\migrations\\' . $this->_settings->db->type . '\\' . $name;
     }
 
     /**
@@ -153,7 +163,7 @@ class Migrations
             $migration = $this->_getMigrationData($file);
             echo "\n" . 'Rollbacking migration ' . $file;
             include_once($this->_migrationsFolder . $file);
-            $mName = $migration['name'];
+            $mName = $this->_getFullClassName($migration['name']);
             /** @var AbstractMigration $mObj */
             $mObj = new $mName($this->_db, $migration['version'], $migration['name']);
             if ($mObj->rollback()) {
