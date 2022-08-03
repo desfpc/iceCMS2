@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 /**
  * iceCMS2 v0.1a
@@ -10,6 +11,7 @@ declare(strict_types=1);
 
 namespace iceCMS2\Models;
 
+use GdImage;
 use iceCMS2\Tools\Exception;
 
 class FileImage extends File
@@ -22,6 +24,10 @@ class FileImage extends File
     protected const FAVICON_HEIGHT = 64;
     /** @var string Default image extension (webp recommended) */
     protected const DEFAULT_IMG_FORMAT = 'webp';
+    /** @var bool Flag - reformat or not original image to DEFAULT_IMG_FORMAT */
+    protected const IF_REFORMAT_ORIGINAL = true;
+    /** @var int Max image length (width or height). Original image resize to this size. If 0 - then no resize */
+    protected const MAX_ORIGINAL_LENGTH = 1200;
     /** @var string File Type (enum: file, image, document) */
     protected string $_filetype = 'image';
 
@@ -70,10 +76,41 @@ class FileImage extends File
      * Method after success file saving via POST request ($this->savePostFile)
      *
      * @return bool
+     * @throws Exception
      */
     protected function _afterSavePostFile(): bool
     {
-        return $this->_makeFavicon();
+        return $this->_reformatOriginal() && $this->_makeFavicon();
+    }
+
+    /**
+     * TODO Reformat original image file
+     *
+     * @return bool
+     * @throws Exception
+     */
+    private function _reformatOriginal(): bool
+    {
+        $doReformating = false;
+        $doResizing = false;
+        if (self::IF_REFORMAT_ORIGINAL && $this->get('extension') !== self::DEFAULT_IMG_FORMAT) {
+            $doReformating = true;
+        }
+        if (
+            self::MAX_ORIGINAL_LENGTH > 0 &&
+            ($this->get('width') > self::MAX_ORIGINAL_LENGTH || $this->get('height') > self::MAX_ORIGINAL_LENGTH)
+        ) {
+            $doResizing = true;
+        }
+
+        if (!$doReformating && !$doResizing) {
+            return true;
+        }
+
+        //resize and reformat original file
+
+
+        return false;
     }
 
     /**
@@ -135,5 +172,132 @@ class FileImage extends File
     public function getImageSizes(): array
     {
         return [];
+    }
+
+    /**
+     * Create image from path and extension
+     *
+     * @param string $path
+     * @param string $extension
+     * @return GdImage|false
+     * @throws Exception
+     */
+    private function _imageCreateFromExtension(string $path, string $extension): GdImage|false
+    {
+        return match ($extension) {
+            'jpg', 'jpeg' => imagecreatefromjpeg($path),
+            'png' => imagecreatefrompng($path),
+            'gif' => imagecreatefromgif($path),
+            'bmp' => imagecreatefrombmp($path),
+            'webp' => imagecreatefromwebp($path),
+            default => throw new Exception('Wrong or not supported image type: ' . $extension),
+        };
+    }
+
+    /**
+     * Save image file with requested sizes, watermark and format
+     *
+     * @param string $from
+     * @param string $to
+     * @param int $newx
+     * @param int $newy
+     * @param string $extension
+     * @param bool $crop
+     * @param int $watermark
+     * @param array|null $wparams
+     * @throws Exception
+     */
+    public function saveImageSize (
+        string $from,
+        string $to,
+        int $newx,
+        int $newy,
+        string $extension,
+        bool $crop = false,
+        int $watermark = 0,
+        ?array $wparams = null
+        )
+    {
+        //Calculating new image sizes
+        $originalx = $this->get('width');
+        $originaly = $this->get('height');
+        $originalExtension = $this->get('extension');
+        if ($newx == 0) {
+            $newx = round($originalx * $newy / $originaly);
+        } elseif ($newy == 0) {
+            $newy = round($originaly * $newx / $originalx);
+        }
+
+        $im = $this->_imageCreateFromExtension($from, $originalExtension);
+        $im1 = imagecreatetruecolor($newx, $newy);
+        if ($extension == 'png') {
+            imagealphablending($im1, false);
+            imagesavealpha($im1, true);
+        }
+
+        if (!$crop) {
+            imagecopyresampled($im1, $im, 0, 0, 0, 0, $newx, $newy, imagesx($im), imagesy($im));
+        } else {
+            $sootn1 = $newx / $newy;
+            $sootn2 = imagesx($im) / imagesy($im);
+
+            //crop by x
+            if ($sootn1 >= $sootn2) {
+                $ix = imagesx($im);
+                $iy = round($newy * imagesx($im) / $newx);
+            //crop by y
+            } else {
+                $iy = imagesy($im);
+                $ix = round($newx * imagesy($im) / $newy);
+
+            }
+
+            //offsets
+            $startx = (int)((imagesx($im) - $ix) / 2);
+            $starty = 0;
+
+            imagecopyresampled($im1, $im, 0, 0, $startx, $starty, $newx, $newy, $ix, $iy);
+        }
+
+        //Create watermark
+        if ($watermark > 0 && !empty($wparams)) {
+            $wimg = new FileImage($this->_settings, $watermark);
+            $wimg->load();
+            $stamp = $this->_imageCreateFromExtension($wimg->getPath(), $wimg->get('extension'));
+
+            $sx = imagesx($stamp);
+            $sy = imagesy($stamp);
+
+            imagecopy(
+                $im1,
+                $stamp,
+                imagesx($im1) - $sx - $wparams['width'],
+                imagesy($im1) - $sy - $wparams['height'],
+                $wparams['top'],
+                $wparams['left'],
+                imagesx($stamp),
+                imagesy($stamp)
+            );
+
+        }
+
+        switch ($extension) {
+            case 'jpg':
+            case 'jpeg':
+                imagejpeg($im1, $to, 100);
+                break;
+            case 'png':
+                imagepng($im1, $to);
+                break;
+            case 'gif':
+                imagegif($im1, $to);
+                break;
+            case 'bmp':
+                imagebmp($im1, $to);
+                break;
+            case 'webp':
+                imagewebp($im1, $to, 100);
+                break;
+        }
     }
 }
