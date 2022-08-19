@@ -32,7 +32,7 @@ class Routing
      */
     public array $route = [
         'controller' => 'ServerErrors',
-        'method' => 'main',
+        'controllerMethod' => 'main',
         'useVendor' => false,
         'parts' => [],
     ];
@@ -100,15 +100,15 @@ class Routing
 
             // Finding a Match between a Request Query String and a Route
             foreach ($rouresTree as $route) {
-                $this->route['method'] = 'main';
+                $this->route['controllerMethod'] = 'main';
                 $this->route['parts'] = [];
                 $addedQueryVars = [];
                 $i = -1;
                 foreach ($this->pathInfo['call_parts'] as $callPart) {
                     ++$i;
                     if (!isset($route['parts'][$i])) {
-                        if ($this->route['method'] === 'main') {
-                            $this->route['method'] = Strings::snakeToCamel($callPart);
+                        if ($this->route['controllerMethod'] === 'main') {
+                            $this->route['controllerMethod'] = Strings::snakeToCamel($callPart);
                         } else {
                             $this->route['parts'][] = $callPart;
                         }
@@ -130,8 +130,8 @@ class Routing
 
                 if (is_array($route['value'])) {
                     $this->route['controller'] = $route['value']['controller'];
-                    if (isset($route['value']['method'])) {
-                        $this->route['method'] = $route['value']['method'];
+                    if (isset($route['value']['controllerMethod'])) {
+                        $this->route['controllerMethod'] = $route['value']['controllerMethod'];
                     }
                     if (isset($route['value']['useVendor'])) {
                         $this->route['useVendor'] = $route['value']['useVendor'];
@@ -143,8 +143,8 @@ class Routing
                 break;
             }
         }
-        if ($this->route['controller'] === 'ServerErrors' && $this->route['method'] === 'main') {
-            $this->route['method'] = 'notFound';
+        if ($this->route['controller'] === 'ServerErrors' && $this->route['controllerMethod'] === 'main') {
+            $this->route['controllerMethod'] = 'notFound';
             $this->route['useVendor'] = true;
         }
     }

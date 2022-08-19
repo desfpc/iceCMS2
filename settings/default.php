@@ -53,9 +53,19 @@ $settings = [
         'redisPort' => 6379,
     ],
     'routes' => [
-        '500' => ['controller' => 'ServerErrors', 'method' => 'serverError', 'useVendor' => true],
-        '404' => ['controller' => 'ServerErrors', 'method' => 'serverError', 'useVendor' => true],
-        '' => ['controller' => 'Main', 'method' => 'main', 'useVendor' => true],
-        'admin' => ['controller' => 'Admin', 'method' => 'main', 'useVendor' => true],
+        '500' => ['controller' => 'ServerErrors', 'controllerMethod' => 'serverError', 'useVendor' => true],
+        '404' => ['controller' => 'ServerErrors', 'controllerMethod' => 'serverError', 'useVendor' => true],
+        '' => ['controller' => 'Main', 'controllerMethod' => 'main', 'useVendor' => true],
+        'admin' => ['controller' => 'Admin', 'controllerMethod' => 'main', 'useVendor' => true],
+        'api/v1/users' => [
+            'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'User',
+            'controllerMethod' => 'list',
+            'useVendor' => true
+        ],
+        'api/v1/user/$id' => [
+            'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'User',
+            'controllerMethod' => 'get',
+            'useVendor' => true
+        ],
     ],
 ];

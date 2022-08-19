@@ -25,6 +25,7 @@ class Loader
      * Loader class constructor
      *
      * @param array $settings Settings array
+     * @throws Exception
      */
     public function __construct(array $settings)
     {
@@ -37,8 +38,9 @@ class Loader
     /**
      * Load conrtoller from $controllerName param or $this->routing data
      *
-     * @param ?string $controllerName Contoller name for loading or null for use Routing data
+     * @param ?string $controllerName Controller name for loading or null for use Routing data
      * @param ?string $controllerMethod Controller method name for loading or null fot use Routing data
+     * @throws Exception
      */
     public function loadController(?string $controllerName = null, ?string $controllerMethod = null, bool $putSettings = true): void
     {
@@ -50,17 +52,12 @@ class Loader
         }
 
         if (is_null($controllerMethod)) {
-            $controllerMethod = $this->routing->route['method'];
+            $controllerMethod = $this->routing->route['controllerMethod'];
         } else {
-            $this->routing->route['method'] = $controllerMethod;
+            $this->routing->route['controllerMethod'] = $controllerMethod;
         }
 
-        if (isset($this->routing->route['useVendor'])) {
-            $useVendor = $this->routing->route['useVendor'];
-        } else {
-            $useVendor = false;
-        }
-
+        $useVendor = $this->routing->route['useVendor'] ?? false;
         $controllerNameForClass = str_replace(DIRECTORY_SEPARATOR, '\\', $controllerName);
 
         if ($useVendor) {
@@ -84,11 +81,6 @@ class Loader
                     $this->controller = new $controllerClassName($this->routing, $this->settings);
                 }
             }
-        }
-
-        // run controller method
-        if (is_null($controllerMethod)) {
-            $controllerMethod = $this->routing->route['method'];
         }
 
         if (!method_exists($this->controller, $controllerMethod)) {

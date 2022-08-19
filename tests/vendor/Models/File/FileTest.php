@@ -79,7 +79,7 @@ class FileTest extends Ice2CMSTestCase
             'anons' => 'File description text',
             'filetype' => 'file',
             'size' => '11357',
-            'url' => '/files_test/202207/1.txt',
+            'url' => '/files_test/' . date('Y') . date('m') . '/1.txt',
             'image_width' => null,
             'image_height' => null,
             'user_id' => null,

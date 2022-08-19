@@ -89,7 +89,7 @@ class RoutingTest extends TestCase
         $routing->getRoute($settings1, false);
         $this->assertEquals([
             'controller' => 'ServerErrors',
-            'method' => 'notFound',
+            'controllerMethod' => 'notFound',
             'parts' => [],
             'useVendor' => true
         ], $routing->route
@@ -100,7 +100,7 @@ class RoutingTest extends TestCase
         $routing->getRoute($settings1, false);
         $this->assertEquals([
             'controller' => 'controller2',
-            'method' => 'main',
+            'controllerMethod' => 'main',
             'parts' => [],
             'useVendor' => true
         ], $routing->route
@@ -111,7 +111,7 @@ class RoutingTest extends TestCase
         $routing->getRoute($settings1, false);
         $this->assertEquals([
             'controller' => 'controller1',
-            'method' => 'testTest5',
+            'controllerMethod' => 'testTest5',
             'parts' => [
                 0 => 'test3',
                 1 => 'test2',
@@ -121,8 +121,8 @@ class RoutingTest extends TestCase
         );
 
         $settings['routes'] = [
-            'test1/test2/$id/$action' => ['controller' => 'controller1', 'method' => 'get'],
-            'test1/test2' => ['controller' => 'controller5', 'method' => 'set'],
+            'test1/test2/$id/$action' => ['controller' => 'controller1', 'controllerMethod' => 'get'],
+            'test1/test2' => ['controller' => 'controller5', 'controllerMethod' => 'set'],
             'test2/test3/$id' => 'controller2',
             'test4/$id' => 'controller4',
             '' => 'main',
@@ -134,7 +134,7 @@ class RoutingTest extends TestCase
         $routing->getRoute($settings2, false);
         $this->assertEquals([
             'controller' => 'main',
-            'method' => 'main',
+            'controllerMethod' => 'main',
             'parts' => [],
             'useVendor' => true
         ], $routing->route
@@ -145,7 +145,7 @@ class RoutingTest extends TestCase
         $routing->getRoute($settings2, false);
         $this->assertEquals([
             'controller' => 'controller1',
-            'method' => 'get',
+            'controllerMethod' => 'get',
             'parts' => [],
             'useVendor' => true
         ], $routing->route
@@ -175,7 +175,7 @@ class RoutingTest extends TestCase
         $routing->getRoute($settings2, false);
         $this->assertEquals([
             'controller' => 'controller5',
-            'method' => 'set',
+            'controllerMethod' => 'set',
             'parts' => [],
             'useVendor' => true
         ], $routing->route
