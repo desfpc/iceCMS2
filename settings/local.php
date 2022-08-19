@@ -62,5 +62,15 @@ $settings = [
             'method' => 'list',
             'useVendor' => true
         ],
+        'api/v1/user/$id' => [
+            'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'User',
+            'method' => 'get',
+            'useVendor' => true
+        ],
+        'api/v1/user' => [
+            'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'User',
+            'method' => 'get',
+            'useVendor' => true
+        ],
     ],
 ];

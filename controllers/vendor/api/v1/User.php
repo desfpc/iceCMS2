@@ -18,7 +18,7 @@ class User extends AbstractController implements ControllerInterface
     public string $title = 'User';
 
     /**
-     * Return list of users JSON
+     * TODO Return list of users JSON
      *
      * @return void
      */
@@ -26,5 +26,21 @@ class User extends AbstractController implements ControllerInterface
     {
         $list = [1,2,3];
         $this->renderJson($list, true);
+    }
+
+    /**
+     * TODO Return User by ID
+     *
+     * @return void
+     */
+    public function get(): void
+    {
+        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
+            $this->renderJson(['message' => 'No User ID passed'], false);
+            return;
+        }
+
+        $id = $this->routing->pathInfo['query_vars']['id'];
+        $this->renderJson(['userId' => $id], true);
     }
 }
