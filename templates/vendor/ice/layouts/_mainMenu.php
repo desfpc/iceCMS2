@@ -29,7 +29,12 @@ use iceCMS2\Controller\AbstractController;
                     } ?>" aria-current="page" href="/">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link <?php if ($this->routing->route['controller'] === 'User'){
+                    <a class="nav-link <?php if ($this->routing->route['controller'] === 'HelloWorld'){
+                        echo 'active';
+                    } ?>" href="/hello-world/">HelloWorld</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php if ($this->routing->route['controller'] === 'Admin'){
                         echo 'active';
                     } ?>" href="/admin/">Admin</a>
                 </li>

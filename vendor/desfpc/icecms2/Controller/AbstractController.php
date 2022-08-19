@@ -41,6 +41,9 @@ abstract class AbstractController implements ControllerInterface
     /** @var string Template layout */
     public string $layout = 'default';
 
+    /** @var bool Use vendor layout */
+    public bool $vendorLayout = false;
+
     /** @var array<int, string|array<string, string>> JS files to load */
     public array $jsFiles = [];
 
@@ -148,8 +151,23 @@ abstract class AbstractController implements ControllerInterface
      */
     protected function _getFullLayoutPath(): string
     {
-        return $this->settings->path . $this->_getTemplateName() . DIRECTORY_SEPARATOR . $this->settings->template
-            . DIRECTORY_SEPARATOR . 'layouts' . DIRECTORY_SEPARATOR . $this->layout . '.php';
+        return $this->_getLayoutPath() . $this->layout . '.php';
+    }
+
+    /**
+     * Get layout path
+     *
+     * @return string
+     */
+    protected function _getLayoutPath(): string
+    {
+        if ($this->vendorLayout) {
+            $layoutTemplateName = $this->_getTemplateName() . DIRECTORY_SEPARATOR . 'vendor';
+        } else {
+            $layoutTemplateName = $this->_getTemplateName();
+        }
+        return $this->settings->path . $layoutTemplateName . DIRECTORY_SEPARATOR . $this->settings->template
+            . DIRECTORY_SEPARATOR . 'layouts' . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -159,11 +177,7 @@ abstract class AbstractController implements ControllerInterface
      */
     protected function _getTemplateName(): string
     {
-        if (isset($this->routing->route['useVendor'])) {
-            $useVendor = $this->routing->route['useVendor'];
-        } else {
-            $useVendor = false;
-        }
+        $useVendor = $this->routing->route['useVendor'] ?? false;
 
         if ($useVendor) {
             $templatesName = 'templates' . DIRECTORY_SEPARATOR . 'vendor';

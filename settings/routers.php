@@ -4,6 +4,7 @@ $routers = [
     '404' => ['controller' => 'ServerErrors', 'controllerMethod' => 'serverError', 'useVendor' => true],
     '' => ['controller' => 'Main', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin' => ['controller' => 'Admin', 'controllerMethod' => 'main', 'useVendor' => true],
+    'hello-world' => ['controller' => 'HelloWorld', 'controllerMethod' => 'main', 'useVendor' => false],
     'api/v1/users' => [
         'method' => 'GET',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'User',
