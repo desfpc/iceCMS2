@@ -31,7 +31,7 @@ use iceCMS2\Controller\AbstractController;
                 <li class="nav-item">
                     <a class="nav-link <?php if ($this->routing->route['controller'] === 'User'){
                         echo 'active';
-                    } ?>" href="/user/">User</a>
+                    } ?>" href="/admin/">Admin</a>
                 </li>
             </ul>
         </div>

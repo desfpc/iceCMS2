@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * User Controller Class
+ * Admin Controller Class
  */
 
 namespace app\Controllers\vendor;
@@ -13,7 +13,7 @@ namespace app\Controllers\vendor;
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 
-class User extends AbstractController implements ControllerInterface
+class Admin extends AbstractController implements ControllerInterface
 {
-    public string $title = 'User';
+    public string $title = 'Admin';
 }

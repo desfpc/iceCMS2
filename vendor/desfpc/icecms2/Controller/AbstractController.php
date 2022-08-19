@@ -50,6 +50,9 @@ abstract class AbstractController implements ControllerInterface
     /** @var string JS code for Document Ready */
     public string $jsReady = '';
 
+    /** @var bool If is need to load template file */
+    public bool $isTemplate = true;
+
     /** @var string Full template file path for including */
     protected string $_fullTemplatePath = '';
 
@@ -69,7 +72,7 @@ abstract class AbstractController implements ControllerInterface
      *
      * @return void
      */
-    protected function readAlerts()
+    protected function readAlerts(): void
     {
         $flashVars = new FlashVars();
         $this->alerts = [
@@ -79,7 +82,9 @@ abstract class AbstractController implements ControllerInterface
         ];
     }
 
-    /** Default main method - only render default template */
+    /** Default main method - only render default template
+     * @throws Exception
+     */
     public function main(): void
     {
         $this->renderTemplate('main');
@@ -96,7 +101,7 @@ abstract class AbstractController implements ControllerInterface
     {
         if (is_null($template)) {
             $dbt=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,2);
-            $template = isset($dbt[1]['function']) ? $dbt[1]['function'] : 'main';
+            $template = $dbt[1]['function'] ?? 'main';
         }
 
         if ($isFullTemplatePatch) {
@@ -110,6 +115,30 @@ abstract class AbstractController implements ControllerInterface
         } catch (\Exception $e) {
             throw new Exception('Can\'t render template: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Render (print) json data answer
+     *
+     * @param array $data
+     * @param bool $success
+     * @return void
+     */
+    public function renderJson(array $data, bool $success): void
+    {
+        $this->layout = 'json';
+        $this->isTemplate = false;
+        require($this->_getFullLayoutPath());
+
+        if (!$success) {
+            $this->_headers[] = 'HTTP/1.0 500 Internal Server Error';
+            $this->_headers[] = 'Status: 500 Internal Server Error';
+        }
+
+        echo json_encode([
+            'success' => $success,
+            'data' => $data,
+        ]);
     }
 
     /**
@@ -166,7 +195,9 @@ abstract class AbstractController implements ControllerInterface
             . DIRECTORY_SEPARATOR;
     }
 
-    /** Echo Template File Body */
+    /** Echo Template File Body
+     * @throws Exception
+     */
     protected function _echoTemplateBody(): void
     {
 

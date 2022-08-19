@@ -12,4 +12,4 @@ declare(strict_types=1);
 $this->_headers = $this->_getDefaultHeaders();
 $this->_headers[] = 'Content-Type: application/json; charset=utf-8';
 $this->_echoHeaders();
-$this->_echoTemplateBody();
+if ($this->isTemplate) { $this->_echoTemplateBody(); }

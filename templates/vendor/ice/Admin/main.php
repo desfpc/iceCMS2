@@ -18,7 +18,7 @@ use iceCMS2\Controller\AbstractController;
         <div class="col">
             <?php include($this->_getTemplatePath() . 'layouts/_alerts.php'); ?>
             <p>&nbsp;</p>
-            <h1>User</h1>
+            <h1>Admin</h1>
         </div>
     </div>
 </div>
