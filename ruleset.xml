@@ -51,7 +51,7 @@
     </rule>
     <rule ref="rulesets/codesize.xml/CyclomaticComplexity">
         <properties>
-            <property name="reportLevel" description="The Cyclomatic Complexity reporting threshold"  value="25"/>
+            <property name="reportLevel" description="The Cyclomatic Complexity reporting threshold"  value="30"/>
             <property name="showClassesComplexity"
                       description="Indicate if class average violation should be added to the report"
                       value="true"/>
