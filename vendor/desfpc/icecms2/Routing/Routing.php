@@ -129,12 +129,23 @@ class Routing
                 }
 
                 if (is_array($route['value'])) {
-                    $this->route['controller'] = $route['value']['controller'];
-                    if (isset($route['value']['controllerMethod'])) {
-                        $this->route['controllerMethod'] = $route['value']['controllerMethod'];
-                    }
-                    if (isset($route['value']['useVendor'])) {
-                        $this->route['useVendor'] = $route['value']['useVendor'];
+                    if (
+                        !isset($route['value']['method'])
+                        || (
+                            !is_array($route['value']['method'])
+                            && $_SERVER["REQUEST_METHOD"] === $route['value']['method']
+                        ) || (
+                            is_array($route['value']['method'])
+                            && in_array($_SERVER["REQUEST_METHOD"], $route['value']['method'])
+                        )
+                    ) {
+                        $this->route['controller'] = $route['value']['controller'];
+                        if (isset($route['value']['controllerMethod'])) {
+                            $this->route['controllerMethod'] = $route['value']['controllerMethod'];
+                        }
+                        if (isset($route['value']['useVendor'])) {
+                            $this->route['useVendor'] = $route['value']['useVendor'];
+                        }
                     }
                 } else {
                     $this->route['controller'] = $route['value'];
