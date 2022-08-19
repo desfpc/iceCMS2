@@ -84,7 +84,7 @@ class FileImage extends File
     }
 
     /**
-     * TODO Reformat original image file
+     * Reformat original image file
      *
      * @return bool
      * @throws Exception
@@ -95,22 +95,60 @@ class FileImage extends File
         $doResizing = false;
         if (self::IF_REFORMAT_ORIGINAL && $this->get('extension') !== self::DEFAULT_IMG_FORMAT) {
             $doReformating = true;
+            $newExtension = self::DEFAULT_IMG_FORMAT;
+            $this->set('extension', $newExtension);
+        } else {
+            $newExtension = $this->get('extension');
         }
         if (
             self::MAX_ORIGINAL_LENGTH > 0 &&
             ($this->get('width') > self::MAX_ORIGINAL_LENGTH || $this->get('height') > self::MAX_ORIGINAL_LENGTH)
         ) {
             $doResizing = true;
+
+            [$newX, $newY] = $this->_getMaxWidthAndHeight(
+                $this->get('width'),
+                $this->get('height'),
+                self::MAX_ORIGINAL_LENGTH
+            );
+            $this->set('width', $newX);
+            $this->set('height', $newY);
+        } else {
+            $newX = $this->get('width');
+            $newY = $this->get('height');
         }
 
         if (!$doReformating && !$doResizing) {
             return true;
         }
 
-        //resize and reformat original file
-
+        if ($this->save()) {
+            $this->saveImageSize($this->getPath(), $this->getPath(), $newX, $newY, $newExtension);
+            return true;
+        }
 
         return false;
+    }
+
+    /**
+     * Return array of new width and height, resizing according to max length value
+     *
+     * @param $width
+     * @param $height
+     * @param $max
+     * @return array
+     */
+    private function _getMaxWidthAndHeight($width, $height, $max): array
+    {
+        if ($width > $max && $width >= $height) {
+            $height = $max * $height / $width;
+            $width = $max;
+        } elseif ($height > $max && $height >= $width) {
+            $width = $max * $width / $height;
+            $height = $max;
+        }
+
+        return [$width, $height];
     }
 
     /**
