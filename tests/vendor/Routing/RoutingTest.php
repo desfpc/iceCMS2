@@ -12,6 +12,7 @@ namespace vendor\Routing;
 
 use iceCMS2\Routing\Routing;
 use iceCMS2\Settings\Settings;
+use iceCMS2\Tools\Exception;
 use PHPUnit\Framework\TestCase;
 
 class RoutingTest extends TestCase
@@ -67,6 +68,8 @@ class RoutingTest extends TestCase
 
     /**
      * Testing getting route from pathInfo and Settings
+     *
+     * @throws Exception
      */
     public function testGettingRoute(): void
     {

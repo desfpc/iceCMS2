@@ -8,6 +8,9 @@ declare(strict_types=1);
  * Default example settings
  */
 
+/** @var array $routers */
+require_once ('routers.php');
+
 $settings = [
     'path' => str_replace('settings', '', dirname(__FILE__)),
     'template' => 'ice',
@@ -52,20 +55,5 @@ $settings = [
         'redisHost' => '127.0.0.1',
         'redisPort' => 6379,
     ],
-    'routes' => [
-        '500' => ['controller' => 'ServerErrors', 'controllerMethod' => 'serverError', 'useVendor' => true],
-        '404' => ['controller' => 'ServerErrors', 'controllerMethod' => 'serverError', 'useVendor' => true],
-        '' => ['controller' => 'Main', 'controllerMethod' => 'main', 'useVendor' => true],
-        'admin' => ['controller' => 'Admin', 'controllerMethod' => 'main', 'useVendor' => true],
-        'api/v1/users' => [
-            'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'User',
-            'controllerMethod' => 'list',
-            'useVendor' => true
-        ],
-        'api/v1/user/$id' => [
-            'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'User',
-            'controllerMethod' => 'get',
-            'useVendor' => true
-        ],
-    ],
+    'routes' => $routers,
 ];
