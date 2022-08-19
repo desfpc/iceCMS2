@@ -57,5 +57,10 @@ $settings = [
         '404' => ['controller' => 'ServerErrors', 'method' => 'serverError', 'useVendor' => true],
         '' => ['controller' => 'Main', 'method' => 'main', 'useVendor' => true],
         'admin' => ['controller' => 'Admin', 'method' => 'main', 'useVendor' => true],
+        'api/v1/users' => [
+            'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'User',
+            'method' => 'list',
+            'useVendor' => true
+        ],
     ],
 ];

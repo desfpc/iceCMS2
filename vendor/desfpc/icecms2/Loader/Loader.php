@@ -61,12 +61,14 @@ class Loader
             $useVendor = false;
         }
 
+        $controllerNameForClass = str_replace(DIRECTORY_SEPARATOR, '\\', $controllerName);
+
         if ($useVendor) {
             $controllerFile = $this->settings->path . 'controllers' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . $controllerName . '.php';
-            $controllerClassName = 'app\Controllers\vendor\\' . $controllerName;
+            $controllerClassName = 'app\Controllers\vendor\\' . $controllerNameForClass;
         } else {
             $controllerFile = $this->settings->path . 'controllers' . DIRECTORY_SEPARATOR . $controllerName . '.php';
-            $controllerClassName = 'app\Controllers\\' . $controllerName;
+            $controllerClassName = 'app\Controllers\\' . $controllerNameForClass;
         }
 
         if (!include_once ($controllerFile)){
