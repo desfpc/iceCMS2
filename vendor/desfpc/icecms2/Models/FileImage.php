@@ -123,7 +123,8 @@ class FileImage extends File
         }
 
         if ($this->save()) {
-            $this->saveImageSize($this->getPath(), $this->getPath(), $newX, $newY, $newExtension);
+            $imgPath = $this->getPath();
+            $this->saveImageSize($imgPath, $imgPath, $newX, $newY, $newExtension);
             return true;
         }
 
@@ -173,6 +174,28 @@ class FileImage extends File
         if (is_null($imageSize)) {
             return parent::getUrl();
         }
+    }
+
+    /**
+     * Getting file favicon URL
+     *
+     * @return string|null
+     * @throws Exception
+     */
+    public function getFaviconUrl(): ?string
+    {
+        return $this->_getUrlDirectory() . $this->_getFaviconName();
+    }
+
+    /**
+     * Getting Image favicon name
+     *
+     * @return string
+     * @throws Exception
+     */
+    private function _getFaviconName(): string
+    {
+        return $this->_id . '_' . self::FAVICON_NAME . '.' . $this->get('extension');
     }
 
     /**

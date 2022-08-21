@@ -157,9 +157,7 @@ class File extends AbstractEntity
     {
         $this->_needLoaded();
 
-        $unixTime = new UnixTime($this->_values['created_time']);
-        $dirs = $this->_getPathDirectory((bool)$this->_values['private'], date('Ym', $unixTime->get()));
-
+        $dirs = $this->_getPathDirectory((bool)$this->_values['private']);
         $path = $dirs[1] . $this->_id;
         if (!empty($this->_values['extension'])) {
             $path .= '.' . $this->_values['extension'];
@@ -177,12 +175,7 @@ class File extends AbstractEntity
     public function getUrl(): string
     {
         $this->_needLoaded();
-        $unixTime = new UnixTime($this->_values['created_time']);
-
-        $url = $this->_getUrlDirectory(
-            (bool)$this->_values['private'],
-            date('Ym', $unixTime->get())
-        );
+        $url = $this->_getUrlDirectory();
 
         $url .= $this->_id;
 
@@ -194,29 +187,38 @@ class File extends AbstractEntity
     }
 
     /**
+     * Getting file favicon URL
+     *
+     * @return string|null
+     */
+    public function getFaviconUrl(): ?string
+    {
+        return null;
+    }
+
+    /**
      * Getting directory for URL and Path
      *
-     * @param bool $private
-     * @param string|null $date
+     * @param ?bool $private
      * @return string
      */
-    private function _getUrlDirectory(bool $private = false, ?string $date = null): string
+    protected function _getUrlDirectory(?bool $private = null): string
     {
+        if (is_null($private)) {
+            $private = (bool)$this->_values['private'];
+        }
+
         if (isset($this->_settings->testMode)) {
-            $url = '/files_test/';
+            $url = DIRECTORY_SEPARATOR . 'files_test' . DIRECTORY_SEPARATOR;
         } else {
-            $url = '/files/';
+            $url = DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR;
         }
 
         if ($private) {
-            $url .= 'private/';
+            $url .= 'private' . DIRECTORY_SEPARATOR;
         }
 
-        if (is_null($date)) {
-            $date = date('Ym');
-        }
-
-        $url .= $date . '/';
+        $url .= date('Ym', (new UnixTime($this->_values['created_time']))->get()) . DIRECTORY_SEPARATOR;
 
         return $url;
     }
@@ -225,12 +227,11 @@ class File extends AbstractEntity
      * Getting url and path directories array
      *
      * @param bool $private
-     * @param string|null $date
      * @return array
      */
-    private function _getPathDirectory(bool $private = false, ?string $date = null): array
+    private function _getPathDirectory(bool $private = false): array
     {
-        $url = $this->_getUrlDirectory($private, $date);
+        $url = $this->_getUrlDirectory($private);
         $dirpatch = $this->_settings->path . 'web' . $url;
 
         return [$url, $dirpatch];
