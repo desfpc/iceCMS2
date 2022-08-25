@@ -21,7 +21,7 @@ class Icecms2CreateImageSizesTable extends AbstractMigration
      */
     public function up(): string
     {
-        return 'CREATE TABLE IF NOT EXISTS `image_sizes`  (
+        return "CREATE TABLE IF NOT EXISTS `image_sizes`  (
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT primary key,
   `width` mediumint UNSIGNED NULL DEFAULT NULL,
   `height` mediumint UNSIGNED NULL DEFAULT NULL,
@@ -29,13 +29,12 @@ class Icecms2CreateImageSizesTable extends AbstractMigration
   `watermark_id` int UNSIGNED NULL DEFAULT NULL,
   `watermark_width` mediumint UNSIGNED NULL DEFAULT NULL,
   `watermark_height` mediumint UNSIGNED NULL DEFAULT NULL,
-  `watermark_top` mediumint UNSIGNED NULL DEFAULT NULL,
-  `watermark_left` mediumint UNSIGNED NULL DEFAULT NULL,
-  `watermark_bottom` mediumint UNSIGNED NULL DEFAULT NULL,
-  `watermark_right` mediumint UNSIGNED NULL DEFAULT NULL,
+  `watermark_top` mediumint NULL DEFAULT NULL,
+  `watermark_left` mediumint NULL DEFAULT NULL,
+  `watermark_units` enum ('px', '%') NOT NULL DEFAULT 'px',
   UNIQUE INDEX `image_sizes_uk`(`stringId`),
   CONSTRAINT `image_sizes_fk` FOREIGN KEY (`watermark_id`) REFERENCES `files` (`id`) ON DELETE SET NULL ON UPDATE SET NULL) 
-  ENGINE = InnoDB ROW_FORMAT = Dynamic CHARACTER SET utf8 COLLATE utf8_general_ci;';
+  ENGINE = InnoDB ROW_FORMAT = Dynamic CHARACTER SET utf8 COLLATE utf8_general_ci;";
     }
 
     /**

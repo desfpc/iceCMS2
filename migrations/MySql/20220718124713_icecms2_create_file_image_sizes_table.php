@@ -24,6 +24,7 @@ class Icecms2CreateFileImageSizesTable extends AbstractMigration
         return 'CREATE TABLE `file_image_sizes`  (
   `file_id` int UNSIGNED NOT NULL,
   `image_size_id` int UNSIGNED NOT NULL,
+  `is_created` smallint(1) UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY (`file_id`, `image_size_id`),
   CONSTRAINT `file_image_sizes_fk1` FOREIGN KEY (`file_id`) REFERENCES `files` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `file_image_sizes_fk2` FOREIGN KEY (`image_size_id`) REFERENCES `image_sizes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE)

@@ -217,13 +217,18 @@ class FileImage extends File
     /**
      * TODO Creating image variant by imageSize ID
      *
-     * @param int $imageSize
+     * @param int $imageSizeId
      * @return bool
-     *
+     * @throws Exception
      * @SuppressWarnings(PHPMD.UnusedFormalParameters)
      */
-    public function createImageSize(int $imageSize): bool
+    public function createImageSize(int $imageSizeId): bool
     {
+        $imageSize = new ImageSize($this->_settings, $imageSizeId);
+        if ($imageSize->load()) {
+
+        }
+
         return false;
     }
 
@@ -350,6 +355,7 @@ class FileImage extends File
             $sx = imagesx($stamp);
             $sy = imagesy($stamp);
 
+            //TODO поправить наложение водяного знака
             imagecopy(
                 $im1,
                 $stamp,
