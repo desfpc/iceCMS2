@@ -75,9 +75,9 @@ interface DBInterface
      * @param bool $isFree clear result after query
      * @param bool $isCnt return number of rows, not rows array
      * @param bool $isForced try to execute the request even if there are errors
-     * @return bool|array<mixed, mixed>|int
+     * @return bool|array|int
      */
-    public function query(string $query, $isFree = true, $isCnt = false, $isForced = false): bool|array|int;
+    public function query(string $query, bool $isFree = true, bool $isCnt = false, bool $isForced = false): bool|array|int;
 
     /**
      * Query to DB with binded values (prepare and execute)
@@ -86,9 +86,9 @@ interface DBInterface
      * @param array $values values for bind
      * @param false $isCnt return number of rows, not rows array
      * @param bool $isForced try to execute the request even if there are errors
-     * @return bool|array<mixed, mixed>|int
+     * @return bool|array|int
      */
-    public function queryBinded(string $query, array $values, $isCnt = false, $isForced = false): bool|array|int;
+    public function queryBinded(string $query, array $values, bool $isCnt = false, bool $isForced = false): bool|array|int;
 
     /**
      * MultiQuery to DB
@@ -96,7 +96,7 @@ interface DBInterface
      * @param string $query
      * @return bool|array
      */
-    public function multiQuery(string $query);
+    public function multiQuery(string $query): bool|array;
 
     /**
      * Transaction CREATE -> process $query -> COMMIT OR ROLLBACK

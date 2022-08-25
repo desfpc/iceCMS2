@@ -30,6 +30,8 @@ class FileImage extends File
     protected const MAX_ORIGINAL_LENGTH = 1200;
     /** @var string File Type (enum: file, image, document) */
     protected string $_filetype = 'image';
+    /** @var array|null Image sizes array*/
+    private ?array $_imageSizes = null;
 
     /**
      * Check POST file for image
@@ -226,13 +228,32 @@ class FileImage extends File
     }
 
     /**
-     * TODO Getting created image sizes
+     * Getting created image sizes
      *
-     * @return array
+     * @return ?array
+     * @throws Exception
      */
-    public function getImageSizes(): array
+    public function getImageSizes(): ?array
     {
-        return [];
+        if (!$this->isLoaded) {
+            throw new Exception('Image object not loaded');
+        }
+        if (is_null($this->_imageSizes)) {
+            $conditions = [
+                'id' => [
+                    'logic' => 'AND',
+                    'sign' => 'IN',
+                    'value' => '(SELECT image_size_id FROM file_image_sizes WHERE file_id = ' . $this->_id . ')'
+                ],
+            ];
+            $order = ['id' => 'ASC'];
+            $imageSizes = new ImageSizeList($this->_settings, $conditions, $order, 1, 1000);
+            $this->_imageSizes = $imageSizes->get();
+            if (!$this->_imageSizes) {
+                $this->_imageSizes = null;
+            }
+        }
+        return $this->_imageSizes;
     }
 
     /**

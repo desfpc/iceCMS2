@@ -217,7 +217,7 @@ class MySql implements DBInterface
     /**
      * @inheritDoc
      */
-    public function queryBinded(string $query, array $values, $isCnt = false, $isForced = false): bool|array|int
+    public function queryBinded(string $query, array $values, bool $isCnt = false, bool $isForced = false): bool|array|int
     {
         if ($this->_isConnected || $isForced) {
             try {
@@ -293,7 +293,7 @@ class MySql implements DBInterface
     /**
      * @inheritDoc
      */
-    public function query(string $query, $isFree = true, $isCnt = false, $isForced = false): bool|array|int
+    public function query(string $query, bool $isFree = true, bool $isCnt = false, bool $isForced = false): bool|array|int
     {
         if ($this->_isConnected || $isForced) {
             try {
