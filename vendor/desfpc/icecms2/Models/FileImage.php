@@ -218,15 +218,50 @@ class FileImage extends File
      * TODO Creating image variant by imageSize ID
      *
      * @param int $imageSizeId
+     * @param bool $isForcibly
      * @return bool
      * @throws Exception
      * @SuppressWarnings(PHPMD.UnusedFormalParameters)
      */
-    public function createImageSize(int $imageSizeId): bool
+    public function createImageSize(int $imageSizeId, bool $isForcibly = false): bool
     {
         $imageSize = new ImageSize($this->_settings, $imageSizeId);
         if ($imageSize->load()) {
+            if (is_null($this->_values['is_created']) || $this->_values['is_created'] === 0) {
 
+                if ($imageSize->get('width') === 0 || $imageSize->get('height') === 0) {
+                    $crop = false;
+                } else {
+                    $crop = true;
+                }
+
+                if (!is_null($imageSize->get('watermark_id')) && $imageSize->get('watermark_id') > 0) {
+                    $wparams = [
+                        'width' => $imageSize->get('watermark_width'),
+                        'height' => $imageSize->get('watermark_height'),
+                        'top' => $imageSize->get('watermark_top'),
+                        'left' => $imageSize->get('watermark_left'),
+                        'units' => $imageSize->get('watermark_units'),
+                    ];
+                } else {
+                    $wparams = null;
+                }
+
+                if ($this->saveImageSize(
+                    $this->getPath(),
+                    $this->getPath($imageSizeId),
+                    $imageSize->get('width'),
+                    $imageSize->get('height'),
+                    self::DEFAULT_IMG_FORMAT,
+                    $crop,
+                    $imageSize->get('watermark_id'),
+                    $wparams
+                    )) {
+
+                    //TODO update file_image_sizes
+
+                }
+            }
         }
 
         return false;
@@ -292,6 +327,7 @@ class FileImage extends File
      * @param bool $crop
      * @param int $watermark
      * @param array|null $wparams
+     * @return bool
      * @throws Exception
      */
     public function saveImageSize (
@@ -303,7 +339,7 @@ class FileImage extends File
         bool $crop = false,
         int $watermark = 0,
         ?array $wparams = null
-        )
+        ): bool
     {
         //Calculating new image sizes
         $originalx = $this->get('width');
@@ -387,5 +423,6 @@ class FileImage extends File
                 imagewebp($im1, $to, 100);
                 break;
         }
+        return true;
     }
 }
