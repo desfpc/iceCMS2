@@ -229,7 +229,7 @@ class File extends AbstractEntity
      * @param bool $private
      * @return array
      */
-    private function _getPathDirectory(bool $private = false): array
+    protected function _getPathDirectory(bool $private = false): array
     {
         $url = $this->_getUrlDirectory($private);
         $dirpatch = $this->_settings->path . 'web' . $url;

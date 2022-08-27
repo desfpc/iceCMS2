@@ -110,8 +110,7 @@ class FileImage extends File
 
             [$newX, $newY] = $this->_getMaxWidthAndHeight(
                 $this->get('width'),
-                $this->get('height'),
-                self::MAX_ORIGINAL_LENGTH
+                $this->get('height')
             );
             $this->set('width', $newX);
             $this->set('height', $newY);
@@ -138,17 +137,16 @@ class FileImage extends File
      *
      * @param $width
      * @param $height
-     * @param $max
      * @return array
      */
-    private function _getMaxWidthAndHeight($width, $height, $max): array
+    private function _getMaxWidthAndHeight($width, $height): array
     {
-        if ($width > $max && $width >= $height) {
-            $height = $max * $height / $width;
-            $width = $max;
-        } elseif ($height > $max && $height >= $width) {
-            $width = $max * $width / $height;
-            $height = $max;
+        if ($width > self::MAX_ORIGINAL_LENGTH && $width >= $height) {
+            $height = self::MAX_ORIGINAL_LENGTH * $height / $width;
+            $width = self::MAX_ORIGINAL_LENGTH;
+        } elseif ($height > self::MAX_ORIGINAL_LENGTH && $height >= $width) {
+            $width = self::MAX_ORIGINAL_LENGTH * $width / $height;
+            $height = self::MAX_ORIGINAL_LENGTH;
         }
 
         return [$width, $height];
@@ -201,17 +199,40 @@ class FileImage extends File
     }
 
     /**
-     * TODO Getting image file path in OS
+     * Getting Image Size name
      *
-     * @param int|null $imageSize
+     * @param int|ImageSize $imageSize
      * @return string
      * @throws Exception
      */
-    public function getPath(?int $imageSize = null): string
+    private function _getImageSizeName(int|ImageSize $imageSize): string
+    {
+        if (is_int($imageSize)) {
+            $imageSize = new ImageSize($this->_settings, $imageSize);
+            $imageSize->load();
+        }
+        return $imageSize->get('string_id');
+    }
+
+    /**
+     * Getting image file path in OS
+     *
+     * @param int|ImageSize|null $imageSize
+     * @return string
+     * @throws Exception
+     */
+    public function getPath(int|ImageSize|null $imageSize = null): string
     {
         if (is_null($imageSize)) {
             return parent::getPath();
         }
+        $dirs = $this->_getPathDirectory((bool)$this->_values['private']);
+        $path = $dirs[1] . $this->_getImageSizeName($imageSize);
+        if (!empty($this->_values['extension'])) {
+            $path .= '.' . $this->_values['extension'];
+        }
+
+        return $path;
     }
 
     /**
@@ -249,7 +270,7 @@ class FileImage extends File
 
                 if ($this->saveImageSize(
                     $this->getPath(),
-                    $this->getPath($imageSizeId),
+                    $this->getPath($imageSize),
                     $imageSize->get('width'),
                     $imageSize->get('height'),
                     self::DEFAULT_IMG_FORMAT,
@@ -264,7 +285,7 @@ class FileImage extends File
                         'is_created' => 1,
                     ]);
                     if (!$fileImageSize->save(true)) {
-                        unlink($this->getPath($imageSizeId));
+                        unlink($this->getPath($imageSize));
                         return false;
                     };
                     return true;
