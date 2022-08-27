@@ -199,10 +199,11 @@ abstract class AbstractEntity
     /**
      * Save Entity
      *
+     * @param bool $isUpdateOnDuplicateKey
      * @return bool
      * @throws Exception
      */
-    public function save(): bool
+    public function save(bool $isUpdateOnDuplicateKey = false): bool
     {
         $this->_cacher->del($this->_getCacheKey());
         if ($this->isDirty && !empty($this->_values)) {
@@ -210,7 +211,7 @@ abstract class AbstractEntity
              * @var string $preparedSQL
              * @var array $prepariedValues
              */
-            [$preparedSQL, $prepariedValues] = $this->_getEntitySaveData();
+            [$preparedSQL, $prepariedValues] = $this->_getEntitySaveData($isUpdateOnDuplicateKey);
             if ($res = $this->_db->queryBinded($preparedSQL, $prepariedValues)) {
                 if (is_null($this->_id)) {
                     if (is_int($res)) {
@@ -230,11 +231,12 @@ abstract class AbstractEntity
     /**
      * Get data for Entity save SQL query
      *
+     * @param bool $isUpdateOnDuplicateKey
      * @return array<string, array>
      *
      * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
-    private function _getEntitySaveData(): array
+    private function _getEntitySaveData(bool $isUpdateOnDuplicateKey = false): array
     {
         $binded = [];
         $keys = '';
@@ -264,6 +266,9 @@ abstract class AbstractEntity
         }
         if (is_null($this->_id)) {
             $sql = 'INSERT INTO `' . $this->_dbtable . '` (' . $keys . ') VALUES (' . $bindedKeys . ')';
+            if ($isUpdateOnDuplicateKey) {
+                $sql .= ' ON DUPLICATE KEY UPDATE ' . $updateStr;
+            }
         } else {
             $sql = 'UPDATE `' . $this->_dbtable . '` SET ' . $updateStr . ' WHERE `id` = ' . $this->_id;
         }

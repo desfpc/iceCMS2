@@ -215,7 +215,7 @@ class FileImage extends File
     }
 
     /**
-     * TODO Creating image variant by imageSize ID
+     * Creating image variant by imageSize ID
      *
      * @param int $imageSizeId
      * @param bool $isForcibly
@@ -257,9 +257,17 @@ class FileImage extends File
                     $imageSize->get('watermark_id'),
                     $wparams
                     )) {
-
-                    //TODO update file_image_sizes
-
+                    $fileImageSize = new FileImageSize($this->_settings);
+                    $fileImageSize->set([
+                        'file_id' => $this->_id,
+                        'image_size_id' => $imageSizeId,
+                        'is_created' => 1,
+                    ]);
+                    if (!$fileImageSize->save(true)) {
+                        unlink($this->getPath($imageSizeId));
+                        return false;
+                    };
+                    return true;
                 }
             }
         }
