@@ -153,27 +153,36 @@ class FileImage extends File
     }
 
     /**
-     * TODO Making image favicon file
+     * Making image favicon file
      *
      * @return bool
+     * @throws Exception
      */
     private function _makeFavicon(): bool
     {
-        return false;
+        return $this->saveImageSize(
+            $this->getPath(),
+            $this->_getFaviconPath(),
+            self::FAVICON_WIDTH,
+            self::FAVICON_HEIGHT,
+            $this->get('extension'),
+            true
+        );
     }
 
     /**
-     * TODO Getting image file URL for web
+     * Getting image file URL for web
      *
-     * @param int|null $imageSize
+     * @param int|ImageSize|null $imageSize
      * @return string
      * @throws Exception
      */
-    public function getUrl(?int $imageSize = null): string
+    public function getUrl(int|ImageSize|null $imageSize = null): string
     {
         if (is_null($imageSize)) {
             return parent::getUrl();
         }
+        return $this->_getUrlDirectory() . $this->_getImageSizeName($imageSize);
     }
 
     /**
@@ -233,6 +242,34 @@ class FileImage extends File
         }
 
         return $path;
+    }
+
+    /**
+     * Getting image favicon path in OS
+     *
+     * @return string
+     * @throws Exception
+     */
+    private function _getFaviconPath(): string
+    {
+        $dirs = $this->_getPathDirectory((bool)$this->_values['private']);
+        $path = $dirs[1] . $this->_getFaviconName();
+        if (!empty($this->_values['extension'])) {
+            $path .= '.' . $this->_values['extension'];
+        }
+
+        return $path;
+    }
+
+    /**
+     * TODO Delete File Image Size by Id
+     *
+     * @param int $imageSizeId
+     * @return bool
+     */
+    public function deleteImageSize(int $imageSizeId): bool
+    {
+        return false;
     }
 
     /**
