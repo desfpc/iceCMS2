@@ -271,13 +271,18 @@ abstract class AbstractEntity
                 $binded[':' . $key] = $this->_values[$key];
             }
         }
-        if (is_null($this->_id)) {
+        if (is_null($this->_id) && empty($this->_idKeys)) {
             $sql = 'INSERT INTO `' . $this->_dbtable . '` (' . $keys . ') VALUES (' . $bindedKeys . ')';
             if ($isUpdateOnDuplicateKey) {
                 $sql .= ' ON DUPLICATE KEY UPDATE ' . $updateStr;
             }
         } else {
-            $sql = 'UPDATE `' . $this->_dbtable . '` SET ' . $updateStr . ' WHERE `id` = ' . $this->_id;
+            $sql = 'UPDATE `' . $this->_dbtable . '` SET ' . $updateStr . ' WHERE';
+            if (!is_null($this->_id)) {
+                $sql .= ' `id` = ' . $this->_id;
+            } else {
+                $sql .= $this->_getIdKeysSQL();
+            }
         }
 
         return [$sql, $binded];
@@ -332,10 +337,12 @@ abstract class AbstractEntity
         $this->isLoaded = false;
         $this->_values = [];
 
-        if (!is_null($id)) {
+        if (is_int($id)) {
             $this->_id = $id;
+        } elseif (is_array($id)) {
+            $this->_idKeys = $id;
         }
-        if (is_null($this->_id)) {
+        if (is_null($this->_id) && empty($this->_idKeys)) {
             return false;
         }
 
@@ -408,10 +415,13 @@ abstract class AbstractEntity
      */
     protected function _delEntityValuesSQL(): string
     {
-        if (is_null($this->_id)) {
+        if (is_null($this->_id) && empty($this->_idKeys)) {
             throw new Exception('Entity has no ID');
         }
-        return 'DELETE FROM ' . $this->_dbtable . ' WHERE id = ' . $this->_id;
+        if (!is_null($this->_id)) {
+            return 'DELETE FROM `' . $this->_dbtable . '` WHERE `id` = ' . $this->_id;
+        }
+        return 'DELETE FROM `' . $this->_dbtable . '` WHERE' . $this->_getIdKeysSQL();
     }
 
     /**
@@ -428,8 +438,17 @@ abstract class AbstractEntity
         if (!is_null($this->_id)) {
             return 'SELECT * FROM `' . $this->_dbtable . '` WHERE `id` = ' . $this->_id;
         }
+        return 'SELECT * FROM `' . $this->_dbtable . '` WHERE' . $this->_getIdKeysSQL();
+    }
 
-        $query = 'SELECT * FROM `' . $this->_dbtable . '` WHERE 1 = 1';
+    /**
+     * Get SQL for select record WS _idKeys
+     *
+     * @return string
+     */
+    private function _getIdKeysSQL(): string
+    {
+        $query = '';
         foreach ($this->_idKeys as $key => $value) {
             if (is_int($value) || is_float($value)) {
                 $valueStr = $value;
@@ -439,7 +458,10 @@ abstract class AbstractEntity
                 $valueStr = "'$value'";
             }
 
-            $query .= ' AND `' . $key . '` = ' . $valueStr;
+            if ($query !== '') {
+                $query .= ' AND';
+            }
+            $query .= ' `' . $key . '` = ' . $valueStr;
         }
 
         return $query;
