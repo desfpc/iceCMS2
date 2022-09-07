@@ -50,8 +50,11 @@ abstract class AbstractEntity
     /** @var int|null Entity ID */
     protected ?int $_id = null;
 
-    /** @var ?array table columns for ID (that create primary key or uniq ID for table without ID column) */
+    /** @var ?array table columns=>values for ID (that create primary key or uniq ID for table without ID column) */
     protected ?array $_idKeys = null;
+
+    /** @var array|null columns for ID */
+    protected ?array $_idColumns = null;
 
     /** @var array|null Entity DB columns */
     protected ?array $_cols = null;
@@ -220,9 +223,13 @@ abstract class AbstractEntity
              */
             [$preparedSQL, $preparedValues] = $this->_getEntitySaveData($isUpdateOnDuplicateKey);
             if ($res = $this->_db->queryBinded($preparedSQL, $preparedValues)) {
-                if (is_null($this->_id)) {
-                    if (is_int($res)) {
+                if (is_null($this->_id) && empty($this->_idKeys)) {
+                    if (is_int($res) && is_null($this->_idColumns)) {
                         $this->_id = $res;
+                    } elseif ($res === true && !empty($this->_idColumns)) {
+                        foreach ($this->_idColumns as $key) {
+                            $this->_idKeys[$key] = $this->_values[$key];
+                        }
                     }
                 }
 

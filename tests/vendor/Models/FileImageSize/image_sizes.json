@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "width": 50,
+    "height": null,
+    "string_id": "test_image_size",
+    "watermark_id": null,
+    "watermark_width": null,
+    "watermark_height": null,
+    "watermark_top": null,
+    "watermark_left": null,
+    "watermark_units": "px"
+  }
+]
