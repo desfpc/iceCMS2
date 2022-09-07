@@ -50,6 +50,9 @@ abstract class AbstractEntity
     /** @var int|null Entity ID */
     protected ?int $_id = null;
 
+    /** @var ?array table columns for ID (that create primary key or uniq ID for table without ID column) */
+    protected ?array $_idKeys = null;
+
     /** @var array|null Entity DB columns */
     protected ?array $_cols = null;
 
@@ -57,12 +60,16 @@ abstract class AbstractEntity
      * Entity constructor class
      *
      * @param Settings $settings App settings
-     * @param int|null $id Entity ID
+     * @param int|array|null $id Entity ID
      * @throws Exception
      */
-    public function __construct(Settings $settings, ?int $id = null)
+    public function __construct(Settings $settings, int|array|null $id = null)
     {
-        $this->_id = $id;
+        if (is_int($id)) {
+            $this->_id = $id;
+        } elseif (is_array($id)) {
+            $this->_idKeys = $id;
+        }
         $this->_settings = $settings;
         $this->_db = DBFactory::get($this->_settings);
         $this->_db->connect();
@@ -165,7 +172,7 @@ abstract class AbstractEntity
      * @return void
      * @throws Exception
      */
-    private function _getTableCols(): void
+    protected function _getTableCols(): void
     {
         $key = $this->_getTableColsKey();
 
@@ -211,8 +218,8 @@ abstract class AbstractEntity
              * @var string $preparedSQL
              * @var array $prepariedValues
              */
-            [$preparedSQL, $prepariedValues] = $this->_getEntitySaveData($isUpdateOnDuplicateKey);
-            if ($res = $this->_db->queryBinded($preparedSQL, $prepariedValues)) {
+            [$preparedSQL, $preparedValues] = $this->_getEntitySaveData($isUpdateOnDuplicateKey);
+            if ($res = $this->_db->queryBinded($preparedSQL, $preparedValues)) {
                 if (is_null($this->_id)) {
                     if (is_int($res)) {
                         $this->_id = $res;
@@ -314,11 +321,11 @@ abstract class AbstractEntity
     /**
      * Load Entity from DB by ID
      *
-     * @param int|null $id
+     * @param int|array|null $id
      * @return bool
      * @throws Exception
      */
-    public function load(?int $id = null): bool
+    public function load(int|array|null $id = null): bool
     {
         $this->isDirty = false;
         $this->_dirtyValues = null;
@@ -380,14 +387,17 @@ abstract class AbstractEntity
      *
      * @return string
      */
-    private function _getCacheKey(): string
+    protected function _getCacheKey(): string
     {
-        if (is_null($this->_id)) {
-            $id = '';
-        } else {
-            $id = $this->_id;
+        $id = '';
+        if (!is_null($this->_id)) {
+            $id = '_' . $this->_id;
+        } elseif(!empty($this->_idKeys)) {
+            foreach ($this->_idKeys as $key => $value) {
+                $id .= '_' . $key . '_' . $value;
+            }
         }
-        return $this->_settings->db->name . '_record_' . $this->_dbtable . '_' . $id;
+        return $this->_settings->db->name . '_record_' . $this->_dbtable . $id;
     }
 
     /**
@@ -412,10 +422,27 @@ abstract class AbstractEntity
      */
     protected function _getEntityValuesSQL(): string
     {
-        if (is_null($this->_id)) {
+        if (is_null($this->_id) && empty($this->_idKeys)) {
             throw new Exception('Entity has no ID');
         }
-        return 'SELECT * FROM ' . $this->_dbtable . ' WHERE id = ' . $this->_id;
+        if (!is_null($this->_id)) {
+            return 'SELECT * FROM `' . $this->_dbtable . '` WHERE `id` = ' . $this->_id;
+        }
+
+        $query = 'SELECT * FROM `' . $this->_dbtable . '` WHERE 1 = 1';
+        foreach ($this->_idKeys as $key => $value) {
+            if (is_int($value) || is_float($value)) {
+                $valueStr = $value;
+            } elseif (is_null($value)) {
+                $valueStr = 'NULL';
+            } else {
+                $valueStr = "'$value'";
+            }
+
+            $query .= ' AND `' . $key . '` = ' . $valueStr;
+        }
+
+        return $query;
     }
 
     /**
