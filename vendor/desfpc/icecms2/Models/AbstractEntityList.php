@@ -42,8 +42,8 @@ abstract class AbstractEntityList
     /** @var int Query results page */
     protected int $_page = 1;
 
-    /** @var int Query results count (page size) */
-    protected int $_size = 10;
+    /** @var ?int Query results count (page size) */
+    protected ?int $_size = 10;
 
     /**
      * Entity list constructor
@@ -52,10 +52,10 @@ abstract class AbstractEntityList
      * @param array $conditions
      * @param array $order
      * @param int $page
-     * @param int $size
+     * @param ?int $size
      * @throws Exception
      */
-    public function __construct(Settings $settings, array $conditions = [], array $order = [], int $page = 1, int $size = 10)
+    public function __construct(Settings $settings, array $conditions = [], array $order = [], int $page = 1, ?int $size = 10)
     {
         $this->_settings = $settings;
         $this->_db = DBFactory::get($this->_settings);
@@ -162,6 +162,16 @@ abstract class AbstractEntityList
     }
 
     /**
+     * Getting more WHERE query part
+     *
+     * @return string
+     */
+    protected function _getMoreWhereQuery(): string
+    {
+        return '';
+    }
+
+    /**
      * Getting conditions query part and binded params
      *
      * @return array
@@ -201,6 +211,8 @@ abstract class AbstractEntityList
             }
         }
 
+        $query .= $this->_getMoreWhereQuery();
+
         return ['query' => $query, 'bindedParams' => $bindedParams];
     }
 
@@ -233,6 +245,9 @@ abstract class AbstractEntityList
      */
     protected function _getLimitQuery(): string
     {
+        if (is_null($this->_size)) {
+            return '';
+        }
         $offset = ($this->_page - 1) * $this->_size;
         return 'LIMIT ' . $offset . ', ' . $this->_size;
     }

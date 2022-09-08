@@ -278,66 +278,125 @@ class FileImage extends File
             if ($fileImageSize->get('is_created') === 1) {
                 unlink($this->getPath($imageSizeId));
             }
+            $this->_imageSizes = null;
             return $fileImageSize->del();
         }
         return false;
     }
 
     /**
+     * Adding ImageSize to file without creating file
+     *
+     * @param int $imageSizeId
+     * @return bool
+     * @throws Exception
+     */
+    public function addImageSize(int $imageSizeId): bool
+    {
+        $imageSize = new ImageSize($this->_settings, $imageSizeId);
+        if ($imageSize->load()) {
+            $fileImageSize = new FileImageSize($this->_settings);
+            $fileImageSize->set([
+                'file_id' => $this->_id,
+                'image_size_id' => $imageSizeId,
+                'is_created' => 0,
+            ]);
+            if (!$fileImageSize->save(true)) {
+                unlink($this->getPath($imageSize));
+                return false;
+            };
+            $this->_imageSizes = null;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Creating ImageSize files
+     *
+     * @param bool $recreateExists
+     * @return bool
+     * @throws Exception
+     */
+    public function buildImageSizeFiles(bool $recreateExists = false): bool
+    {
+        if (!is_null($this->_imageSizes)) {
+            $imageSizes = $this->_imageSizes;
+        } else {
+            $imageSizes = $this->getImageSizes();
+        }
+
+        $errors = [];
+        if (!empty($imageSizes)) {
+            foreach ($imageSizes as $imageSize) {
+                if ($recreateExists || $imageSize['is_created'] === 0) {
+                    if (!$this->createImageSize($imageSize['id'])) {
+                        $errors[] = 'Error when creating ImageSize ' . $imageSize['id'];
+                    }
+                }
+            }
+
+            if (!empty($errors)) {
+                $this->errors = array_merge($this->errors, $errors);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Creating image variant by imageSize ID
      *
      * @param int $imageSizeId
-     * @param bool $isForcibly
      * @return bool
      * @throws Exception
      * @SuppressWarnings(PHPMD.UnusedFormalParameters)
      */
-    public function createImageSize(int $imageSizeId, bool $isForcibly = false): bool
+    public function createImageSize(int $imageSizeId): bool
     {
         $imageSize = new ImageSize($this->_settings, $imageSizeId);
         if ($imageSize->load()) {
-            if (is_null($this->_values['is_created']) || $this->_values['is_created'] === 0) {
 
-                if ($imageSize->get('width') === 0 || $imageSize->get('height') === 0) {
-                    $crop = false;
-                } else {
-                    $crop = true;
-                }
+            if ($imageSize->get('width') === 0 || $imageSize->get('height') === 0) {
+                $crop = false;
+            } else {
+                $crop = true;
+            }
 
-                if (!is_null($imageSize->get('watermark_id')) && $imageSize->get('watermark_id') > 0) {
-                    $wparams = [
-                        'width' => $imageSize->get('watermark_width'),
-                        'height' => $imageSize->get('watermark_height'),
-                        'top' => $imageSize->get('watermark_top'),
-                        'left' => $imageSize->get('watermark_left'),
-                        'units' => $imageSize->get('watermark_units'),
-                    ];
-                } else {
-                    $wparams = null;
-                }
+            if (!is_null($imageSize->get('watermark_id')) && $imageSize->get('watermark_id') > 0) {
+                $wparams = [
+                    'width' => $imageSize->get('watermark_width'),
+                    'height' => $imageSize->get('watermark_height'),
+                    'top' => $imageSize->get('watermark_top'),
+                    'left' => $imageSize->get('watermark_left'),
+                    'units' => $imageSize->get('watermark_units'),
+                ];
+            } else {
+                $wparams = null;
+            }
 
-                if ($this->saveImageSize(
-                    $this->getPath(),
-                    $this->getPath($imageSize),
-                    $imageSize->get('width'),
-                    $imageSize->get('height'),
-                    self::DEFAULT_IMG_FORMAT,
-                    $crop,
-                    $imageSize->get('watermark_id'),
-                    $wparams
-                    )) {
-                    $fileImageSize = new FileImageSize($this->_settings);
-                    $fileImageSize->set([
-                        'file_id' => $this->_id,
-                        'image_size_id' => $imageSizeId,
-                        'is_created' => 1,
-                    ]);
-                    if (!$fileImageSize->save(true)) {
-                        unlink($this->getPath($imageSize));
-                        return false;
-                    };
-                    return true;
-                }
+            if ($this->saveImageSize(
+                $this->getPath(),
+                $this->getPath($imageSize),
+                $imageSize->get('width'),
+                $imageSize->get('height'),
+                self::DEFAULT_IMG_FORMAT,
+                $crop,
+                $imageSize->get('watermark_id'),
+                $wparams
+            )) {
+                $fileImageSize = new FileImageSize($this->_settings);
+                $fileImageSize->set([
+                    'file_id' => $this->_id,
+                    'image_size_id' => $imageSizeId,
+                    'is_created' => 1,
+                ]);
+                if (!$fileImageSize->save(true)) {
+                    unlink($this->getPath($imageSize));
+                    return false;
+                };
+                $this->_imageSizes = null;
+                return true;
             }
         }
 
@@ -356,15 +415,9 @@ class FileImage extends File
             throw new Exception('Image object not loaded');
         }
         if (is_null($this->_imageSizes)) {
-            $conditions = [
-                'id' => [
-                    'logic' => 'AND',
-                    'sign' => 'IN',
-                    'value' => '(SELECT image_size_id FROM file_image_sizes WHERE file_id = ' . $this->_id . ')'
-                ],
-            ];
+            $conditions = ['file_id' => $this->_id];
             $order = ['id' => 'ASC'];
-            $imageSizes = new ImageSizeList($this->_settings, $conditions, $order, 1, 1000);
+            $imageSizes = new ImageSizeList($this->_settings, $conditions, $order, 1, null);
             $this->_imageSizes = $imageSizes->get();
             if (!$this->_imageSizes) {
                 $this->_imageSizes = null;
