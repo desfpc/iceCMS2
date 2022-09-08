@@ -521,18 +521,47 @@ class FileImage extends File
             $sx = imagesx($stamp);
             $sy = imagesy($stamp);
 
-            //TODO поправить наложение водяного знака
+            if ($sx !== $wparams['width'] || $sy !== $wparams['height']) {
+                $temp = imagecreatetruecolor($wparams['width'], $wparams['height']);
+                imagecopyresampled(
+                    $temp,
+                    $stamp,
+                    0,
+                    0,
+                    0,
+                    0,
+                    $wparams['width'],
+                    $wparams['height'],
+                    $sx,
+                    $sy
+                );
+                $stamp = $temp;
+            }
+
+            if ($wparams['left'] >= 0) {
+                $dst_x = $wparams['left'];
+            } else {
+                $dst_x = imagesx($im1) + $wparams['left'] - $wparams['width'];
+            }
+
+            if ($wparams['top'] >= 0) {
+                $dst_y = $wparams['top'];
+            } else {
+                $dst_y = imagesy($im1) + $wparams['top'] - $wparams['height'];
+            }
+
             imagecopy(
                 $im1,
                 $stamp,
-                imagesx($im1) - $sx - $wparams['width'],
-                imagesy($im1) - $sy - $wparams['height'],
-                $wparams['top'],
-                $wparams['left'],
-                imagesx($stamp),
-                imagesy($stamp)
+                $dst_x,
+                $dst_y,
+                0,
+                0,
+                $wparams['width'],
+                $wparams['height']
             );
 
+            imagedestroy($stamp);
         }
 
         switch ($extension) {
