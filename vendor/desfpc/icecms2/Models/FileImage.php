@@ -539,22 +539,22 @@ class FileImage extends File
             }
 
             if ($wparams['left'] >= 0) {
-                $dst_x = $wparams['left'];
+                $dstX = $wparams['left'];
             } else {
-                $dst_x = imagesx($im1) + $wparams['left'] - $wparams['width'];
+                $dstX = imagesx($im1) + $wparams['left'] - $wparams['width'];
             }
 
             if ($wparams['top'] >= 0) {
-                $dst_y = $wparams['top'];
+                $dstY = $wparams['top'];
             } else {
-                $dst_y = imagesy($im1) + $wparams['top'] - $wparams['height'];
+                $dstY = imagesy($im1) + $wparams['top'] - $wparams['height'];
             }
 
             imagecopy(
                 $im1,
                 $stamp,
-                $dst_x,
-                $dst_y,
+                $dstX,
+                $dstY,
                 0,
                 0,
                 $wparams['width'],
