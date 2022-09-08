@@ -262,13 +262,24 @@ class FileImage extends File
     }
 
     /**
-     * TODO Delete File Image Size by Id
+     * Delete FileImageSize by ImageSize Id
      *
      * @param int $imageSizeId
      * @return bool
+     * @throws Exception
      */
     public function deleteImageSize(int $imageSizeId): bool
     {
+        $fileImageSize = new FileImageSize($this->_settings, [
+            'file_id' => $this->_id,
+            'image_size_id' => $imageSizeId
+        ]);
+        if ($fileImageSize->load()) {
+            if ($fileImageSize->get('is_created') === 1) {
+                unlink($this->getPath($imageSizeId));
+            }
+            return $fileImageSize->del();
+        }
         return false;
     }
 
