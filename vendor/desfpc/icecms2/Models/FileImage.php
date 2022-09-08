@@ -447,6 +447,67 @@ class FileImage extends File
     }
 
     /**
+     * Overlay watermark
+     *
+     * @param int $watermark
+     * @param GdImage $image
+     * @param array $wparams
+     * @return void
+     * @throws Exception
+     */
+    private function _overlayWatermark(int $watermark, GdImage $image, array $wparams): void
+    {
+        $wimg = new FileImage($this->_settings, $watermark);
+        $wimg->load();
+        $stamp = $this->_imageCreateFromExtension($wimg->getPath(), $wimg->get('extension'));
+
+        $sx = imagesx($stamp);
+        $sy = imagesy($stamp);
+
+        if ($sx !== $wparams['width'] || $sy !== $wparams['height']) {
+            $temp = imagecreatetruecolor($wparams['width'], $wparams['height']);
+            imagecopyresampled(
+                $temp,
+                $stamp,
+                0,
+                0,
+                0,
+                0,
+                $wparams['width'],
+                $wparams['height'],
+                $sx,
+                $sy
+            );
+            $stamp = $temp;
+        }
+
+        if ($wparams['left'] >= 0) {
+            $dstX = $wparams['left'];
+        } else {
+            $dstX = imagesx($image) + $wparams['left'] - $wparams['width'];
+        }
+
+        if ($wparams['top'] >= 0) {
+            $dstY = $wparams['top'];
+        } else {
+            $dstY = imagesy($image) + $wparams['top'] - $wparams['height'];
+        }
+
+        imagecopy(
+            $image,
+            $stamp,
+            $dstX,
+            $dstY,
+            0,
+            0,
+            $wparams['width'],
+            $wparams['height']
+        );
+
+        imagedestroy($stamp);
+    }
+
+    /**
      * Save image file with requested sizes, watermark and format
      *
      * @param string $from
@@ -514,54 +575,7 @@ class FileImage extends File
 
         //Create watermark
         if ($watermark > 0 && !empty($wparams)) {
-            $wimg = new FileImage($this->_settings, $watermark);
-            $wimg->load();
-            $stamp = $this->_imageCreateFromExtension($wimg->getPath(), $wimg->get('extension'));
-
-            $sx = imagesx($stamp);
-            $sy = imagesy($stamp);
-
-            if ($sx !== $wparams['width'] || $sy !== $wparams['height']) {
-                $temp = imagecreatetruecolor($wparams['width'], $wparams['height']);
-                imagecopyresampled(
-                    $temp,
-                    $stamp,
-                    0,
-                    0,
-                    0,
-                    0,
-                    $wparams['width'],
-                    $wparams['height'],
-                    $sx,
-                    $sy
-                );
-                $stamp = $temp;
-            }
-
-            if ($wparams['left'] >= 0) {
-                $dstX = $wparams['left'];
-            } else {
-                $dstX = imagesx($im1) + $wparams['left'] - $wparams['width'];
-            }
-
-            if ($wparams['top'] >= 0) {
-                $dstY = $wparams['top'];
-            } else {
-                $dstY = imagesy($im1) + $wparams['top'] - $wparams['height'];
-            }
-
-            imagecopy(
-                $im1,
-                $stamp,
-                $dstX,
-                $dstY,
-                0,
-                0,
-                $wparams['width'],
-                $wparams['height']
-            );
-
-            imagedestroy($stamp);
+            $this->_overlayWatermark($watermark, $im1, $wparams);
         }
 
         switch ($extension) {
