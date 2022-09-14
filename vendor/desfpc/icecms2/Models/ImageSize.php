@@ -45,7 +45,7 @@ class ImageSize extends AbstractEntity
             throw new Exception('Entity has no ID');
         }
         if (is_null($this->_imageId)) {
-            return parent::_delEntityValuesSQL();
+            return parent::_getEntityValuesSQL();
         }
         return 'SELECT `s`.*, `i`.`is_created` FROM ' . $this->_dbtable . ' `s`'
             . ' RIGHT JOIN `file_image_sizes` `i` ON `s`.`id` = `i`.`image_size_id`'

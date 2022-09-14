@@ -39,9 +39,10 @@ class FileImageTest extends Ice2CMSTestCase
     public function testFileImage(): void
     {
         //TODO Creating watermark image
+
         $watermarkId = 1;
 
-        //TODO Creating test image sizes
+        //Creating test image sizes
         $imageSizeArr = [
             [
                 'width' => 0,
@@ -74,8 +75,15 @@ class FileImageTest extends Ice2CMSTestCase
         foreach ($imageSizeArr as $item) {
             $imageSize = new ImageSize(self::$_testSettings);
             $imageSize->set($item);
-            $this->assertTrue($imageSize->save());
+            $imageSizeSaved = $imageSize->save();
+            if (!$imageSizeSaved) {
+                print_r($item);
+            }
+            $this->assertTrue($imageSizeSaved);
         }
+
+        $query = 'SELECT * FROM image_sizes';
+        print_r((self::$_db)->query($query));
 
         //TODO Creating test image
 
