@@ -281,12 +281,7 @@ class FileImage extends File
     private function _getFaviconPath(): string
     {
         $dirs = $this->_getPathDirectory((bool)$this->_values['private']);
-        $path = $dirs[1] . $this->_getFaviconName();
-        if (!empty($this->_values['extension'])) {
-            $path .= '.' . $this->_values['extension'];
-        }
-
-        return $path;
+        return $dirs[1] . $this->_getFaviconName();
     }
 
     /**
@@ -393,10 +388,10 @@ class FileImage extends File
 
             if (!is_null($imageSize->get('watermark_id')) && $imageSize->get('watermark_id') > 0) {
                 $wparams = [
-                    'width' => $imageSize->get('watermark_width'),
-                    'height' => $imageSize->get('watermark_height'),
-                    'top' => $imageSize->get('watermark_top'),
-                    'left' => $imageSize->get('watermark_left'),
+                    'width' => (int)$imageSize->get('watermark_width'),
+                    'height' => (int)$imageSize->get('watermark_height'),
+                    'top' => (int)$imageSize->get('watermark_top'),
+                    'left' => (int)$imageSize->get('watermark_left'),
                     'units' => $imageSize->get('watermark_units'),
                 ];
             } else {
@@ -406,11 +401,11 @@ class FileImage extends File
             if ($this->saveImageSize(
                 $this->getPath(),
                 $this->getPath($imageSize),
-                $imageSize->get('width'),
-                $imageSize->get('height'),
+                (int)$imageSize->get('width'),
+                (int)$imageSize->get('height'),
                 self::DEFAULT_IMG_FORMAT,
                 $crop,
-                $imageSize->get('watermark_id'),
+                (int)$imageSize->get('watermark_id'),
                 $wparams
             )) {
                 $fileImageSize = new FileImageSize($this->_settings);
@@ -494,6 +489,10 @@ class FileImage extends File
 
         if ($sx !== $wparams['width'] || $sy !== $wparams['height']) {
             $temp = imagecreatetruecolor($wparams['width'], $wparams['height']);
+            imagecolortransparent($temp, imagecolorallocatealpha($temp, 0, 0, 0, 127));
+            imagealphablending($temp, false);
+            imagesavealpha($temp, true);
+
             imagecopyresampled(
                 $temp,
                 $stamp,
@@ -571,9 +570,9 @@ class FileImage extends File
             $originalExtension = $oldExtension;
         }
         if ($newx == 0) {
-            $newx = round($originalx * $newy / $originaly);
+            $newx = (int)round($originalx * $newy / $originaly);
         } elseif ($newy == 0) {
-            $newy = round($originaly * $newx / $originalx);
+            $newy = (int)round($originaly * $newx / $originalx);
         }
 
         $im = $this->_imageCreateFromExtension($from, $originalExtension);

@@ -108,7 +108,7 @@ abstract class AbstractEntity
         if (is_null($key)) {
             return $this->_values;
         }
-        if (!isset($this->_values[$key])) {
+        if (!key_exists($key, $this->_values)) {
             throw new Exception('Field "' . $key . '" missing in table "' . $this->_dbtable . '"');
         }
         return $this->_values[$key];
@@ -215,6 +215,10 @@ abstract class AbstractEntity
      */
     public function save(bool $isUpdateOnDuplicateKey = false): bool
     {
+        echo PHP_EOL;
+        echo PHP_EOL;
+        echo 'DEL ' . $this->_getCacheKey();
+        //TODO delete image_file_size caches!!!
         $this->_cacher->del($this->_getCacheKey());
         if ($this->isDirty && !empty($this->_values)) {
             /**
@@ -253,6 +257,7 @@ abstract class AbstractEntity
     private function _getEntitySaveData(bool $isUpdateOnDuplicateKey = false): array
     {
         $binded = [];
+        $bindedU = [];
         $keys = '';
         $bindedKeys = '';
         $updateStr = '';
@@ -276,12 +281,14 @@ abstract class AbstractEntity
                 $bindedKeys .= $symbol;
                 $updateStr .= '`' . $key . '`' . ' = ' . $symbol;
                 $binded[':' . $key] = $this->_values[$key];
+                $bindedU[':' . $key . '_u'] = $this->_values[$key];
             }
         }
         if (is_null($this->_id) && empty($this->_idKeys)) {
             $sql = 'INSERT INTO `' . $this->_dbtable . '` (' . $keys . ') VALUES (' . $bindedKeys . ')';
             if ($isUpdateOnDuplicateKey) {
                 $sql .= ' ON DUPLICATE KEY UPDATE ' . $updateStr;
+                $binded = array_merge($binded, $bindedU);
             }
         } else {
             $sql = 'UPDATE `' . $this->_dbtable . '` SET ' . $updateStr . ' WHERE';
@@ -354,6 +361,8 @@ abstract class AbstractEntity
         }
 
         $key = $this->_getCacheKey();
+        echo PHP_EOL;
+        print_r($key);
 
         if ($this->_cacher->has($key) && $values = $this->_cacher->get($key, true)) {
             $this->_values = $values;
