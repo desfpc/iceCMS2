@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace vendor\Models\FileImage;
 
+use iceCMS2\Models\FileImage;
 use iceCMS2\Models\ImageSize;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Tests\Ice2CMSTestCase;
@@ -39,6 +40,27 @@ class FileImageTest extends Ice2CMSTestCase
     public function testFileImage(): void
     {
         //TODO Creating watermark image
+        $testFilePath = self::getTestClassDir() . 'logofw.png';
+        $testFilePathNew = self::getTestClassDir() . 'logofwnew.png';
+
+        copy($testFilePath, $testFilePathNew);
+        chmod($testFilePathNew, 0666);
+
+        //Simulating File transfer
+        $_FILES['testFile'] = [
+            'tmp_name' => $testFilePathNew,
+            'name' => 'logofwnew.png',
+            'size' => filesize($testFilePathNew),
+        ];
+
+        //Simulating POST transfer
+        $_POST = [
+            'noInTableKey' => 'someValue',
+            'anons' => 'File description text',
+        ];
+
+        $watermarkFile = new FileImage(self::$_testSettings);
+        $this->assertTrue($watermarkFile->savePostFile('testFile'));
 
         $watermarkId = 1;
 
@@ -83,7 +105,7 @@ class FileImageTest extends Ice2CMSTestCase
         }
 
         $query = 'SELECT * FROM image_sizes';
-        print_r((self::$_db)->query($query));
+        print_r(self::$_db->query($query));
 
         //TODO Creating test image
 

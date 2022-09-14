@@ -30,6 +30,7 @@ class File extends AbstractEntity
     public static function getFileExtension(string $filename): string
     {
         $pathInfo = pathinfo($filename);
+
         if (!isset($pathInfo['extension'])) {
             return '';
         }
@@ -93,11 +94,12 @@ class File extends AbstractEntity
         $file = $_FILES[$paramName];
 
         $tmpName = $file['tmp_name'];
+        $extension = File::getFileExtension($tmpName);
 
         //Setting entity params from File
         $this->_setByKeyAndValue('name', $file['name'], false);
         $this->_setByKeyAndValue('filename', $file['name'], false);
-        $this->_setByKeyAndValue('extension', File::getFileExtension($file['name']), false);
+        $this->_setByKeyAndValue('extension', $extension, false);
         $this->_setByKeyAndValue('size', (int)$file['size'], false);
         $this->_setByKeyAndValue('filetype', $this->_filetype, false);
         $this->_setByKeyAndValue('private', (int)$private, false);
@@ -121,8 +123,8 @@ class File extends AbstractEntity
 
         //Creating a server route for storing file
         $fileVsPath = $this->_createPath($private) . $this->_id;
-        if (!empty($this->_values['extension'])) {
-            $fileVsPath .= '.' . $this->_values['extension'];
+        if (!empty($extension)) {
+            $fileVsPath .= '.' . $extension;
         }
 
         //Store file on server

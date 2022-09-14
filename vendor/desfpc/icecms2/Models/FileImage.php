@@ -46,8 +46,8 @@ class FileImage extends File
     {
         [$width, $height, $type, $attr] = getimagesize($file['tmp_name']);
 
-        $this->_setByKeyAndValue('width', (int)$width);
-        $this->_setByKeyAndValue('height', (int)$height);
+        $this->_setByKeyAndValue('image_width', (int)$width);
+        $this->_setByKeyAndValue('image_height', (int)$height);
 
         switch ($type) {
             case '2':
@@ -95,28 +95,31 @@ class FileImage extends File
     {
         $doReformating = false;
         $doResizing = false;
-        if (self::IF_REFORMAT_ORIGINAL && $this->get('extension') !== self::DEFAULT_IMG_FORMAT) {
+        $oldExtension = $this->get('extension');
+
+        if (self::IF_REFORMAT_ORIGINAL && $oldExtension !== self::DEFAULT_IMG_FORMAT) {
             $doReformating = true;
             $newExtension = self::DEFAULT_IMG_FORMAT;
             $this->set('extension', $newExtension);
+
         } else {
-            $newExtension = $this->get('extension');
+            $newExtension = $oldExtension;
         }
         if (
             self::MAX_ORIGINAL_LENGTH > 0 &&
-            ($this->get('width') > self::MAX_ORIGINAL_LENGTH || $this->get('height') > self::MAX_ORIGINAL_LENGTH)
+            ($this->get('image_width') > self::MAX_ORIGINAL_LENGTH || $this->get('image_height') > self::MAX_ORIGINAL_LENGTH)
         ) {
             $doResizing = true;
 
             [$newX, $newY] = $this->_getMaxWidthAndHeight(
-                $this->get('width'),
-                $this->get('height')
+                $this->get('image_width'),
+                $this->get('image_height')
             );
-            $this->set('width', $newX);
-            $this->set('height', $newY);
+            $this->set('image_width', $newX);
+            $this->set('image_height', $newY);
         } else {
-            $newX = $this->get('width');
-            $newY = $this->get('height');
+            $newX = $this->get('image_width');
+            $newY = $this->get('image_height');
         }
 
         if (!$doReformating && !$doResizing) {
@@ -124,8 +127,23 @@ class FileImage extends File
         }
 
         if ($this->save()) {
-            $imgPath = $this->getPath();
-            $this->saveImageSize($imgPath, $imgPath, $newX, $newY, $newExtension);
+            $imgPathFrom = $this->getPath(null, $oldExtension);
+            $imgPathTo = $this->getPath();
+            if ($this->saveImageSize(
+                $imgPathFrom,
+                $imgPathTo,
+                $newX,
+                $newY,
+                $newExtension,
+                false,
+                0,
+                null,
+                $oldExtension
+            )) {
+                if ($imgPathFrom !== $imgPathTo) {
+                    unlink($imgPathFrom);
+                }
+            }
             return true;
         }
 
@@ -142,10 +160,10 @@ class FileImage extends File
     private function _getMaxWidthAndHeight($width, $height): array
     {
         if ($width > self::MAX_ORIGINAL_LENGTH && $width >= $height) {
-            $height = self::MAX_ORIGINAL_LENGTH * $height / $width;
+            $height = (int)round(self::MAX_ORIGINAL_LENGTH * $height / $width);
             $width = self::MAX_ORIGINAL_LENGTH;
         } elseif ($height > self::MAX_ORIGINAL_LENGTH && $height >= $width) {
-            $width = self::MAX_ORIGINAL_LENGTH * $width / $height;
+            $width = (int)round(self::MAX_ORIGINAL_LENGTH * $width / $height);
             $height = self::MAX_ORIGINAL_LENGTH;
         }
 
@@ -227,18 +245,28 @@ class FileImage extends File
      * Getting image file path in OS
      *
      * @param int|ImageSize|null $imageSize
+     * @param string|null $oldExtension
      * @return string
      * @throws Exception
      */
-    public function getPath(int|ImageSize|null $imageSize = null): string
+    public function getPath(int|ImageSize|null $imageSize = null, ?string $oldExtension = null): string
     {
-        if (is_null($imageSize)) {
-            return parent::getPath();
+        if (is_null($oldExtension)) {
+            $extension = $this->_values['extension'];
+        } else {
+            $extension = $oldExtension;
         }
         $dirs = $this->_getPathDirectory((bool)$this->_values['private']);
+        if (is_null($imageSize)) {
+            $path = $dirs[1] . $this->_id;
+            if (!empty($extension)) {
+                $path .= '.' . $extension;
+            }
+            return $path;
+        }
         $path = $dirs[1] . $this->_getImageSizeName($imageSize);
-        if (!empty($this->_values['extension'])) {
-            $path .= '.' . $this->_values['extension'];
+        if (!empty($extension)) {
+            $path .= '.' . $extension;
         }
 
         return $path;
@@ -518,6 +546,7 @@ class FileImage extends File
      * @param bool $crop
      * @param int $watermark
      * @param array|null $wparams
+     * @param string|null $oldExtension
      * @return bool
      * @throws Exception
      */
@@ -529,13 +558,18 @@ class FileImage extends File
         string $extension,
         bool $crop = false,
         int $watermark = 0,
-        ?array $wparams = null
+        ?array $wparams = null,
+        ?string $oldExtension = null
         ): bool
     {
         //Calculating new image sizes
-        $originalx = $this->get('width');
-        $originaly = $this->get('height');
-        $originalExtension = $this->get('extension');
+        $originalx = $this->get('image_width');
+        $originaly = $this->get('image_height');
+        if (is_null($oldExtension)) {
+            $originalExtension = $this->get('extension');
+        } else {
+            $originalExtension = $oldExtension;
+        }
         if ($newx == 0) {
             $newx = round($originalx * $newy / $originaly);
         } elseif ($newy == 0) {
@@ -544,7 +578,7 @@ class FileImage extends File
 
         $im = $this->_imageCreateFromExtension($from, $originalExtension);
         $im1 = imagecreatetruecolor($newx, $newy);
-        if ($extension == 'png') {
+        if ($originalExtension == 'png' || $originalExtension == 'webp') {
             imagealphablending($im1, false);
             imagesavealpha($im1, true);
         }
@@ -558,11 +592,11 @@ class FileImage extends File
             //crop by x
             if ($sootn1 >= $sootn2) {
                 $ix = imagesx($im);
-                $iy = round($newy * imagesx($im) / $newx);
+                $iy = (int)round($newy * imagesx($im) / $newx);
             //crop by y
             } else {
                 $iy = imagesy($im);
-                $ix = round($newx * imagesy($im) / $newy);
+                $ix = (int)round($newx * imagesy($im) / $newy);
 
             }
 
