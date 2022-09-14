@@ -207,6 +207,18 @@ abstract class AbstractEntity
     }
 
     /**
+     * Setting _idKeys from _idColumns and _values
+     *
+     * @return void
+     */
+    private function _setIdKeys(): void
+    {
+        foreach ($this->_idColumns as $key) {
+            $this->_idKeys[$key] = $this->_values[$key];
+        }
+    }
+
+    /**
      * Save Entity
      *
      * @param bool $isUpdateOnDuplicateKey
@@ -215,11 +227,13 @@ abstract class AbstractEntity
      */
     public function save(bool $isUpdateOnDuplicateKey = false): bool
     {
-        echo PHP_EOL;
-        echo PHP_EOL;
-        echo 'DEL ' . $this->_getCacheKey();
-        //TODO delete image_file_size caches!!!
+        //TODO wrong $this->_getCacheKey() (DEL ice2_test_record_files BUT key is ice2_test_record_files_1)
+        if (!empty($this->_idColumns) && is_null($this->_idKeys)) {
+            $this->_setIdKeys();
+        }
+        echo PHP_EOL . 'DEL ' . $this->_getCacheKey();
         $this->_cacher->del($this->_getCacheKey());
+        $this->_idKeys = null;
         if ($this->isDirty && !empty($this->_values)) {
             /**
              * @var string $preparedSQL
@@ -231,9 +245,7 @@ abstract class AbstractEntity
                     if (is_int($res) && is_null($this->_idColumns)) {
                         $this->_id = $res;
                     } elseif ($res === true && !empty($this->_idColumns)) {
-                        foreach ($this->_idColumns as $key) {
-                            $this->_idKeys[$key] = $this->_values[$key];
-                        }
+                        $this->_setIdKeys();
                     }
                 }
 
@@ -361,9 +373,7 @@ abstract class AbstractEntity
         }
 
         $key = $this->_getCacheKey();
-        echo PHP_EOL;
-        print_r($key);
-
+        echo PHP_EOL . 'HAS ' . $key;
         if ($this->_cacher->has($key) && $values = $this->_cacher->get($key, true)) {
             $this->_values = $values;
             $this->isLoaded = true;
@@ -420,6 +430,7 @@ abstract class AbstractEntity
                 $id .= '_' . $key . '_' . $value;
             }
         }
+
         return $this->_settings->db->name . '_record_' . $this->_dbtable . $id;
     }
 

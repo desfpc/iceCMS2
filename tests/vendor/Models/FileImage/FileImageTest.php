@@ -87,7 +87,7 @@ class FileImageTest extends Ice2CMSTestCase
                 'string_id' => '800_400_' . $watermarkId,
                 'watermark_id' => $watermarkId,
                 'watermark_width' => 100,
-                'watermark_height' => 200,
+                'watermark_height' => 50,
                 'watermark_top' => -10,
                 'watermark_left' => 10,
                 'watermark_units' => 'px',
@@ -98,9 +98,6 @@ class FileImageTest extends Ice2CMSTestCase
             $imageSize = new ImageSize(self::$_testSettings);
             $imageSize->set($item);
             $imageSizeSaved = $imageSize->save();
-            if (!$imageSizeSaved) {
-                print_r($item);
-            }
             $this->assertTrue($imageSizeSaved);
         }
 
@@ -140,7 +137,7 @@ class FileImageTest extends Ice2CMSTestCase
         $this->assertCount(4, $imageSizesArr);
 
         foreach ($imageSizesArr as $item) {
-            $imageFile->createImageSize($item['id']);
+            $this->assertTrue($imageFile->createImageSize($item['id']));
         }
 
         //TODO Deleting imageSizes
