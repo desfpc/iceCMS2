@@ -227,12 +227,6 @@ abstract class AbstractEntity
      */
     public function save(bool $isUpdateOnDuplicateKey = false): bool
     {
-        //TODO wrong $this->_getCacheKey() (DEL ice2_test_record_files BUT key is ice2_test_record_files_1)
-        if (!empty($this->_idColumns) && is_null($this->_idKeys)) {
-            $this->_setIdKeys();
-        }
-        echo PHP_EOL . 'DEL ' . $this->_getCacheKey();
-        $this->_cacher->del($this->_getCacheKey());
         $this->_idKeys = null;
         if ($this->isDirty && !empty($this->_values)) {
             /**
@@ -248,6 +242,7 @@ abstract class AbstractEntity
                         $this->_setIdKeys();
                     }
                 }
+                $this->_cacher->del($this->_getCacheKey());
 
                 if (!$this->load()) {
                     return false;
@@ -373,7 +368,6 @@ abstract class AbstractEntity
         }
 
         $key = $this->_getCacheKey();
-        echo PHP_EOL . 'HAS ' . $key;
         if ($this->_cacher->has($key) && $values = $this->_cacher->get($key, true)) {
             $this->_values = $values;
             $this->isLoaded = true;

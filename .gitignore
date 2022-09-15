@@ -9,3 +9,4 @@ settings/local.php
 settings/product.php
 .phpunit.result.cache
 **/.DS_Store
+web/files_test

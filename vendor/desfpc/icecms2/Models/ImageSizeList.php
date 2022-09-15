@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace iceCMS2\Models;
 
-use iceCMS2\DB\DBFactory;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
 

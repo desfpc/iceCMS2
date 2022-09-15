@@ -379,7 +379,6 @@ class FileImage extends File
     {
         $imageSize = new ImageSize($this->_settings, $imageSizeId);
         if ($imageSize->load()) {
-
             if ($imageSize->get('width') === 0 || $imageSize->get('height') === 0) {
                 $crop = false;
             } else {

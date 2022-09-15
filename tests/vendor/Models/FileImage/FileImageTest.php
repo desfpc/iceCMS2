@@ -86,7 +86,7 @@ class FileImageTest extends Ice2CMSTestCase
                 'height' => 400,
                 'string_id' => '800_400_' . $watermarkId,
                 'watermark_id' => $watermarkId,
-                'watermark_width' => 100,
+                'watermark_width' => 25,
                 'watermark_height' => 50,
                 'watermark_top' => -10,
                 'watermark_left' => 10,
