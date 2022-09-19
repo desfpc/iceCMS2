@@ -37,13 +37,10 @@ class DBFactory
      */
     public function __construct(Settings $settings)
     {
-        switch ($settings->db->type) {
-            case 'MySQL':
-                $this->db = new MySql($settings->db);
-                break;
-            default:
-                throw new Exception("Unknown DB type " . $settings->db->type);
-        }
+        $this->db = match ($settings->db->type) {
+            'MySQL' => new MySql($settings->db),
+            default => throw new Exception("Unknown DB type " . $settings->db->type),
+        };
     }
 
     /**
