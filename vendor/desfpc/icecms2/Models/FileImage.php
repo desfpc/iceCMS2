@@ -1,6 +1,6 @@
 <?php
-
 declare(strict_types=1);
+
 /**
  * iceCMS2 v0.1a
  * Created by Sergey Peshalov https://github.com/desfpc
@@ -379,7 +379,7 @@ class FileImage extends File
     {
         $imageSize = new ImageSize($this->_settings, $imageSizeId);
         if ($imageSize->load()) {
-            if ($imageSize->get('width') === 0 || $imageSize->get('height') === 0) {
+            if ($imageSize->get('width') == 0 || $imageSize->get('height') == 0 || $imageSize->get('is_crop') == 0) {
                 $crop = false;
             } else {
                 $crop = true;
@@ -392,6 +392,7 @@ class FileImage extends File
                     'top' => (int)$imageSize->get('watermark_top'),
                     'left' => (int)$imageSize->get('watermark_left'),
                     'units' => $imageSize->get('watermark_units'),
+                    'alpha' => (int)$imageSize->get('watermark_alpha'),
                 ];
             } else {
                 $wparams = null;
@@ -507,19 +508,24 @@ class FileImage extends File
             $stamp = $temp;
         }
 
-        if ($wparams['left'] >= 0) {
-            $dstX = $wparams['left'];
+        if ($wparams['units'] === 'px') {
+            if ($wparams['left'] >= 0) {
+                $dstX = $wparams['left'];
+            } else {
+                $dstX = imagesx($image) + $wparams['left'] - $wparams['width'];
+            }
+
+            if ($wparams['top'] >= 0) {
+                $dstY = $wparams['top'];
+            } else {
+                $dstY = imagesy($image) + $wparams['top'] - $wparams['height'];
+            }
         } else {
-            $dstX = imagesx($image) + $wparams['left'] - $wparams['width'];
+            $dstX = (int)round((imagesx($image)*$wparams['left']/100) - ($wparams['width']*$wparams['left']/100));
+            $dstY = (int)round((imagesy($image)*$wparams['top']/100) - ($wparams['height']*$wparams['top']/100));
         }
 
-        if ($wparams['top'] >= 0) {
-            $dstY = $wparams['top'];
-        } else {
-            $dstY = imagesy($image) + $wparams['top'] - $wparams['height'];
-        }
-
-        imagecopy(
+        /*imagecopy(
             $image,
             $stamp,
             $dstX,
@@ -528,6 +534,18 @@ class FileImage extends File
             0,
             $wparams['width'],
             $wparams['height']
+        );*/
+
+        imagecopymerge(
+            $image,
+            $stamp,
+            $dstX,
+            $dstY,
+            0,
+            0,
+            $wparams['width'],
+            $wparams['height'],
+            $wparams['alpha']
         );
 
         imagedestroy($stamp);

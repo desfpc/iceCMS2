@@ -69,28 +69,46 @@ class FileImageTest extends Ice2CMSTestCase
             [
                 'width' => 0,
                 'height' => 300,
+                'is_crop' => 0,
                 'string_id' => '0_300',
             ],
             [
                 'width' => 300,
                 'height' => 0,
+                'is_crop' => 0,
                 'string_id' => '300_0',
             ],
             [
                 'width' => 300,
                 'height' => 300,
+                'is_crop' => 1,
                 'string_id' => '300',
             ],
             [
                 'width' => 800,
                 'height' => 400,
+                'is_crop' => 0,
                 'string_id' => '800_400_' . $watermarkId,
                 'watermark_id' => $watermarkId,
-                'watermark_width' => 25,
-                'watermark_height' => 50,
+                'watermark_width' => 100,
+                'watermark_height' => 115,
                 'watermark_top' => -10,
                 'watermark_left' => 10,
                 'watermark_units' => 'px',
+                'watermark_alpha' => 80,
+            ],
+            [
+                'width' => 200,
+                'height' => 0,
+                'is_crop' => 0,
+                'string_id' => '200_0_' . $watermarkId,
+                'watermark_id' => $watermarkId,
+                'watermark_width' => 100,
+                'watermark_height' => 115,
+                'watermark_top' => 50,
+                'watermark_left' => 50,
+                'watermark_units' => '%',
+                'watermark_alpha' => 50,
             ],
         ];
 
@@ -103,7 +121,7 @@ class FileImageTest extends Ice2CMSTestCase
 
         $query = 'SELECT * FROM image_sizes';
         $res = self::$_db->query($query);
-        $this->assertCount(4, $res);
+        $this->assertCount(5, $res);
 
         //Creating test image
         $testFilePath = self::getTestClassDir() . 'testImg.jpg';
@@ -134,7 +152,7 @@ class FileImageTest extends Ice2CMSTestCase
 
         $imageSizes = new ImageSizeList(self::$_testSettings);
         $imageSizesArr = $imageSizes->get();
-        $this->assertCount(4, $imageSizesArr);
+        $this->assertCount(5, $imageSizesArr);
 
         foreach ($imageSizesArr as $item) {
             $this->assertTrue($imageFile->createImageSize($item['id']));

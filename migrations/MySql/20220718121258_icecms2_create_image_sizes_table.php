@@ -25,6 +25,7 @@ class Icecms2CreateImageSizesTable extends AbstractMigration
   `id` int UNSIGNED NOT NULL AUTO_INCREMENT primary key,
   `width` mediumint UNSIGNED NULL DEFAULT NULL,
   `height` mediumint UNSIGNED NULL DEFAULT NULL,
+  `is_crop` smallint unsigned default 1 not null,
   `string_id` varchar(255) NOT NULL,
   `watermark_id` int UNSIGNED NULL DEFAULT NULL,
   `watermark_width` mediumint UNSIGNED NULL DEFAULT NULL,
@@ -32,6 +33,7 @@ class Icecms2CreateImageSizesTable extends AbstractMigration
   `watermark_top` mediumint NULL DEFAULT NULL,
   `watermark_left` mediumint NULL DEFAULT NULL,
   `watermark_units` enum ('px', '%') NOT NULL DEFAULT 'px',
+  `watermark_alpha` smallint UNSIGNED NOT NULL DEFAULT 100,
   UNIQUE INDEX `image_sizes_uk`(`string_id`),
   CONSTRAINT `image_sizes_fk` FOREIGN KEY (`watermark_id`) REFERENCES `files` (`id`) ON DELETE SET NULL ON UPDATE SET NULL) 
   ENGINE = InnoDB ROW_FORMAT = Dynamic CHARACTER SET utf8 COLLATE utf8_general_ci;";

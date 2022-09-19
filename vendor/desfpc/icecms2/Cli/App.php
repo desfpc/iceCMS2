@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace iceCMS2\Cli;
 
+use iceCMS2\Caching\CachingFactory;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
 
@@ -48,6 +49,7 @@ class App
      * Parsing Request
      *
      * @return void
+     * @throws Exception
      */
     private function _requestParsing(): void
     {
@@ -60,6 +62,8 @@ class App
                 echo "\n" . 'migration-create {name} - Create blank new DB migration with name {name}. Name must be in CamelCase.';
                 echo "\n" . 'migration-exec - Execute DB migrations.';
                 echo "\n" . 'migration-rollback - Rollback last DB migration.';
+                echo "\n";
+                echo "\n" . 'cache-clear-all - Clear all caches.';
                 echo "\n\n";
                 break;
             case 'migration-create':
@@ -94,6 +98,21 @@ class App
                     echo "\n\e[32m" . 'Migration rollbacked!' . "\e[39m";
                 }
                 echo "\n\n";
+                break;
+            case 'cache-clear-all':
+                echo "\n" . 'IceCMS2 Clear all caches';
+                $cacher = CachingFactory::instance($this->_settings);
+                $keys = $cacher->findKeys($this->_settings->db->name . '*');
+                if (!empty($keys)) {
+                    foreach ($keys as $key) {
+                        echo "\n" . $key . ' ';
+                        if ($cacher->del($key)) {
+                            echo "\e[32m" . '[DELETED]' . "\e[39m";
+                        } else {
+                            echo "\e[31m" . '[ERROR]' . "\e[39m";
+                        }
+                    }
+                }
                 break;
             default:
                 echo "\n\e[31m" . 'Wrong command "' . $this->_argv[1] . '". Type "php cli.php help" for command help.' . "\e[39m";

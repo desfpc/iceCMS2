@@ -19,13 +19,13 @@ class Redis implements CachingInterface
     public bool $connected = false;
 
     /** @var string Redis host */
-    public $host;
+    public string $host;
 
     /** @var int Redis port */
-    public $port;
+    public int $port;
 
     /** @var array Cacher errors array */
-    public $errors = [];
+    public array $errors = [];
 
     /** @var Redka Redis client object */
     private Redka $redis;
@@ -35,8 +35,9 @@ class Redis implements CachingInterface
      *
      * @param string $host
      * @param int $port
+     * @throws \Exception
      */
-    public function __construct($host = 'localhost', $port = 6379)
+    public function __construct(string $host = 'localhost', int $port = 6379)
     {
         $this->host = $host;
         $this->port = $port;
@@ -54,6 +55,7 @@ class Redis implements CachingInterface
 
     /**
      * @inheritDoc
+     * @throws \Exception
      */
     public function has(string $key): bool
     {
@@ -65,6 +67,7 @@ class Redis implements CachingInterface
 
     /**
      * @inheritDoc
+     * @throws \Exception
      */
     public function findKeys(string $pattern): mixed
     {
@@ -76,6 +79,7 @@ class Redis implements CachingInterface
 
     /**
      * @inheritDoc
+     * @throws \Exception
      */
     public function get(string $key, bool $decode = false): mixed
     {
@@ -93,6 +97,7 @@ class Redis implements CachingInterface
 
     /**
      * @inheritDoc
+     * @throws \Exception
      */
     public function set(string $key, mixed $value, ?int $expired = null): bool
     {
@@ -112,12 +117,12 @@ class Redis implements CachingInterface
 
     /**
      * @inheritDoc
+     * @throws \Exception
      */
     public function del(string $key): bool
     {
         if ($this->connected) {
-            $this->key = $key;
-            $res = $this->redis->del($this->key);
+            $res = $this->redis->del($key);
             if ($res === 'OK' || $res === '1' || $res === 1) {
                 return true;
             }
