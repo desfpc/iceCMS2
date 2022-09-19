@@ -298,7 +298,7 @@ class FileImage extends File
             'image_size_id' => $imageSizeId
         ]);
         if ($fileImageSize->load()) {
-            if ($fileImageSize->get('is_created') === 1) {
+            if ((int)$fileImageSize->get('is_created') === 1) {
                 unlink($this->getPath($imageSizeId));
             }
             $this->_imageSizes = null;
@@ -647,5 +647,19 @@ class FileImage extends File
                 break;
         }
         return true;
+    }
+
+    /**
+     * Function before delete
+     *
+     * @return bool
+     * @throws Exception
+     */
+    protected function _beforeDel(): bool
+    {
+        $favicon = $this->_getFaviconPath();
+        unlink($favicon);
+
+        return parent::_beforeDel();
     }
 }

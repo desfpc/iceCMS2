@@ -158,8 +158,17 @@ class FileImageTest extends Ice2CMSTestCase
             $this->assertTrue($imageFile->createImageSize($item['id']));
         }
 
-        //TODO Deleting imageSizes
+        //Deleting imageSizes
+        foreach ($imageSizesArr as $item) {
+            $this->assertTrue($imageFile->deleteImageSize($item['id']));
+        }
 
-        //TODO Deleting Image
+        $watermarkFile = new FileImage(self::$_testSettings);
+        $watermarkFile->load(1);
+        $this->assertTrue($watermarkFile->del());
+
+        $testFile = new FileImage(self::$_testSettings);
+        $testFile->load(2);
+        $this->assertTrue($testFile->del());
     }
 }
