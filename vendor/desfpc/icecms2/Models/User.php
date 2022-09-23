@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace iceCMS2\Models;
 
 use iceCMS2\Helpers\Strings;
+use iceCMS2\Messages\MessageFactory;
 use iceCMS2\Tools\Exception;
 
 class User extends AbstractEntity
@@ -74,17 +75,23 @@ class User extends AbstractEntity
      *
      * @param string $codeType
      * @return bool
+     * @throws Exception
      */
     private function _sendApproveCodeMessage(string $codeType): bool
     {
+        $code = $this->_getApproveCode();
+        $message = MessageFactory::get($this->_settings, $codeType)->setTo($this->get($codeType), $this->get('name'));
+
         switch ($codeType) {
             case 'phone':
+
                 break;
             case 'email':
+
                 break;
         }
 
-        return false;
+        return $message->send();
     }
 
     /**

@@ -26,8 +26,8 @@ class MessageFactory
     public static function get(Settings $settings, string $receiverType): MessageInterface
     {
         return match ($receiverType) {
-            'email' => new FakePushTransport($settings),
-            'phone' => new FakePushTransport($settings),
+            'email' => new FakeEmailTransport($settings),
+            'phone' => new FakePhoneTransport($settings),
             'push' => new FakePushTransport($settings),
             default => throw new Exception('Wrong message receiver type'),
         };
