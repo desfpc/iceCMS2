@@ -192,8 +192,20 @@ abstract class AbstractEntity
                     }
                     $this->_cacher->set($key, json_encode($this->_cols));
                 }
+            } else {
+                $this->_ifGetTableColsError();
             }
         }
+    }
+
+    /**
+     * Function that runs when get error while getting Entity DB table columns
+     *
+     * @return void
+     */
+    protected function _ifGetTableColsError(): void
+    {
+
     }
 
     /**
