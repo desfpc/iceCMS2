@@ -39,10 +39,11 @@ class LocaleText
         }
 
         $keyArr = explode('/', $key);
-        $template = $key;
+        $template = $keyArr[count($keyArr) - 1];
 
         if ($locale !== 'en' && in_array($locale, $settings->locales)) {
             $patch = $settings->path . 'locale/' . $locale . '/' . $keyArr[0] . '.php';
+            unset($keyArr[0]);
 
             if (is_file($patch)) {
                 $fileCacheKey = self::_getFileCacheKey($settings, $patch);
