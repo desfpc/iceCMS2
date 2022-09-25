@@ -43,9 +43,12 @@ $settings = [
         'title' => 'IceCMS2 Great Site',
         'primaryDomain' => 'icecms2',
         'redirectToPrimaryDomain' => true,
-        'languageSubdomain' => true,
+        'localeSubdomain' => true,
         'cssScriptsVersion' => '1',
         'jsScriptsVersion' => '1',
+    ],
+    'locales' => [
+        'en', 'ru',
     ],
     'cache' => [
         'useRedis' => true,

@@ -59,10 +59,11 @@ class Settings
             'title' => 1,
             'primaryDomain' => 1,
             'redirectToPrimaryDomain' => 1,
-            'languageSubdomain' => 1,
+            'localeSubdomain' => 1,
             'cssScriptsVersion' => 1,
             'jsScriptsVersion' => 1,
         ],
+        'locales' => [],
         'cache' => [
             'useRedis' => 1,
             'redisHost' => 0,

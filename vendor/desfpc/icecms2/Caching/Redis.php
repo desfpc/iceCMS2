@@ -35,7 +35,6 @@ class Redis implements CachingInterface
      *
      * @param string $host
      * @param int $port
-     * @throws \Exception
      */
     public function __construct(string $host = 'localhost', int $port = 6379)
     {
@@ -48,65 +47,76 @@ class Redis implements CachingInterface
             if ($this->redis->status == 1) {
                 $this->connected = true;
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->errors[] = $e->getMessage();
         }
     }
 
     /**
      * @inheritDoc
-     * @throws \Exception
+     * @throws Exception
      */
     public function has(string $key): bool
     {
         if ($this->connected) {
-            return ($this->redis->has($key));
+            try {
+                return ($this->redis->has($key));
+            } catch (\Exception $e) {
+                throw new Exception('Redis error: ' . $e->getMessage());
+            }
         }
         throw new Exception('No Redis connection');
     }
 
     /**
      * @inheritDoc
-     * @throws \Exception
+     * @throws Exception
      */
     public function findKeys(string $pattern): mixed
     {
         if ($this->connected) {
-            return ($this->redis->findKeys($pattern));
+            try {
+                return ($this->redis->findKeys($pattern));
+            } catch (\Exception $e) {
+                throw new Exception('Redis error: ' . $e->getMessage());
+            }
         }
         throw new Exception('No Redis connection');
     }
 
     /**
      * @inheritDoc
-     * @throws \Exception
+     * @throws Exception
      */
     public function get(string $key, bool $decode = false): mixed
     {
         if ($this->connected) {
-            $this->key = $key;
-            $this->value = $this->redis->get($key);
+            try {
+                $value = $this->redis->get($key);
+            } catch (\Exception $e) {
+                throw new Exception('Redis error: ' . $e->getMessage());
+            }
 
             if ($decode) {
-                return (json_decode($this->value, true));
+                return (json_decode($value, true));
             }
-            return ($this->value);
+            return ($value);
         }
         throw new Exception('No Redis connection');
     }
 
     /**
      * @inheritDoc
-     * @throws \Exception
+     * @throws Exception
      */
     public function set(string $key, mixed $value, ?int $expired = null): bool
     {
         if ($this->connected) {
-            $this->key = $key;
-            $this->value = $value;
-            $this->expired = $expired;
-
-            $res = $this->redis->set($this->key, $this->value, $this->expired);
+            try {
+                $res = $this->redis->set($key, $value, $expired);
+            } catch (\Exception $e) {
+                throw new Exception('Redis error: ' . $e->getMessage());
+            }
             if ($res === 'OK') {
                 return true;
             }

@@ -62,9 +62,12 @@ class SettingsTest extends TestCase
                 'title' => 'Test Site Name',
                 'primaryDomain' => 'test.site',
                 'redirectToPrimaryDomain' => true,
-                'languageSubdomain' => true,
+                'localeSubdomain' => true,
                 'cssScriptsVersion' => '1',
                 'jsScriptsVersion' => '1',
+            ],
+            'locales' => [
+                'en', 'ru',
             ],
             'cache' => [
                 'useRedis' => true,

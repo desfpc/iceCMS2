@@ -133,7 +133,7 @@ abstract class AbstractEntity
      * @return void
      * @throws Exception
      */
-    public function set(string|array $keyOrValues, string|int|float|bool|null $value = null, bool $checkKey = true): void
+    public function set(string|array $keyOrValues, string|int|float|bool|UnixTime|null $value = null, bool $checkKey = true): void
     {
         if (is_string($keyOrValues)) {
             $this->_setByKeyAndValue($keyOrValues, $value, $checkKey);

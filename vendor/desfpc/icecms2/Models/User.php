@@ -13,6 +13,7 @@ namespace iceCMS2\Models;
 use iceCMS2\Helpers\Strings;
 use iceCMS2\Messages\MessageFactory;
 use iceCMS2\Tools\Exception;
+use iceCMS2\Types\UnixTime;
 
 class User extends AbstractEntity
 {
@@ -71,7 +72,7 @@ class User extends AbstractEntity
     }
 
     /**
-     * TODO send approve code message
+     * Send approve code message
      *
      * @param string $codeType
      * @return bool
@@ -80,18 +81,32 @@ class User extends AbstractEntity
     private function _sendApproveCodeMessage(string $codeType): bool
     {
         $code = $this->_getApproveCode();
-        $message = MessageFactory::get($this->_settings, $codeType)->setTo($this->get($codeType), $this->get('name'));
+        $this->set($codeType . '_approve_code', $code);
+        $this->set($codeType . '_approved', false);
+        $this->set($codeType . '_send_time', new UnixTime());
 
-        switch ($codeType) {
-            case 'phone':
+        if ($this->save()) {
+            $message = MessageFactory::get($this->_settings, $codeType)
+                ->setTo($this->get($codeType), $this->get('name'))
+                ->setTheme('Code for approve ' . $codeType);
 
-                break;
-            case 'email':
+            switch ($codeType) {
+                case 'phone':
+                    $message->setFrom($this->_settings->site->name, $this->_settings->site->name)
+                        ->setText('Code: ' . $code);
+                    break;
+                case 'email':
+                    $message->setFrom($this->_settings->email->mail, $this->_settings->email->signature)
+                        ->setText('Dear ' . $this->get('name') . '!'
+                            . '<br><br>Your code for approve email on ' . $this->_settings->site->title . ': <b>' . $code . '</b>'
+                            . '<br><br>' . $this->_settings->site->title . ' team.');
+                    break;
+            }
 
-                break;
+            return $message->send();
         }
 
-        return $message->send();
+        return false;
     }
 
     /**
