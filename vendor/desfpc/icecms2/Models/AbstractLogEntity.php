@@ -16,12 +16,16 @@ use iceCMS2\Tools\Exception;
 
 abstract class AbstractLogEntity extends AbstractEntity
 {
+    /** @var string|null Main log tible (for copying structure) */
+    protected ?string $_mainTable = null;
+
     /**
      * @inheritDoc
      */
     public function __construct(Settings $settings, int|array|null $id = null)
     {
         $this->_settings = $settings;
+        $this->_mainTable = $this->_dbtable;
         $this->_dbtable = $this->_getTableName();
         parent::__construct($settings, $id);
     }
@@ -50,25 +54,37 @@ abstract class AbstractLogEntity extends AbstractEntity
     private function _getTableName(): string
     {
 
+        return $this->_mainTable . '_log';
     }
 
     /**
-     * TODO Checking if real log table is exists
+     * Checking if real log table is exists
      *
      * @return bool
      */
     private function _ifLogTableExists(): bool
     {
-
+        $res = $this->_db->query('SHOW TABLES LIKE "' . $this->_dbtable . '"');
+        return !empty($res);
     }
 
     /**
-     * TODO Creating log table for now time
+     * Creating log table for now time
      *
      * @return bool
      */
     private function _createLogTable(): bool
     {
+        if ($createTableSQL = $this->_db->query('SHOW CREATE TABLE `' . $this->_mainTable . '`;')) {
+            $createTableSQL = $createTableSQL[0]['Create Table'];
+            $createTableSQL = str_replace(
+                'CREATE TABLE `' . $this->_mainTable . '`',
+                'CREATE TABLE `' . $this->_dbtable . '`',
+                $createTableSQL
+            );
+            return $this->_db->query($createTableSQL);
+        }
 
+        return false;
     }
 }

@@ -64,6 +64,10 @@ class Settings
             'jsScriptsVersion' => 1,
         ],
         'locales' => [],
+        'logs' => [
+            'period' => 1,
+            'type' => 1,
+        ],
         'cache' => [
             'useRedis' => 1,
             'redisHost' => 0,
@@ -92,6 +96,9 @@ class Settings
 
     /** @var array|null site locales */
     public ?array $locales = null;
+
+    /** @var stdClass|null logs settings */
+    public ?stdClass $logs = null;
 
     /** @var string|null site active locale */
     public ?string $locale = 'en';
