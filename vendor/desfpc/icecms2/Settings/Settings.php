@@ -90,6 +90,9 @@ class Settings
     /** @var stdClass|null site settings */
     public ?stdClass $site = null;
 
+    /** @var array|null site locales */
+    public ?array $locales = null;
+
     /** @var stdClass|null cache system settings */
     public ?stdClass $cache = null;
 
