@@ -22,22 +22,26 @@ class LocaleText
      * @param Settings $settings
      * @param string $key
      * @param array|null $values
-     * @param string $locale
+     * @param string|null $locale
      * @return string
      * @throws Exception
      */
-    public static function get(Settings $settings, string $key, ?array $values, string $locale = 'ru'): string
+    public static function get(Settings $settings, string $key, ?array $values = null, ?string $locale = null): string
     {
+        if (is_null($locale)) {
+            $locale = $settings->locale;
+        }
+
         $cacher = CachingFactory::instance($settings);
         $textCacheKey = self::_getTextCacheKey($settings, $key, $values, $locale);
         if ($cacher->has($textCacheKey)) {
             return $cacher->get($textCacheKey);
         }
 
+        $keyArr = explode('/', $key);
         $template = $key;
 
         if ($locale !== 'en' && in_array($locale, $settings->locales)) {
-            $keyArr = explode('/', $key);
             $patch = $settings->path . 'locale/' . $locale . '/' . $keyArr[0] . '.php';
 
             if (is_file($patch)) {

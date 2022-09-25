@@ -93,6 +93,9 @@ class Settings
     /** @var array|null site locales */
     public ?array $locales = null;
 
+    /** @var string|null site active locale */
+    public ?string $locale = 'en';
+
     /** @var stdClass|null cache system settings */
     public ?stdClass $cache = null;
 

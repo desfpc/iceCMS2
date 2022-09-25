@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace iceCMS2\Models;
 
 use iceCMS2\Helpers\Strings;
+use iceCMS2\Locale\LocaleText;
 use iceCMS2\Messages\MessageFactory;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Types\UnixTime;
@@ -23,14 +24,25 @@ class User extends AbstractEntity
     /** @var array Array of needed to approve values */
     protected array $_needToApproveValues = ['phone', 'email'];
 
+    /** @var FileImage|null User avatar obj */
+    public ?FileImage $avatar = null;
+
     /**
-     * TODO Logics after Entity load() method
+     * Logic after Entity load() method
      *
      * @return void
+     * @throws Exception
      */
     protected function _afterLoad(): void
     {
-
+        //avatar load
+        if ($this->get('avatar') > 0) {
+            $this->avatar = new FileImage($this->_settings, $this->get('avatar'));
+            if (!$this->avatar->load()){
+                $this->avatar = null;
+                $this->errors[] = LocaleText::get($this->_settings, 'user/errors/User avatar load error');
+            }
+        }
     }
 
     /**
@@ -63,7 +75,7 @@ class User extends AbstractEntity
         $code = $this->_getApproveCode();
         $this->set($codeType. '_approve_code', $code);
         $this->set($codeType. '_approved', 0);
-        $this->set($codeType. '_send_time');
+        $this->set($codeType. '_send_time', new UnixTime());
         if ($this->save() && $this->_sendApproveCodeMessage($codeType)) {
             return true;
         }
@@ -80,33 +92,41 @@ class User extends AbstractEntity
      */
     private function _sendApproveCodeMessage(string $codeType): bool
     {
-        $code = $this->_getApproveCode();
-        $this->set($codeType . '_approve_code', $code);
-        $this->set($codeType . '_approved', false);
-        $this->set($codeType . '_send_time', new UnixTime());
+        $code = $this->get($codeType. '_approve_code');
 
-        if ($this->save()) {
-            $message = MessageFactory::get($this->_settings, $codeType)
-                ->setTo($this->get($codeType), $this->get('name'))
-                ->setTheme('Code for approve ' . $codeType);
+        $message = MessageFactory::get($this->_settings, $codeType)
+            ->setTo($this->get($codeType), $this->get('name'))
+            ->setTheme(LocaleText::get(
+                $this->_settings,
+                'user/approve/Code for approve {codeType}',
+                ['codeType' => LocaleText::get($this->_settings, 'user/approve/genitiveСase/' . $codeType)]
+            ));
 
-            switch ($codeType) {
-                case 'phone':
-                    $message->setFrom($this->_settings->site->name, $this->_settings->site->name)
-                        ->setText('Code: ' . $code);
-                    break;
-                case 'email':
-                    $message->setFrom($this->_settings->email->mail, $this->_settings->email->signature)
-                        ->setText('Dear ' . $this->get('name') . '!'
-                            . '<br><br>Your code for approve email on ' . $this->_settings->site->title . ': <b>' . $code . '</b>'
-                            . '<br><br>' . $this->_settings->site->title . ' team.');
-                    break;
-            }
-
-            return $message->send();
+        switch ($codeType) {
+            case 'phone':
+                $message->setFrom($this->_settings->site->name, $this->_settings->site->name)
+                    ->setText('Code: ' . $code);
+                break;
+            case 'email':
+                $message->setFrom($this->_settings->email->mail, $this->_settings->email->signature)
+                    ->setText(LocaleText::get($this->_settings, 'user/approve/Code') . ' '
+                        . $this->get('name') . '!'
+                        . '<br><br>' . LocaleText::get(
+                            $this->_settings,
+                            'Your approval code on {siteName}: <b>{code}</b>', [
+                            'siteName' => $this->_settings->site->title,
+                            'code' => $code
+                        ])
+                        . '<br><br>' . LocaleText::get(
+                            $this->_settings,
+                            '{team} team',
+                            ['team' => $this->_settings->site->title]
+                        )
+                    );
+                break;
         }
 
-        return false;
+        return $message->send();
     }
 
     /**
