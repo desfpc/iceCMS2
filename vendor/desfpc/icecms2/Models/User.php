@@ -94,7 +94,7 @@ class User extends AbstractEntity
     {
         $code = $this->get($codeType. '_approve_code');
 
-        $message = MessageFactory::get($this->_settings, $codeType)
+        $message = MessageFactory::instance($this->_settings, $codeType)
             ->setTo($this->get($codeType), $this->get('name'))
             ->setTheme(LocaleText::get(
                 $this->_settings,

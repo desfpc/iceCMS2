@@ -23,7 +23,7 @@ class MessageFactory
      * @return MessageInterface
      * @throws Exception
      */
-    public static function get(Settings $settings, string $receiverType): MessageInterface
+    public static function instance(Settings $settings, string $receiverType): MessageInterface
     {
         return match ($receiverType) {
             'email' => new FakeEmailTransport($settings),
