@@ -28,8 +28,9 @@ class DBLogger implements LoggerInterface
             /** @var AbstractLogEntity $data */
             return $data->save();
         } elseif (is_array($data)) {
+            $fullClassName = 'iceCMS2\Models\\' . $type . 'Log';
             /** @var AbstractLogEntity $log */
-            $log = new $$type($settings);
+            $log = new $$fullClassName($settings);
             $log->set($data);
             return $log->save();
         }
