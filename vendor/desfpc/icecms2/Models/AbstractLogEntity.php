@@ -47,14 +47,17 @@ abstract class AbstractLogEntity extends AbstractEntity
     }
 
     /**
-     * TODO Get name of table according to log period and now time
+     * Get table name according to log period and now time
      *
      * @return string
      */
     private function _getTableName(): string
     {
-
-        return $this->_mainTable . '_log';
+        return match ($this->_settings->logs->period) {
+            'month' => $this->_mainTable . '_log_' . date('Ym'),
+            'year' => $this->_mainTable . '_log_' . date('Y'),
+            default => $this->_mainTable . '_log',
+        };
     }
 
     /**

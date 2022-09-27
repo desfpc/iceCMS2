@@ -69,6 +69,10 @@ class SettingsTest extends TestCase
             'locales' => [
                 'en', 'ru',
             ],
+            'logs' => [
+                'period' => 'month',
+                'type' => 'db',
+            ],
             'cache' => [
                 'useRedis' => true,
                 'redisHost' => '127.0.0.1',
