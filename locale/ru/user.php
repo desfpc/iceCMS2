@@ -22,5 +22,6 @@ $langArr = [
     ],
     'errors' => [
         'User avatar load error' => 'Ошибка загрузки аватара пользователя',
+        'User avatar save error' => 'Ошибка сохранения аватара пользователя',
     ],
 ];

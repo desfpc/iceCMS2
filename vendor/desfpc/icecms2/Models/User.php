@@ -18,6 +18,12 @@ use iceCMS2\Types\UnixTime;
 
 class User extends AbstractEntity
 {
+    /** @var int Avatar image size in px */
+    private const AVATAR_SIZE = 200;
+
+    /** @var string Avatar file name prefix */
+    private const AVATAR_FILE_NAME = 'avatar';
+
     /** @var string Entity DB table name */
     protected string $_dbtable = 'users';
 
@@ -26,6 +32,9 @@ class User extends AbstractEntity
 
     /** @var FileImage|null User avatar obj */
     public ?FileImage $avatar = null;
+
+    /** @var string|null User avatar file url */
+    public ?string $avatarUrl = null;
 
     /**
      * Logic after Entity load() method
@@ -42,6 +51,36 @@ class User extends AbstractEntity
                 $this->avatar = null;
                 $this->errors[] = LocaleText::get($this->_settings, 'user/errors/User avatar load error');
             }
+            $fileSizes = $this->avatar->getImageSizes();
+            $avatarSizeId = null;
+            if (!empty($fileSizes)) {
+                foreach ($fileSizes as $size) {
+                    if ($size['string_id'] == self::AVATAR_FILE_NAME) {
+                        $avatarSizeId = $size['id'];
+                        break;
+                    }
+                }
+            }
+            if (is_null($avatarSizeId)) {
+                $fileSize = new FileImageSize($this->_settings);
+                if (!$fileSize->loadByParam('string_id', self::AVATAR_FILE_NAME)) {
+                    $fileSize->set([
+                        'width' => self::AVATAR_SIZE,
+                        'height' => self::AVATAR_SIZE,
+                        'is_crop' => 1,
+                        'string_id' => self::AVATAR_FILE_NAME,
+                    ]);
+                    if (!$fileSize->save()) {
+                        $this->errors[] = LocaleText::get($this->_settings, 'user/errors/User avatar size save error');
+                    }
+                }
+                if ($fileSize->isLoaded) {
+                    $avatarSizeId = $fileSize->get('id');
+                    $this->avatar->addImageSize($avatarSizeId);
+                    $this->avatar->buildImageSizeFiles();
+                }
+            }
+            $this->avatarUrl = $this->avatar->getUrl($avatarSizeId);
         }
     }
 
