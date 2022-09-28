@@ -39,6 +39,9 @@ abstract class AbstractEntityList
     /** @var array Query order data */
     protected array $_order;
 
+    /** @var ?array Fields for select */
+    protected ?array $_selectedFields = null;
+
     /** @var int Query results page */
     protected int $_page = 1;
 
@@ -122,7 +125,11 @@ abstract class AbstractEntityList
         if ($ifCnt) {
             $query = 'SELECT COUNT(`dbtable`.`id`) `cnt` ';
         } else {
-            $query = 'SELECT `dbtable`.* ';
+            if (is_null($this->_selectedFields)) {
+                $query = 'SELECT `dbtable`.* ';
+            } else {
+                $query = 'SELECT `dbtable`.`' . implode('`,`dbtable`.`', $this->_selectedFields) . '` ';
+            }
         }
         $query .= $this->_getMoreSelectQuery();
         $query .= 'FROM ' . $this->_dbtable .' `dbtable`';

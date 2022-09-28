@@ -525,17 +525,6 @@ class FileImage extends File
             $dstY = (int)round((imagesy($image)*$wparams['top']/100) - ($wparams['height']*$wparams['top']/100));
         }
 
-        /*imagecopy(
-            $image,
-            $stamp,
-            $dstX,
-            $dstY,
-            0,
-            0,
-            $wparams['width'],
-            $wparams['height']
-        );*/
-
         imagecopymerge(
             $image,
             $stamp,

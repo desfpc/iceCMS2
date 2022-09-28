@@ -13,6 +13,7 @@ namespace iceCMS2\Models;
 use iceCMS2\Helpers\Strings;
 use iceCMS2\Locale\LocaleText;
 use iceCMS2\Messages\MessageFactory;
+use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Types\UnixTime;
 
@@ -22,7 +23,7 @@ class User extends AbstractEntity
     private const AVATAR_SIZE = 200;
 
     /** @var string Avatar file name prefix */
-    private const AVATAR_FILE_NAME = 'avatar';
+    public const AVATAR_FILE_NAME = 'avatar';
 
     /** @var string Entity DB table name */
     protected string $_dbtable = 'users';
@@ -50,8 +51,39 @@ class User extends AbstractEntity
             if (!$this->avatar->load()){
                 $this->avatar = null;
                 $this->errors[] = LocaleText::get($this->_settings, 'user/errors/User avatar load error');
+            } else {
+                $this->avatarUrl = self::getAvatarUrl($this->_settings, $this->avatar);
+                if (is_null($this->avatarUrl)) {
+                    $this->errors[] = LocaleText::get($this->_settings, 'user/errors/User avatar save error');
+                }
             }
-            $fileSizes = $this->avatar->getImageSizes();
+        }
+    }
+
+    /**
+     * Get Avatar URL by image ID
+     *
+     * @param Settings $settings
+     * @param int|FileImage|null $avatarId
+     * @return string|null
+     * @throws Exception
+     */
+    public static function getAvatarUrl(Settings $settings, int|FileImage|null $avatarId = null): ?string
+    {
+        if (!is_null($avatarId)) {
+
+            if (is_int($avatarId)) {
+                $avatar = new FileImage($settings, $avatarId);
+                if (!$avatar->load()) {
+                    return null;
+                }
+            } else {
+                $avatar = $avatarId;
+                if (!$avatar->isLoaded && !$avatar->load()) {
+                    return null;
+                }
+            }
+            $fileSizes = $avatar->getImageSizes();
             $avatarSizeId = null;
             if (!empty($fileSizes)) {
                 foreach ($fileSizes as $size) {
@@ -62,7 +94,7 @@ class User extends AbstractEntity
                 }
             }
             if (is_null($avatarSizeId)) {
-                $fileSize = new FileImageSize($this->_settings);
+                $fileSize = new FileImageSize($settings);
                 if (!$fileSize->loadByParam('string_id', self::AVATAR_FILE_NAME)) {
                     $fileSize->set([
                         'width' => self::AVATAR_SIZE,
@@ -71,17 +103,19 @@ class User extends AbstractEntity
                         'string_id' => self::AVATAR_FILE_NAME,
                     ]);
                     if (!$fileSize->save()) {
-                        $this->errors[] = LocaleText::get($this->_settings, 'user/errors/User avatar size save error');
+                        return null;
                     }
                 }
                 if ($fileSize->isLoaded) {
                     $avatarSizeId = $fileSize->get('id');
-                    $this->avatar->addImageSize($avatarSizeId);
-                    $this->avatar->buildImageSizeFiles();
+                    $avatar->addImageSize($avatarSizeId);
+                    $avatar->buildImageSizeFiles();
                 }
             }
-            $this->avatarUrl = $this->avatar->getUrl($avatarSizeId);
+            return $avatar->getUrl($avatarSizeId);
         }
+
+        return null;
     }
 
     /**
