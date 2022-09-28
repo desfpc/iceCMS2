@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace iceCMS2\Messages;
 
+use DateTime;
 use iceCMS2\Settings\Settings;
 
 abstract class AbstractMessage implements MessageInterface
@@ -31,6 +32,9 @@ abstract class AbstractMessage implements MessageInterface
 
     /** @var string|null */
     private ?string $_text = null;
+
+    /** @var DateTime|null */
+    private ?DateTime $_sendDate = null;
 
     /** @var Settings|null */
     private ?Settings $_settings = null;
@@ -108,6 +112,25 @@ abstract class AbstractMessage implements MessageInterface
      */
     public function send(): bool
     {
+        $this->_sendDate = new DateTime();
         return true;
+    }
+
+    /**
+     * Serializer
+     *
+     * @return array
+     */
+    public function __serialize(): array
+    {
+        return [
+            'from' => $this->_from,
+            'fromName' => $this->_fromName,
+            'to' => $this->_to,
+            'toName' => $this->_toName,
+            'theme' => $this->_theme,
+            'text' => $this->_text,
+            'date' => is_null($this->_sendDate) ? null : $this->_sendDate->format('Y-m-d H:i:s'),
+        ];
     }
 }

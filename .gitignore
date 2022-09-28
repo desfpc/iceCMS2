@@ -10,3 +10,5 @@ settings/product.php
 .phpunit.result.cache
 **/.DS_Store
 web/files_test
+.DS_Store
+*.log

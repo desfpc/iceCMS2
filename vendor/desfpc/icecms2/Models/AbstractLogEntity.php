@@ -54,8 +54,8 @@ abstract class AbstractLogEntity extends AbstractEntity
     private function _getTableName(): string
     {
         return match ($this->_settings->logs->period) {
-            'month' => $this->_mainTable . '_log_' . date('Ym'),
-            'year' => $this->_mainTable . '_log_' . date('Y'),
+            'month' => $this->_mainTable . '_' . date('Ym'),
+            'year' => $this->_mainTable . '_' . date('Y'),
             default => $this->_mainTable . '_log',
         };
     }

@@ -24,13 +24,12 @@ class DBLogger implements LoggerInterface
      */
     public static function log(Settings $settings, string $type, mixed $data): bool
     {
-        if ($data instanceof AbstractLogEntity::class) {
-            /** @var AbstractLogEntity $data */
+        if ($data instanceof AbstractLogEntity) {
             return $data->save();
         } elseif (is_array($data)) {
             $fullClassName = 'iceCMS2\Models\\' . $type . 'Log';
             /** @var AbstractLogEntity $log */
-            $log = new $$fullClassName($settings);
+            $log = new $fullClassName($settings);
             $log->set($data);
             return $log->save();
         }

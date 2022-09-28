@@ -22,7 +22,7 @@ class LoggerFactory
      */
     public static function instance(Settings $settings): LoggerInterface
     {
-        return match ($settings->logger->type) {
+        return match ($settings->logs->type) {
             'db' => new DBLogger(),
             default => new FileLogger()
         };

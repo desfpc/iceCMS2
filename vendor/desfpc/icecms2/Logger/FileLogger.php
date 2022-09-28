@@ -21,7 +21,7 @@ class FileLogger implements LoggerInterface
      */
     public static function log(Settings $settings, string $type, mixed $data): bool
     {
-        $logFile = $settings->logs->path . '/' . $type . match ($settings->logs->period) {
+        $logFile = $settings->path . '/logs/' . $type . match ($settings->logs->period) {
             'day' => '_' . date('Y-m-d') . '.log',
             'month' => '_' . date('Y-m') . '.log',
             'year' => '_' . date('Y') . '.log',
@@ -32,6 +32,9 @@ class FileLogger implements LoggerInterface
             case 'array':
                 $data = json_encode($data);
                 break;
+            case 'object':
+                $data = json_encode($data->__serialize());
+                break;
             case 'string':
                 break;
             default:
@@ -39,6 +42,6 @@ class FileLogger implements LoggerInterface
         }
 
         $logData = date('Y-m-d H:i:s') . ' ' . $data . PHP_EOL;
-        return file_put_contents($logFile, $logData, FILE_APPEND);
+        return (bool)file_put_contents($logFile, $logData, FILE_APPEND);
     }
 }

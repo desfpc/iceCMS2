@@ -24,7 +24,7 @@ class Icecms2CreateMessageLogTable extends AbstractMigration
         return 'CREATE TABLE `message_log` (
         `id` int UNSIGNED NOT NULL AUTO_INCREMENT,
         `date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        `type` enum(\'email\',\'sms\',\'push\') NOT NULL,
+        `type` enum(\'email\',\'sms\',\'push\',\'fake\') NOT NULL,
         `to` varchar(255) NOT NULL,
         `to_name` varchar(255) NOT NULL,
         `from` varchar(255) NOT NULL,

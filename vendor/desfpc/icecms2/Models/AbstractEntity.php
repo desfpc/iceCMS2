@@ -194,6 +194,7 @@ abstract class AbstractEntity
                 }
             } else {
                 $this->_ifGetTableColsError();
+                $this->_getTableCols();
             }
         }
     }

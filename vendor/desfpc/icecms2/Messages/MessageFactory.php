@@ -29,6 +29,7 @@ class MessageFactory
             'email' => new FakeEmailTransport($settings),
             'phone' => new FakePhoneTransport($settings),
             'push' => new FakePushTransport($settings),
+            'fake' => new FakeEmailTransport($settings),
             default => throw new Exception('Wrong message receiver type'),
         };
     }
