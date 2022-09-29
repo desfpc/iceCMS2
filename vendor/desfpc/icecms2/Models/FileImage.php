@@ -200,7 +200,12 @@ class FileImage extends File
         if (is_null($imageSize)) {
             return parent::getUrl();
         }
-        return $this->_getUrlDirectory() . $this->_getImageSizeName($imageSize);
+        if (!is_null($this->get('extension'))) {
+            $extension = '.' . $this->get('extension');
+        } else {
+            $extension = '';
+        }
+        return $this->_getUrlDirectory() . $this->_getImageSizeName($imageSize) . $extension;
     }
 
     /**
@@ -238,7 +243,7 @@ class FileImage extends File
             $imageSize = new ImageSize($this->_settings, $imageSize);
             $imageSize->load();
         }
-        return $imageSize->get('string_id');
+        return $this->get('id') . '_' . $imageSize->get('string_id');
     }
 
     /**

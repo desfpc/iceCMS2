@@ -47,7 +47,7 @@ class User extends AbstractEntity
     {
         //avatar load
         if ($this->get('avatar') > 0) {
-            $this->avatar = new FileImage($this->_settings, $this->get('avatar'));
+            $this->avatar = new FileImage($this->_settings, (int)$this->get('avatar'));
             if (!$this->avatar->load()){
                 $this->avatar = null;
                 $this->errors[] = LocaleText::get($this->_settings, 'user/errors/User avatar load error');
@@ -94,7 +94,7 @@ class User extends AbstractEntity
                 }
             }
             if (is_null($avatarSizeId)) {
-                $fileSize = new FileImageSize($settings);
+                $fileSize = new ImageSize($settings);
                 if (!$fileSize->loadByParam('string_id', self::AVATAR_FILE_NAME)) {
                     $fileSize->set([
                         'width' => self::AVATAR_SIZE,
@@ -107,7 +107,7 @@ class User extends AbstractEntity
                     }
                 }
                 if ($fileSize->isLoaded) {
-                    $avatarSizeId = $fileSize->get('id');
+                    $avatarSizeId = (int)$fileSize->get('id');
                     $avatar->addImageSize($avatarSizeId);
                     $avatar->buildImageSizeFiles();
                 }

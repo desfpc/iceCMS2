@@ -261,7 +261,11 @@ abstract class AbstractEntity
                     return false;
                 }
                 return true;
+            } else {
+                $this->errors[] = $this->_db->getWarningText();
             }
+        } else {
+            $this->errors[] = 'Error while saving Entity: no dirty values';
         }
         return false;
     }
@@ -408,9 +412,9 @@ abstract class AbstractEntity
      */
     public function loadByParam(string $param, string|int|float|bool|null $value = null): bool
     {
-        if (!isset($this->_values[$param])) {
+        /*if (!isset($this->_values[$param])) {
             throw new Exception('Field "' . $param . '" missing in table "' . $this->_dbtable . '"');
-        }
+        }*/
 
         $sql = 'SELECT max(`id`) `id` FROM `' . $this->_dbtable . '` WHERE `' . $param . '` = ?';
         $res = $this->_db->queryBinded($sql, [':'.$param => $value]);
