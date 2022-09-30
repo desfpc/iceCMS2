@@ -12,7 +12,7 @@ namespace iceCMS2\Authorization;
 
 use iceCMS2\Models\User;
 
-class TokenAuthorization implements AuthorizationInterface
+class TokenAuthorization extends AbstractAuthorization implements AuthorizationInterface
 {
 
     /**
@@ -26,24 +26,8 @@ class TokenAuthorization implements AuthorizationInterface
     /**
      * @inheritDoc
      */
-    public function getAuthStatus(): bool
-    {
-        // TODO: Implement getAuthStatus() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getAuthUser(): ?User
     {
         // TODO: Implement getAuthUser() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function exitAuth(): bool
-    {
-        // TODO: Implement exitAuth() method.
     }
 }

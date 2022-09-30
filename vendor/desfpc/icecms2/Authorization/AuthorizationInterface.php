@@ -11,9 +11,17 @@ declare(strict_types=1);
 namespace iceCMS2\Authorization;
 
 use iceCMS2\Models\User;
+use iceCMS2\Settings\Settings;
 
 interface AuthorizationInterface
 {
+    /**
+     * Constructor class
+     *
+     * @param Settings $settings
+     */
+    public function __construct(Settings $settings);
+
     /**
      * Authorize request
      *
@@ -33,7 +41,7 @@ interface AuthorizationInterface
      *
      * @return User|null
      */
-    public function getAuthUser(): ?User;
+    public function getUser(): ?User;
 
     /**
      * Exit from authorized user
