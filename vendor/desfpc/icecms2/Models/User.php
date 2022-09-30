@@ -211,4 +211,50 @@ class User extends AbstractEntity
     {
         return Strings::getRandomString(6, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
     }
+
+    /**
+     * Setting new Entity value
+     *
+     * @param string $key
+     * @param string|int|float|bool|null $value
+     * @param bool $checkKey
+     * @throws Exception
+     */
+    protected function _setByKeyAndValue(
+        string $key,
+        string|int|float|bool|UnixTime|null $value = null,
+        bool $checkKey = true
+    ): void {
+        if ($key === 'password') {
+            $value = $this->_getPasswordHash($value);
+        }
+
+        parent::_setByKeyAndValue($key, $value, $checkKey);
+    }
+
+    /**
+     * Get password hash
+     *
+     * @param string $password
+     * @return string
+     */
+    private function _getPasswordHash(string $password): string
+    {
+        return password_hash($password, PASSWORD_DEFAULT);
+    }
+
+    /**
+     * Check password
+     *
+     * @param string $password
+     * @return bool
+     * @throws Exception
+     */
+    public function checkPassword(string $password): bool
+    {
+        if (!$this->isLoaded) {
+            throw new Exception('User is not loaded');
+        }
+        return password_verify($password, $this->get('password'));
+    }
 }
