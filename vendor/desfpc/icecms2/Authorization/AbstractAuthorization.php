@@ -12,6 +12,7 @@ namespace iceCMS2\Authorization;
 
 use iceCMS2\Models\User;
 use iceCMS2\Settings\Settings;
+use iceCMS2\Tools\Exception;
 
 class AbstractAuthorization implements AuthorizationInterface
 {
@@ -24,6 +25,27 @@ class AbstractAuthorization implements AuthorizationInterface
     public function __construct(Settings $settings)
     {
         $this->_settings = $settings;
+    }
+
+    /**
+     * Authorize user by email and password
+     *
+     * @param string $email
+     * @param string $password
+     * @return bool
+     * @throws Exception
+     */
+    protected function _passwordAuth(string $email, string $password): bool
+    {
+        $user = new User($this->_settings);
+        if ($user->loadByParam('email', $email)) {
+            if ($user->checkPassword($password)) {
+                self::$_user = $user;
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

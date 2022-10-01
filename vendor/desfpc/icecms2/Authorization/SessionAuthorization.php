@@ -22,14 +22,7 @@ class SessionAuthorization extends AbstractAuthorization implements Authorizatio
     public function authorizeRequest(): bool
     {
         if (isset($_REQUEST['email']) && isset($_REQUEST['password'])) {
-            $user = new User($this->_settings);
-            if ($user->loadByParam('email', $_REQUEST['email'])) {
-                if ($user->checkPassword($_REQUEST['password'])) {
-                    self::$_user = $user;
-                    $_SESSION['user'] = $user->get('id');
-                    return true;
-                }
-            }
+            return $this->_passwordAuth($_REQUEST['email'], $_REQUEST['password']);
         } elseif (isset($_SESSION['user'])) {
             $user = new User($this->_settings);
             if ($user->load((int)$_SESSION['user'])) {

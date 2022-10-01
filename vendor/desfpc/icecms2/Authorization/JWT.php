@@ -77,16 +77,20 @@ class JWT
      *
      * @param Settings $settings
      * @param string $token
+     * @param string $type
      * @return bool|JWTPayload
      */
-    public static function checkJWT(Settings $settings, string $token): bool|JWTPayload
+    public static function checkJWT(Settings $settings, string $token, string $type): bool|JWTPayload
     {
         $tokenArr = explode('.', $token);
         $header = json_decode(base64_decode($tokenArr[0]), true);
         $payload = json_decode(base64_decode($tokenArr[1]), true);
         $signature = base64_decode($tokenArr[2]);
 
-        if ($signature === hash_hmac(self::ALGORITHM, $header . '.' . $payload, $settings->secret)) {
+        if (
+            $type === $payload->getType
+            && $signature === hash_hmac(self::ALGORITHM, $header . '.' . $payload, $settings->secret)
+        ) {
             if ($payload['exp'] > time()) {
                 return self::getPayloadObj($payload);
             }
