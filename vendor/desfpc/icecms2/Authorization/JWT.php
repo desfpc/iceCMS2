@@ -67,9 +67,22 @@ class JWT
         }
 
         $payload = json_encode($payload);
-        $signature = hash_hmac(self::ALGORITHM, $header . '.' . $payload, $settings->secret);
+        $signature = static::_getSignature($settings, $header, $payload);
 
         return base64_encode($header) . '.' . base64_encode($payload) . '.' . base64_encode($signature);
+    }
+
+    /**
+     * Get signature for header and payload
+     *
+     * @param Settings $settings
+     * @param string $header
+     * @param string $payload
+     * @return string
+     */
+    private static function _getSignature(Settings $settings, string $header, string $payload): string
+    {
+        return hash_hmac(self::ALGORITHM, $header . '.' . $payload, $settings->secret);
     }
 
     /**
@@ -83,13 +96,15 @@ class JWT
     public static function checkJWT(Settings $settings, string $token, string $type): bool|JWTPayload
     {
         $tokenArr = explode('.', $token);
-        $header = json_decode(base64_decode($tokenArr[0]), true);
-        $payload = json_decode(base64_decode($tokenArr[1]), true);
+        $headerStr = base64_decode($tokenArr[0]);
+        //$header = json_decode($headerStr, true);
+        $payloadStr = base64_decode($tokenArr[1]);
+        $payload = json_decode($payloadStr, true);
         $signature = base64_decode($tokenArr[2]);
 
         if (
-            $type === $payload->getType
-            && $signature === hash_hmac(self::ALGORITHM, $header . '.' . $payload, $settings->secret)
+            $type === $payload['type']
+            && $signature === hash_hmac(self::ALGORITHM, $headerStr . '.' . $payloadStr, $settings->secret)
         ) {
             if ($payload['exp'] > time()) {
                 return self::getPayloadObj($payload);

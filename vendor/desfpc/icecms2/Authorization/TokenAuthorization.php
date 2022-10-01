@@ -69,8 +69,8 @@ class TokenAuthorization extends AbstractAuthorization implements AuthorizationI
     public function getTokens(string $email, string $password): bool|array
     {
         if ($this->_passwordAuth($email, $password)) {
-            $accessToken = JWT::getJWT($this->_settings, self::$_user->get('id'), 'access');
-            $refreshToken = JWT::getJWT($this->_settings, self::$_user->get('id'), 'refresh');
+            $accessToken = JWT::getJWT($this->_settings, (int)self::$_user->get('id'), 'access');
+            $refreshToken = JWT::getJWT($this->_settings, (int)self::$_user->get('id'), 'refresh');
 
             return [
                 'accessToken' => $accessToken,

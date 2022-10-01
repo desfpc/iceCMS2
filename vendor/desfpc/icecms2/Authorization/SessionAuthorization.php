@@ -22,7 +22,10 @@ class SessionAuthorization extends AbstractAuthorization implements Authorizatio
     public function authorizeRequest(): bool
     {
         if (isset($_REQUEST['email']) && isset($_REQUEST['password'])) {
-            return $this->_passwordAuth($_REQUEST['email'], $_REQUEST['password']);
+            if ($this->_passwordAuth($_REQUEST['email'], $_REQUEST['password'])) {
+                $_SESSION['user'] = self::$_user->get('id');
+                return true;
+            }
         } elseif (isset($_SESSION['user'])) {
             $user = new User($this->_settings);
             if ($user->load((int)$_SESSION['user'])) {
@@ -32,5 +35,15 @@ class SessionAuthorization extends AbstractAuthorization implements Authorizatio
         }
 
         return false;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function exitAuth(): bool
+    {
+        unset($_SESSION['user']);
+        self::$_user = null;
+        return true;
     }
 }
