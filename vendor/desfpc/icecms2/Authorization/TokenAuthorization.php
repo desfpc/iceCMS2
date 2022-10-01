@@ -22,12 +22,4 @@ class TokenAuthorization extends AbstractAuthorization implements AuthorizationI
     {
         // TODO: Implement authorizeRequest() method.
     }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAuthUser(): ?User
-    {
-        // TODO: Implement getAuthUser() method.
-    }
 }
