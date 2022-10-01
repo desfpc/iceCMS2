@@ -37,6 +37,11 @@ class User extends AbstractEntity
     /** @var string|null User avatar file url */
     public ?string $avatarUrl = null;
 
+    /** @var array|null Validators for values by key */
+    protected ?array $_validators = [
+        'password' => 'password',
+    ];
+
     /**
      * Logic after Entity load() method
      *
@@ -225,10 +230,10 @@ class User extends AbstractEntity
         string|int|float|bool|UnixTime|null $value = null,
         bool $checkKey = true
     ): void {
+        parent::_setByKeyAndValue($key, $value, $checkKey);
         if ($key === 'password') {
             $value = $this->_getPasswordHash($value);
         }
-
         parent::_setByKeyAndValue($key, $value, $checkKey);
     }
 

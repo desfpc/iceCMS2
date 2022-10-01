@@ -54,7 +54,9 @@ class LoggerTest extends Ice2CMSTestCase
 
         $dateTime = new DateTime();
         $testLogPath = self::$_testSettings->path . '/logs/test_' . $dateTime->format('Y-m') . '.log';
-        unlink($testLogPath);
+        if (file_exists($testLogPath)) {
+            unlink($testLogPath);
+        }
         $this->assertTrue($logger::log(self::$_settings, 'test', $message));
         $this->assertTrue(file_exists($testLogPath));
 

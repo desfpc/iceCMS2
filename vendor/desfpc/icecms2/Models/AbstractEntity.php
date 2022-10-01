@@ -17,6 +17,7 @@ use iceCMS2\Caching\CachingInterface;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Types\UnixTime;
+use iceCMS2\Validator\ValidatorFactory;
 
 abstract class AbstractEntity
 {
@@ -58,6 +59,9 @@ abstract class AbstractEntity
 
     /** @var array|null Entity DB columns */
     protected ?array $_cols = null;
+
+    /** @var array|null Validators for values by key */
+    protected ?array $_validators = null;
 
     /**
      * Entity constructor class
@@ -157,16 +161,37 @@ abstract class AbstractEntity
      * @param bool $checkKey
      * @throws Exception
      */
-    protected function _setByKeyAndValue(string $key, string|int|float|bool|UnixTime|null $value = null, bool $checkKey = true): void
-    {
+    protected function _setByKeyAndValue(
+        string $key,
+        string|int|float|bool|UnixTime|null $value = null,
+        bool $checkKey = true
+    ): void {
         if ($checkKey && !isset($this->_cols[$key])) {
             throw new Exception('Field "' . $key . '" missing in table "' . $this->_dbtable . '"');
         }
-        if (!isset($this->_values[$key]) || $this->_values[$key] !== $value) {
+        if ((!isset($this->_values[$key]) || $this->_values[$key] !== $value) && $this->_validate($key, $value)) {
             $this->isDirty = true;
             $this->_dirtyValues[$key] = !isset($this->_values[$key]) ? null : $this->_values[$key];
             $this->_values[$key] = $value;
         }
+    }
+
+    /**
+     * Validate value before setting
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return bool
+     * @throws Exception
+     */
+    protected function _validate(string $key, mixed $value): bool
+    {
+        if (is_array($this->_validators) && isset($this->_validators[$key])) {
+            $validator = $this->_validators[$key];
+            return ValidatorFactory::validate($validator, $value);
+        }
+
+        return true;
     }
 
     /**

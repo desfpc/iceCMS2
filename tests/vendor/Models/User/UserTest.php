@@ -66,6 +66,7 @@ class UserTest extends Ice2CMSTestCase
         $this->assertEquals(1, $avatarId);
 
         //Creating user
+        $userPass = '123#@$%#_VCff';
         $user = new User(self::$_testSettings);
         $user->set([
             'email' => 'test@email.com',
@@ -79,10 +80,11 @@ class UserTest extends Ice2CMSTestCase
             'rating' => 0,
             'avatar' => $avatarId,
             'sex' => 'female',
-            'password' => '123',
+            'password' => $userPass,
         ]);
 
         $this->assertTrue($user->save());
+        $this->assertNotEquals($userPass, $user->get('password'));
 
         $avatarUrl = $user->avatarUrl;
         $this->assertNotNull($avatarUrl);
