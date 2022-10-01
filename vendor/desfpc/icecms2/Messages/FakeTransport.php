@@ -5,12 +5,12 @@ declare(strict_types=1);
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * Fake Push Transport class
+ * Fake Transport class
  */
 
 namespace iceCMS2\Messages;
 
-class FakePushTransport extends AbstractMessage
+class FakeTransport extends AbstractMessage
 {
 
 }

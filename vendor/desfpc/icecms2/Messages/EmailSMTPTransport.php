@@ -5,12 +5,12 @@ declare(strict_types=1);
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * Fake Phone Transport class
+ * Email SMTP Transport class
  */
 
 namespace iceCMS2\Messages;
 
-class FakePhoneTransport extends AbstractMessage
+class EmailSMTPTransport extends AbstractMessage
 {
 
 }
