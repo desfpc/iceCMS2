@@ -16,28 +16,28 @@ use iceCMS2\Settings\Settings;
 abstract class AbstractMessage implements MessageInterface
 {
     /** @var string|null */
-    private ?string $_to = null;
+    protected ?string $_to = null;
 
     /** @var string|null */
-    private ?string $_toName = null;
+    protected ?string $_toName = null;
 
     /** @var string|null */
-    private ?string $_from = null;
+    protected ?string $_from = null;
 
     /** @var string|null */
-    private ?string $_fromName = null;
+    protected ?string $_fromName = null;
 
     /** @var string|null */
-    private ?string $_theme = null;
+    protected ?string $_theme = null;
 
     /** @var string|null */
-    private ?string $_text = null;
+    protected ?string $_text = null;
 
     /** @var DateTime|null */
-    private ?DateTime $_sendDate = null;
+    protected ?DateTime $_sendDate = null;
 
     /** @var Settings|null */
-    private ?Settings $_settings = null;
+    protected ?Settings $_settings = null;
 
     /**
      * Class constructor
