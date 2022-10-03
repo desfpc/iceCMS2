@@ -77,7 +77,7 @@ class EmailSMTPTransport extends AbstractMessage
             );
 
             return true;
-        };
+        }
 
     return false;
     }
