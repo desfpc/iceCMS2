@@ -44,6 +44,11 @@
         <exclude name="NPathComplexity"/>
         <exclude name="ExcessiveClassComplexity" />
     </rule>
+    <rule ref="rulesets/codesize.xml/TooManyFields">
+        <properties>
+            <property name="maxfields" description="The field count reporting threshold" value="24" />
+        </properties>
+    </rule>
     <rule ref="rulesets/codesize.xml/ExcessiveMethodLength">
         <properties>
             <property name="minimum" description="The method size reporting threshold" value="150"/>
