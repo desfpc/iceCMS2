@@ -42,6 +42,11 @@ class User extends AbstractEntity
         'password' => 'password',
     ];
 
+    /** @var array|null Modificators for values by key */
+    protected ?array $_modificators = [
+        'password' => 'password',
+    ];
+
     /**
      * Logic after Entity load() method
      *
@@ -215,37 +220,6 @@ class User extends AbstractEntity
     private function _getApproveCode():string
     {
         return Strings::getRandomString(6, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
-    }
-
-    /**
-     * Setting new Entity value
-     *
-     * @param string $key
-     * @param string|int|float|bool|null $value
-     * @param bool $checkKey
-     * @throws Exception
-     */
-    protected function _setByKeyAndValue(
-        string $key,
-        string|int|float|bool|UnixTime|null $value = null,
-        bool $checkKey = true
-    ): void {
-        parent::_setByKeyAndValue($key, $value, $checkKey);
-        if ($key === 'password') {
-            $value = $this->_getPasswordHash($value);
-        }
-        parent::_setByKeyAndValue($key, $value, $checkKey);
-    }
-
-    /**
-     * Get password hash
-     *
-     * @param string $password
-     * @return string
-     */
-    private function _getPasswordHash(string $password): string
-    {
-        return password_hash($password, PASSWORD_DEFAULT);
     }
 
     /**

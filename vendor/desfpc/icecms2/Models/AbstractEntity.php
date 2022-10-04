@@ -14,6 +14,7 @@ use iceCMS2\Caching\CachingFactory;
 use iceCMS2\DB\DBFactory;
 use iceCMS2\DB\DBInterface;
 use iceCMS2\Caching\CachingInterface;
+use iceCMS2\Modificator\ModificatorFactory;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Types\UnixTime;
@@ -62,6 +63,9 @@ abstract class AbstractEntity
 
     /** @var array|null Validators for values by key */
     protected ?array $_validators = null;
+
+    /** @var array|null Modificators for values by key */
+    protected ?array $_modificators = null;
 
     /**
      * Entity constructor class
@@ -172,6 +176,7 @@ abstract class AbstractEntity
         if ((!isset($this->_values[$key]) || $this->_values[$key] !== $value) && $this->_validate($key, $value)) {
             $this->isDirty = true;
             $this->_dirtyValues[$key] = !isset($this->_values[$key]) ? null : $this->_values[$key];
+            $this->_modify($key, $value);
             $this->_values[$key] = $value;
         }
     }
@@ -192,6 +197,22 @@ abstract class AbstractEntity
         }
 
         return true;
+    }
+
+    /**
+     * Modify value before setting
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return void
+     * @throws Exception
+     */
+    protected function _modify(string $key, mixed &$value): void
+    {
+        if (is_array($this->_modificators) && isset($this->_modificators[$key])) {
+            $modificator = $this->_modificators[$key];
+            ModificatorFactory::modify($modificator, $value);
+        }
     }
 
     /**
