@@ -39,6 +39,7 @@
     <rule ref="rulesets/design.xml" />
 
     <rule ref="rulesets/codesize.xml">
+        <exclude name="TooManyFields"/>
         <exclude name="ExcessiveMethodLength"/>
         <exclude name="CyclomaticComplexity"/>
         <exclude name="NPathComplexity"/>
