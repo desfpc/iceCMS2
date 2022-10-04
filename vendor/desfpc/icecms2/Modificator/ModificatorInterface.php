@@ -14,7 +14,7 @@ interface ModificatorInterface
 {
     /**
      * @param mixed $value
-     * @return bool
+     * @return void
      */
     public static function modify(mixed &$value): void;
 }

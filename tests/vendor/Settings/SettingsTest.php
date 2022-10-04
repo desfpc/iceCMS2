@@ -83,6 +83,7 @@ class SettingsTest extends TestCase
                 '500' => '500',
                 'someURL' => 'someRouteControllerAndMethod'
             ],
+            'isUseCms' => true,
         ];
 
         $settings = new Settings($validSettings);

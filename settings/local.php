@@ -63,4 +63,5 @@ $settings = [
         'redisPort' => 6379,
     ],
     'routes' => $routers,
+    'isUseCms' => true,
 ];

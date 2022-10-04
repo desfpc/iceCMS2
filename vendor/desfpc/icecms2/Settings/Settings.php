@@ -74,6 +74,7 @@ class Settings
             'redisPort' => 0,
         ],
         'routes' => [],
+        'isUseCms' => 1,
     ];
     
     /** @var stdClass|null DataBase settings */
@@ -120,6 +121,9 @@ class Settings
 
     /** @var bool development mode */
     public bool $dev = false;
+
+    /** @var bool is use CMS system */
+    public bool $isUseCms = true;
 
     /**
      * Class constructor
