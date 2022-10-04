@@ -46,7 +46,7 @@
     </rule>
     <rule ref="rulesets/codesize.xml/TooManyFields">
         <properties>
-            <property name="maxfields" description="The field count reporting threshold" value="24" />
+            <property name="maxfields" description="The field count reporting threshold" value="24"/>
         </properties>
     </rule>
     <rule ref="rulesets/codesize.xml/ExcessiveMethodLength">
