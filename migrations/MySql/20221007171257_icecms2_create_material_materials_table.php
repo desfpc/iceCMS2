@@ -21,7 +21,18 @@ class Icecms2CreateMaterialMaterialsTable extends AbstractMigration
      */
     public function up(): string
     {
-        return '';
+        return "
+        CREATE TABLE `material_materials`  (
+            `parent_id` int UNSIGNED NOT NULL COMMENT 'Parent material ID',
+            `child_id` int UNSIGNED NOT NULL COMMENT 'Child material ID',
+            `count` int UNSIGNED NULL DEFAULT NULL COMMENT 'Count of child materials',
+            `price` decimal(10, 2) NULL DEFAULT NULL COMMENT 'Price of child materials',
+            `ordernum` int UNSIGNED NULL DEFAULT NULL COMMENT 'Order number',
+            PRIMARY KEY (`parent_id`, `child_id`) USING BTREE,
+            INDEX `matmat_parent_idx`(`parent_id`) USING BTREE,
+            INDEX `matmat_child_idx`(`child_id`) USING BTREE
+        ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+        ";
     }
 
     /**
@@ -31,6 +42,6 @@ class Icecms2CreateMaterialMaterialsTable extends AbstractMigration
      */
     public function down(): string
     {
-        return '';
+        return 'DROP TABLE IF EXISTS `material_materials`';
     }
 }

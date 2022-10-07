@@ -26,7 +26,7 @@ class Icecms2CreateMaterialExtraParamsTable extends AbstractMigration
             `id` int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'ID',
             `name` varchar(255) NOT NULL COMMENT 'Param name',
             `mtype_id` int(11) NOT NULL COMMENT 'Material type ID',
-            `value_type` ENUM('int', 'bool', 'varchar', 'text', 'float', 'decimal') NOT NULL COMMENT 'Param value type',
+            `value_type` ENUM('int', 'mat', 'bool', 'varchar', 'text', 'float', 'decimal') NOT NULL COMMENT 'Param value type',
             `value_mtype` int UNSIGNED NULL DEFAULT NULL COMMENT 'Material type ID',
             PRIMARY KEY (`id`) USING BTREE,
             INDEX `mep_mtype_idx`(`mtype_id`) USING BTREE
