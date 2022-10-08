@@ -58,6 +58,6 @@ class Icecms2CreateMaterialsTable extends AbstractMigration
      */
     public function down(): string
     {
-        return 'DROP TABLE IF EXISTS `materials`';
+        return 'DROP TABLE IF EXISTS `materials`;';
     }
 }
