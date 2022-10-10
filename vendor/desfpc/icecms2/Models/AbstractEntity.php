@@ -392,9 +392,19 @@ abstract class AbstractEntity
             $this->_id = null;
             $this->_values = [];
             $this->isLoaded = false;
+            $this->_afterDel();
             return true;
         }
         return false;
+    }
+
+    /**
+     * Function that runs after Entity delete
+     *
+     * @return void
+     */
+    protected function _afterDel(): void
+    {
     }
 
     /**
@@ -458,9 +468,9 @@ abstract class AbstractEntity
      */
     public function loadByParam(string $param, string|int|float|bool|null $value = null): bool
     {
-        /*if (!isset($this->_values[$param])) {
+        if (!isset($this->_cols[$param])) {
             throw new Exception('Field "' . $param . '" missing in table "' . $this->_dbtable . '"');
-        }*/
+        }
 
         $sql = 'SELECT max(`id`) `id` FROM `' . $this->_dbtable . '` WHERE `' . $param . '` = ?';
         $res = $this->_db->queryBinded($sql, [':'.$param => $value]);
