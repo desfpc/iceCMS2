@@ -10,13 +10,21 @@ declare(strict_types=1);
 
 namespace iceCMS2\Controller;
 
+use iceCMS2\Authorization\AbstractAuthorization;
 use iceCMS2\Routing\Routing;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\FlashVars;
 use iceCMS2\Tools\Exception;
+use JetBrains\PhpStorm\NoReturn;
 
 abstract class AbstractController implements ControllerInterface
 {
+    /** @var string Authorization redirect url */
+    protected const AUTHORIZE_REDIRECT_URL = '/authorize';
+
+    /** @var AbstractAuthorization Authorization object */
+    protected AbstractAuthorization $authorization;
+
     /** @var array Site alerts from FlashVars */
     public array $alerts;
 
@@ -297,6 +305,36 @@ abstract class AbstractController implements ControllerInterface
         }
         foreach ($this->_headers as $header) {
             header($header);
+        }
+    }
+
+    /**
+     * Echo headers for redirect tot authorization page
+     *
+     * @return void
+     */
+    #[NoReturn] protected function _authorizeRedirect(): void
+    {
+        $headers = $this->_getDefaultHeaders();
+        $headers[] = 'Location: ' . static::AUTHORIZE_REDIRECT_URL;
+        $headers[] = 'HTTP/1.1 302 Found';
+
+        foreach ($headers as $header) {
+            header($header);
+        }
+
+        die();
+    }
+
+    /**
+     * Check authorization for action method
+     *
+     * @return void
+     */
+    protected function _authorizationCheck(): void
+    {
+        if ($this->authorization->getAuthStatus() === false || !$this->authorization->authorizeRequest()) {
+            $this->_authorizeRedirect();
         }
     }
 }
