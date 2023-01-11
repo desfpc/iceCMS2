@@ -10,20 +10,24 @@ declare(strict_types=1);
 
 namespace iceCMS2\Controller;
 
-use iceCMS2\Authorization\AbstractAuthorization;
+use iceCMS2\Authorization\AuthorizationFactory;
+use iceCMS2\Authorization\AuthorizationInterface;
 use iceCMS2\Routing\Routing;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\FlashVars;
 use iceCMS2\Tools\Exception;
-use JetBrains\PhpStorm\NoReturn;
+use phpDocumentor\Reflection\Types\Static_;
 
 abstract class AbstractController implements ControllerInterface
 {
     /** @var string Authorization redirect url */
     protected const AUTHORIZE_REDIRECT_URL = '/authorize';
 
-    /** @var AbstractAuthorization Authorization object */
-    protected AbstractAuthorization $authorization;
+    /** @var string Authorization type */
+    protected const AUTHORIZE_TYPE = 'session';
+
+    /** @var AuthorizationInterface Authorization object */
+    protected AuthorizationInterface $authorization;
 
     /** @var array Site alerts from FlashVars */
     public array $alerts;
@@ -75,6 +79,7 @@ abstract class AbstractController implements ControllerInterface
     {
         $this->routing = $routing;
         $this->settings = $settings;
+        $this->authorization = AuthorizationFactory::instance($this->settings, static::AUTHORIZE_TYPE);
         $this->readAlerts();
     }
 
@@ -309,11 +314,11 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
-     * Echo headers for redirect tot authorization page
+     * Echo headers for redirect to authorization page
      *
      * @return void
      */
-    #[NoReturn] protected function _authorizeRedirect(): void
+    protected function _authorizeRedirect(): void
     {
         $headers = $this->_getDefaultHeaders();
         $headers[] = 'Location: ' . static::AUTHORIZE_REDIRECT_URL;
@@ -327,7 +332,7 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
-     * Check authorization for action method
+     * Check authorization for action method (run it in the top of action, that need authorization)
      *
      * @return void
      */
