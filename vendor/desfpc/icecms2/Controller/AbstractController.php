@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * Controller class
+ * Abstract Controller class
  */
 
 namespace iceCMS2\Controller;
@@ -16,7 +16,6 @@ use iceCMS2\Routing\Routing;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\FlashVars;
 use iceCMS2\Tools\Exception;
-use phpDocumentor\Reflection\Types\Static_;
 
 abstract class AbstractController implements ControllerInterface
 {
@@ -317,6 +316,7 @@ abstract class AbstractController implements ControllerInterface
      * Echo headers for redirect to authorization page
      *
      * @return void
+     * @SuppressWarnings(PHPMD)
      */
     protected function _authorizeRedirect(): void
     {
