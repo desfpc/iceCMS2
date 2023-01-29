@@ -3,6 +3,7 @@ $routers = [
     '500' => ['controller' => 'ServerErrors', 'controllerMethod' => 'serverError', 'useVendor' => true],
     '404' => ['controller' => 'ServerErrors', 'controllerMethod' => 'serverError', 'useVendor' => true],
     '' => ['controller' => 'Main', 'controllerMethod' => 'main', 'useVendor' => true],
+    'authorize' => ['controller' => 'Authorize', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin' => ['controller' => 'Admin', 'controllerMethod' => 'main', 'useVendor' => true],
     'hello-world' => ['controller' => 'HelloWorld', 'controllerMethod' => 'main', 'useVendor' => false],
     'api/v1/users' => [

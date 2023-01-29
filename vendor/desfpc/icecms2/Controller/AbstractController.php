@@ -16,6 +16,7 @@ use iceCMS2\Routing\Routing;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\FlashVars;
 use iceCMS2\Tools\Exception;
+use iceCMS2\Tools\RequestParameters;
 
 abstract class AbstractController implements ControllerInterface
 {
@@ -55,6 +56,9 @@ abstract class AbstractController implements ControllerInterface
     /** @var bool Use vendor layout */
     public bool $vendorLayout = false;
 
+    /** @var RequestParameters|null REQUEST parameters */
+    public?RequestParameters $requestParameters = null;
+
     /** @var array<int, string|array<string, string>> JS files to load */
     public array $jsFiles = [];
 
@@ -80,6 +84,7 @@ abstract class AbstractController implements ControllerInterface
         $this->settings = $settings;
         $this->authorization = AuthorizationFactory::instance($this->settings, static::AUTHORIZE_TYPE);
         $this->readAlerts();
+        $this->requestParameters = new RequestParameters();
     }
 
     /**
@@ -321,7 +326,7 @@ abstract class AbstractController implements ControllerInterface
     protected function _authorizeRedirect(): void
     {
         $headers = $this->_getDefaultHeaders();
-        $headers[] = 'Location: ' . static::AUTHORIZE_REDIRECT_URL;
+        $headers[] = 'Location: ' . static::AUTHORIZE_REDIRECT_URL . '?redirect=' . urlencode($_SERVER['REQUEST_URI']);
         $headers[] = 'HTTP/1.1 302 Found';
 
         foreach ($headers as $header) {

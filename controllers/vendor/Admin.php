@@ -12,8 +12,19 @@ namespace app\Controllers\vendor;
 
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
+use iceCMS2\Tools\Exception;
 
 class Admin extends AbstractController implements ControllerInterface
 {
     public string $title = 'Admin';
+
+    /** Default main method - only render default template
+     * @throws Exception
+     */
+    public function main(): void
+    {
+        $this->_authorizationCheck();
+
+        $this->renderTemplate('main');
+    }
 }
