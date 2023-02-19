@@ -12,7 +12,7 @@ namespace iceCMS2\Validator;
 use iceCMS2\Helpers\Strings;
 use iceCMS2\Tools\Exception;
 
-class PasswordValidator implements ValidatorInterface
+class PasswordValidator extends AbstractValidator implements ValidatorInterface
 {
 
     /**

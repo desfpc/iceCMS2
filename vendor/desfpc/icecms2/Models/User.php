@@ -40,6 +40,25 @@ class User extends AbstractEntity
     /** @var array|null Validators for values by key */
     protected ?array $_validators = [
         'password' => 'password',
+        'email' => 'email',
+        'phone' => 'phone|empty',
+        'telegram' => 'telegram|empty',
+        'language' => 'language',
+        'name' => 'string|empty',
+        'nikname' => 'uniqueString',
+        'status' => 'status',
+        'role' => 'role',
+        'rating' => 'float',
+        'avatar' => 'int|empty',
+        'email_approve_code' => 'string|empty',
+        'email_approved' => 'int',
+        'email_send_time' => 'unixtime|empty',
+        'phone_approve_code' => 'string|empty',
+        'phone_approved' => 'int',
+        'phone_send_time' => 'unixtime|empty',
+        'created_time' => 'nowUnixtime',
+        'sex' => 'sex',
+        'contacts' => 'json|empty',
     ];
 
     /** @var array|null Modificators for values by key */

@@ -26,9 +26,9 @@ CREATE TABLE IF NOT EXISTS `users`
 (
     `id`                 int unsigned auto_increment comment 'ID' primary key,
     `email`              varchar(255)                                     not null comment 'E-mail',
-    `phone`              varchar(24)                                      not null comment 'Phone number',
+    `phone`              varchar(24)                                      null comment 'Phone number',
     `telegram`           varchar(32)                                      null comment 'Telegram login',
-    `language`           enum ('en', 'ge', 'ru')                          not null comment 'User language',
+    `language`           enum ('en', 'ru', 'ge')                          not null comment 'User language',
     `name`               varchar(255)                                     null comment 'User name',
     `nikname`            varchar(255)                                     not null comment 'User nikname',
     `status`             enum ('created', 'active', 'deleted')            not null comment 'Activity status',

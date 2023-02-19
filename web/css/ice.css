@@ -49,3 +49,8 @@
 .alert {
     margin: 0.1rem 0;
 }
+
+.form-label.required:after {
+    content: " *";
+    color: #ff0000;
+}

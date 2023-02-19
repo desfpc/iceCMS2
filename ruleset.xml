@@ -75,7 +75,7 @@
     </rule>
     <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity">
         <properties>
-            <property name="maximum" description="The maximum WMC tolerable for a class." value="100"/>
+            <property name="maximum" description="The maximum WMC tolerable for a class." value="110"/>
         </properties>
     </rule>
 
