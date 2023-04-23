@@ -419,4 +419,19 @@ class MySql implements DBInterface
         }
         return !$this->_isWarning;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getEnumValues($table, $field): array
+    {
+        $type = $this->query("SHOW COLUMNS FROM $table WHERE Field = '$field'")[0]["Type"];
+        preg_match("/^enum\(\'(.*)\'\)$/", $type, $matches);
+
+        if (!empty($matches) && !empty($matches[1])) {
+            return explode("','", $matches[1]);
+        }
+
+        return [];
+    }
 }

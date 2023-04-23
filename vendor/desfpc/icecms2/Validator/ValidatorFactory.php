@@ -9,6 +9,8 @@ declare(strict_types=1);
  */
 namespace iceCMS2\Validator;
 
+use iceCMS2\DB\DBInterface;
+use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
 
 class ValidatorFactory
@@ -16,21 +18,31 @@ class ValidatorFactory
     /**
      * Choose validator and validate
      *
+     * @param DBInterface $db
+     * @param Settings $settings
      * @param string $validator
      * @param mixed $value
+     * @param string|null $table
+     * @param string|null $name
      * @return bool
      * @throws Exception
      */
-    public static function validate(string $validator, mixed $value): bool
+    public static function validate(DBInterface $db, Settings $settings, string $validator, mixed $value, ?string $table = null, ?string $name = null): bool
     {
         switch ($validator) {
             case 'password':
-                return PasswordValidator::validate($value);
+                return PasswordValidator::validate($db, $value);
+            case 'email':
+                return EmailValidator::validate($db, $value);
+            case 'uniqueString':
+                return UniqueStringValidator::validate($db, $value, $settings, $table, $name);
+            case 'language':
+                return LanguageValidator::validate($db, $value, $settings);
             default:
                 if (class_exists($validator)) {
                     /** @var ValidatorInterface $validatorObj */
                     $validatorObj = new $validator();
-                    return $validatorObj::validate($value);
+                    return $validatorObj::validate($db, $value, $settings, $table, $name);
                 }
 
                 throw new Exception('Validator ' . $validator . ' not found');

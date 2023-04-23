@@ -53,6 +53,7 @@ $settings = [
     'locales' => [
         'en', 'ru',
     ],
+    'locale' => 'en',
     'logs' => [
         'period' => 'month',
         'type' => 'db',

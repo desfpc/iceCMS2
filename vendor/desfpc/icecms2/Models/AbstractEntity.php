@@ -193,7 +193,7 @@ abstract class AbstractEntity
     {
         if (is_array($this->_validators) && isset($this->_validators[$key])) {
             $validator = $this->_validators[$key];
-            return ValidatorFactory::validate($validator, $value);
+            return ValidatorFactory::validate($this->_db, $this->_settings, $validator, $value, $this->_dbtable, $key);
         }
 
         return true;
@@ -293,6 +293,7 @@ abstract class AbstractEntity
              * @var array $prepariedValues
              */
             [$preparedSQL, $preparedValues] = $this->_getEntitySaveData($isUpdateOnDuplicateKey);
+
             if ($res = $this->_db->queryBinded($preparedSQL, $preparedValues)) {
                 if (is_null($this->_id) && empty($this->_idKeys)) {
                     if (is_int($res) && is_null($this->_idColumns)) {

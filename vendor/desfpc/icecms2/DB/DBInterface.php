@@ -120,4 +120,13 @@ interface DBInterface
      * @return string
      */
     public function realEscapeString(string $value): string;
+
+    /**
+     * Get array of Enum values
+     *
+     * @param $table
+     * @param $field
+     * @return array
+     */
+    public function getEnumValues($table, $field): array;
 }

@@ -19,6 +19,27 @@ use iceCMS2\Types\UnixTime;
 
 class User extends AbstractEntity
 {
+    /** @var string User status created */
+    public const STATUS_CREATED = 'created';
+    /** @var string User status active */
+    public const STATUS_ACTIVE = 'active';
+    /** @var string User status deleted */
+    public const STATUS_DELETED = 'deleted';
+
+    /** @var string User role user */
+    public const ROLE_USER = 'user';
+    /** @var string User role moderator */
+    public const ROLE_MODERATOR = 'moderator';
+    /** @var string User role admin */
+    public const ROLE_ADMIN = 'admin';
+
+    /** @var string User sex male */
+    public const SEX_MALE = 'male';
+    /** @var string User sex female */
+    public const SEX_FEMALE = 'female';
+    /** @var string User sex other */
+    public const SEX_OTHER = 'other';
+
     /** @var int Avatar image size in px */
     private const AVATAR_SIZE = 200;
 
@@ -46,8 +67,8 @@ class User extends AbstractEntity
         'language' => 'language',
         'name' => 'string|empty',
         'nikname' => 'uniqueString',
-        'status' => 'status',
-        'role' => 'role',
+        'status' => 'enum',
+        'role' => 'enum',
         'rating' => 'float',
         'avatar' => 'int|empty',
         'email_approve_code' => 'string|empty',
