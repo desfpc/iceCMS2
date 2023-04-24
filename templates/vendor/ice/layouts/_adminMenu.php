@@ -38,9 +38,19 @@ use iceCMS2\Controller\AbstractController;
                     } ?>" aria-current="page" href="/admin/users/"><i class="bi-people" style="font-size: 20px; color: #408fab;"></i> Users</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link <?php if ($this->routing->route['controller'] === 'AdminCaches') {
+                        echo 'active';
+                    } ?>" aria-current="page" href="/admin/caches/"><i class="bi-clock-history" style="font-size: 20px; color: #408fab;"></i> Caches</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link <?php if ($this->routing->route['controller'] === 'AdminSettings') {
                         echo 'active';
                     } ?>" aria-current="page" href="/admin/settings/"><i class="bi-gear" style="font-size: 20px; color: #408fab;"></i> Settings</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php if ($this->routing->route['controller'] === 'AdminLogs') {
+                        echo 'active';
+                    } ?>" aria-current="page" href="/admin/logs/"><i class="bi-journal-text" style="font-size: 20px; color: #408fab;"></i> Logs</a>
                 </li>
             </ul>
         </div>
