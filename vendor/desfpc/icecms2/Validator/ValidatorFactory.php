@@ -52,6 +52,8 @@ class ValidatorFactory
                 return LanguageValidator::validate($db, $value, $settings);
             case 'enum':
                 return EnumValidator::validate($db, $value, $settings, $table, $name);
+            case 'unixtime':
+                return UnixTimeValidator::validate($db, $value);
             default:
                 if (class_exists($validator)) {
                     /** @var ValidatorInterface $validatorObj */
