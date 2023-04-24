@@ -20,7 +20,9 @@ if ($this->authorization->getAuthStatus()) {
 } else {
     $authorized = false;
 }
-
+if ($authorized && in_array($user->get('role'), [User::ROLE_ADMIN, User::ROLE_MODERATOR])) {
+    include_once('_adminMenu.php');
+}
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">

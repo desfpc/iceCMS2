@@ -54,3 +54,7 @@
     content: " *";
     color: #ff0000;
 }
+
+.admin-menu {
+    background-color: #000000!important;
+}
