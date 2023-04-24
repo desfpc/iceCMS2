@@ -29,7 +29,19 @@ class ValidatorFactory
      */
     public static function validate(DBInterface $db, Settings $settings, string $validator, mixed $value, ?string $table = null, ?string $name = null): bool
     {
-        switch ($validator) {
+        $validatorName = str_replace('|empty', '', $validator);
+
+        if ($validator !== $validatorName) {
+            $empty = true;
+        } else {
+            $empty = false;
+        }
+
+        if ($empty && empty($value)) {
+            return true;
+        }
+
+        switch ($validatorName) {
             case 'password':
                 return PasswordValidator::validate($db, $value);
             case 'email':
@@ -47,7 +59,7 @@ class ValidatorFactory
                     return $validatorObj::validate($db, $value, $settings, $table, $name);
                 }
 
-                throw new Exception('Validator ' . $validator . ' not found');
+                throw new Exception('Validator ' . $validatorName . ' not found');
         }
     }
 }

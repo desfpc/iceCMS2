@@ -77,7 +77,7 @@ class User extends AbstractEntity
         'phone_approve_code' => 'string|empty',
         'phone_approved' => 'int',
         'phone_send_time' => 'unixtime|empty',
-        'created_time' => 'nowUnixtime',
+        'created_time' => 'unixtime|empty',
         'sex' => 'sex',
         'contacts' => 'json|empty',
     ];
@@ -85,6 +85,7 @@ class User extends AbstractEntity
     /** @var array|null Modificators for values by key */
     protected ?array $_modificators = [
         'password' => 'password',
+        'created_time' => 'nowUnixtime',
     ];
 
     /**
