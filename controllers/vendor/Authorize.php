@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace app\Controllers\vendor;
 
-use desfpc\Visualijoper\Visualijoper;
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\Models\User;
@@ -54,17 +53,20 @@ class Authorize extends AbstractController implements ControllerInterface
      */
     public function main(): void
     {
-        /*if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->authorization->authorizeRequest();
 
             if ($this->authorization->getAuthStatus() === true) {
-                //TODO redirect to redirect URL or default page
-                echo 'yeah';
-            } else {
-                //TODO echo authorize errors
-                echo 'azaza';
+
+                echo 'yeah!!!';
+
+                if (!empty($this->redirect)) {
+                    $this->_redirect($this->redirect);
+                } else {
+                    $this->_redirect('/');
+                }
             }
-        }*/
+        }
 
         $this->renderTemplate('main');
     }

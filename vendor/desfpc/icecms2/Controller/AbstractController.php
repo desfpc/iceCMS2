@@ -84,7 +84,6 @@ abstract class AbstractController implements ControllerInterface
         $this->routing = $routing;
         $this->settings = $settings;
         $this->authorization = AuthorizationFactory::instance($this->settings, static::AUTHORIZE_TYPE);
-        //$this->readAlerts();
         $this->requestParameters = new RequestParameters();
     }
 

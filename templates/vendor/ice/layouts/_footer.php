@@ -30,7 +30,7 @@ devModeBtn.addEventListener('click' , () => {
 
 ";
 
-    $vj = new visualijoper($this, 'Controller data', true);
+    $vj = new visualijoper(['site' => $this, 'session' => $_SESSION], 'Controller data', true);
 
     $devMode = '<div class="developer_mode">
     <div class="dev_btn" id="dev_btn">
