@@ -11,6 +11,15 @@ declare(strict_types=1);
  */
 
 use iceCMS2\Controller\AbstractController;
+use iceCMS2\Models\User;
+
+/** @var User $user */
+if ($this->authorization->getAuthStatus()) {
+    $user = $this->authorization->getUser();
+    $authorized = true;
+} else {
+    $authorized = false;
+}
 
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -39,6 +48,13 @@ use iceCMS2\Controller\AbstractController;
                     } ?>" href="/admin/">Admin</a>
                 </li>
             </ul>
-        </div>
+        </div><?php
+        if ($authorized) {
+            ?>
+            <div class="justify-content-end main-menu-user">
+                <a href="/profile"><?= $user->get('email') ?></a>
+            </div>
+            <?php
+        } ?>
     </div>
 </nav>

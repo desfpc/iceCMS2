@@ -57,9 +57,6 @@ class Authorize extends AbstractController implements ControllerInterface
             $this->authorization->authorizeRequest();
 
             if ($this->authorization->getAuthStatus() === true) {
-
-                echo 'yeah!!!';
-
                 if (!empty($this->redirect)) {
                     $this->_redirect($this->redirect);
                 } else {
