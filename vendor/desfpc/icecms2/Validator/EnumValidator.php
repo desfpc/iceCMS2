@@ -35,7 +35,7 @@ class EnumValidator extends AbstractValidator implements ValidatorInterface
                 return true;
             }
 
-            return false;
+            throw new Exception('Wrong value for ' . $name . ' field - ' . implode(',', $enumArr) . ' expected');
         }
 
         throw new Exception('Wrong parameters for EnumValidator');

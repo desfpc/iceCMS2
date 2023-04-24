@@ -24,11 +24,13 @@ class UniqueStringValidator extends AbstractValidator implements ValidatorInterf
         ?string $name = null): bool
     {
         if (!is_null($table) && !is_null($name)) {
-            $sql = 'SELECT ' . $name . ' FROM ' . $table . ' WHERE ' . $name . ' = ?';
+            $sql = 'SELECT count(' . $name . ') cnt FROM ' . $table . ' WHERE ' . $name . ' = ?';
+
             $params = [$value];
             $result = $db->queryBinded($sql, $params);
-            if (count($result) > 0) {
-                return false;
+
+            if ($result[0]['cnt'] > 0) {
+                throw new Exception($name . ' must be unique');
             }
             return true;
         }

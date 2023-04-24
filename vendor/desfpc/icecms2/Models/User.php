@@ -61,7 +61,7 @@ class User extends AbstractEntity
     /** @var array|null Validators for values by key */
     protected ?array $_validators = [
         'password' => 'password',
-        'email' => 'email',
+        'email' => ['email', 'uniqueString'],
         'phone' => 'phone|empty',
         'telegram' => 'telegram|empty',
         'language' => 'language',
@@ -78,7 +78,7 @@ class User extends AbstractEntity
         'phone_approved' => 'int',
         'phone_send_time' => 'unixtime|empty',
         'created_time' => 'unixtime|empty',
-        'sex' => 'sex',
+        'sex' => 'enum',
         'contacts' => 'json|empty',
     ];
 

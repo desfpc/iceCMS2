@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace app\Controllers\vendor;
 
+use desfpc\Visualijoper\Visualijoper;
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\Models\User;
@@ -51,8 +52,9 @@ class Authorize extends AbstractController implements ControllerInterface
      * @return void
      * @throws Exception
      */
-    public function main():void {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    public function main(): void
+    {
+        /*if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->authorization->authorizeRequest();
 
             if ($this->authorization->getAuthStatus() === true) {
@@ -62,16 +64,20 @@ class Authorize extends AbstractController implements ControllerInterface
                 //TODO echo authorize errors
                 echo 'azaza';
             }
-        }
+        }*/
 
         $this->renderTemplate('main');
     }
 
     /**
+     * User registration
+     *
      * @return void
      * @throws Exception
+     * @SuppressWarnings(PHPMD)
      */
-    public function registration():void {
+    public function registration(): void
+    {
 
         $this->requestParameters->getRequestValues(['email', 'password', 'rePassword']);
 
@@ -91,13 +97,16 @@ class Authorize extends AbstractController implements ControllerInterface
                         'nikname' => $this->requestParameters->values->email,
                         'status' => User::STATUS_ACTIVE,
                         'role' => User::ROLE_USER,
-                        'created_time' => date('Y-m-d H:i:s'),
                         'sex' => User::SEX_OTHER,
                     ]);
 
                     if ($user->save()) {
                         $this->flashVars->set('success', 'User created - please login with your credentials');
-                        $this->renderTemplate('main');
+
+                        session_write_close();
+                        $this->_redirect('/authorize', 303, true);
+
+                        exit;
                     } else {
                         $this->flashVars->set('error', 'User not created');
                     };
@@ -118,7 +127,8 @@ class Authorize extends AbstractController implements ControllerInterface
      * @return void
      * @throws Exception
      */
-    public function resetPassword():void {
+    public function resetPassword(): void
+    {
         $this->renderTemplate('resetPassword');
     }
 }

@@ -193,7 +193,17 @@ abstract class AbstractEntity
     {
         if (is_array($this->_validators) && isset($this->_validators[$key])) {
             $validator = $this->_validators[$key];
-            return ValidatorFactory::validate($this->_db, $this->_settings, $validator, $value, $this->_dbtable, $key);
+
+            if (!is_array($validator)) {
+                return ValidatorFactory::validate($this->_db, $this->_settings, $validator, $value, $this->_dbtable, $key);
+            } else {
+                foreach ($validator as $v) {
+                    if (!ValidatorFactory::validate($this->_db, $this->_settings, $v, $value, $this->_dbtable, $key)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
         }
 
         return true;

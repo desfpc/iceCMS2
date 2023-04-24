@@ -27,6 +27,6 @@ class UnixTimeValidator extends AbstractValidator implements ValidatorInterface
             return true;
         }
 
-        throw new Exception('Value must be numeric');
+        throw new Exception('Value "' . $value . '" must be numeric');
     }
 }

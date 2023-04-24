@@ -34,7 +34,7 @@ class FlashVars
      * @param bool $rewrite
      * @return void
      */
-    public function set(string $name, $value, bool $rewrite = true): void
+    public function set(string $name, mixed $value, bool $rewrite = true): void
     {
         if ($rewrite || (empty($_SESSION['flashVars'][$name]))) {
             $_SESSION['flashVars'][$name] = $value;

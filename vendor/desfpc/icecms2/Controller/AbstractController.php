@@ -17,6 +17,7 @@ use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\FlashVars;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Tools\RequestParameters;
+use JetBrains\PhpStorm\NoReturn;
 
 abstract class AbstractController implements ControllerInterface
 {
@@ -83,7 +84,7 @@ abstract class AbstractController implements ControllerInterface
         $this->routing = $routing;
         $this->settings = $settings;
         $this->authorization = AuthorizationFactory::instance($this->settings, static::AUTHORIZE_TYPE);
-        $this->readAlerts();
+        //$this->readAlerts();
         $this->requestParameters = new RequestParameters();
     }
 
@@ -320,12 +321,48 @@ abstract class AbstractController implements ControllerInterface
     }
 
     /**
+     * Simple redirect
+     *
+     * @param string $url
+     * @param int $code
+     * @param bool $noDie
+     * @return void
+     * @throws Exception
+     * @SuppressWarnings(PHPMD)
+     */
+    protected function _redirect(string $url, int $code = 303, bool $noDie = false): void
+    {
+        $codeNames = [
+            301 => 'Moved Permanently',
+            302 => 'Found',
+            303 => 'See Other',
+            307 => 'Temporary Redirect',
+        ];
+
+        if (!isset($codeNames[$code])) {
+            throw new Exception('Invalid redirect code: ' . $code);
+        }
+
+        //$headers = $this->_getDefaultHeaders();
+        $headers[] = 'Location: ' . $url;
+        //$headers[] = 'HTTP/1.1 ' . $code . ' ' . $codeNames[$code];
+
+        foreach ($headers as $header) {
+            header($header);
+        }
+
+        if ($noDie) {
+            die();
+        }
+    }
+
+    /**
      * Echo headers for redirect to authorization page
      *
      * @return void
      * @SuppressWarnings(PHPMD)
      */
-    protected function _authorizeRedirect(): void
+    #[NoReturn] protected function _authorizeRedirect(): void
     {
         $headers = $this->_getDefaultHeaders();
         $headers[] = 'Location: ' . static::AUTHORIZE_REDIRECT_URL . '?redirect=' . urlencode($_SERVER['REQUEST_URI']);
