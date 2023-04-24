@@ -119,6 +119,8 @@ abstract class AbstractController implements ControllerInterface
      */
     public function renderTemplate(?string $template = null, bool $isFullTemplatePatch = false): void
     {
+        $this->readAlerts();
+
         if (is_null($template)) {
             $dbt=debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,2);
             $template = $dbt[1]['function'] ?? 'main';

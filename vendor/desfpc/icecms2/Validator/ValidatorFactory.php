@@ -38,6 +38,8 @@ class ValidatorFactory
                 return UniqueStringValidator::validate($db, $value, $settings, $table, $name);
             case 'language':
                 return LanguageValidator::validate($db, $value, $settings);
+            case 'enum':
+                return EnumValidator::validate($db, $value, $settings, $table, $name);
             default:
                 if (class_exists($validator)) {
                     /** @var ValidatorInterface $validatorObj */

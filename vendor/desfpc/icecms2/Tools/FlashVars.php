@@ -36,7 +36,7 @@ class FlashVars
      */
     public function set(string $name, $value, bool $rewrite = true): void
     {
-        if ($rewrite || !isset($_SESSION['flashVars'][$name]) || (empty($_SESSION['flashVars'][$name]))) {
+        if ($rewrite || (empty($_SESSION['flashVars'][$name]))) {
             $_SESSION['flashVars'][$name] = $value;
         } else {
             if (!is_array($_SESSION['flashVars'][$name]) || !isset($_SESSION['flashVars'][$name][0])) {
@@ -53,11 +53,12 @@ class FlashVars
      * @param string $name
      * @return false|mixed
      */
-    public function get(string $name)
+    public function get(string $name): mixed
     {
         if (isset($_SESSION['flashVars'][$name])) {
             $value = $_SESSION['flashVars'][$name];
             unset($_SESSION['flashVars'][$name]);
+
             return $value;
         }
         return false;
