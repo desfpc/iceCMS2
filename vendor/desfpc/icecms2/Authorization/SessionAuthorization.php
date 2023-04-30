@@ -25,12 +25,16 @@ class SessionAuthorization extends AbstractAuthorization implements Authorizatio
             if ($this->_passwordAuth($_REQUEST['email'], $_REQUEST['password'])) {
                 $_SESSION['user'] = self::$_user->get('id');
                 return true;
+            } else {
+                $this->errors[] = 'Wrong email or password';
             }
         } elseif (isset($_SESSION['user'])) {
             $user = new User($this->_settings);
             if ($user->load((int)$_SESSION['user'])) {
                 self::$_user = $user;
                 return true;
+            } else {
+                $this->errors[] = 'Wrong session';
             }
         }
 

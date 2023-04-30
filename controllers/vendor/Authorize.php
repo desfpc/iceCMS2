@@ -53,7 +53,10 @@ class Authorize extends AbstractController implements ControllerInterface
      */
     public function main(): void
     {
+        $this->requestParameters->getRequestValues(['email', 'password']);
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
             $this->authorization->authorizeRequest();
 
             if ($this->authorization->getAuthStatus() === true) {
@@ -62,6 +65,8 @@ class Authorize extends AbstractController implements ControllerInterface
                 } else {
                     $this->_redirect('/');
                 }
+            } else {
+                $this->flashVars->set('error', 'Authorization error: ' . json_encode($this->authorization->errors));
             }
         }
 

@@ -22,6 +22,12 @@ class AbstractAuthorization implements AuthorizationInterface
     /** @var User|null */
     protected static ?User $_user = null;
 
+    /** @var array */
+    public array $errors = [];
+
+    /**
+     * @param Settings $settings
+     */
     public function __construct(Settings $settings)
     {
         $this->_settings = $settings;

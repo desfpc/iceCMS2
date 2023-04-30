@@ -28,12 +28,12 @@ use iceCMS2\Controller\AbstractController;
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label required">Password</label>
-                        <input type="text" class="form-control" id="password" name="password"
+                        <input type="password" class="form-control" id="password" name="password"
                                value="<?= $this->requestParameters->values->password ?>">
                     </div>
                     <div class="mb-3">
                         <label for="rePassword" class="form-label required">Re-enter password</label>
-                        <input type="text" class="form-control" id="rePassword" name="rePassword"
+                        <input type="password" class="form-control" id="rePassword" name="rePassword"
                                value="<?= $this->requestParameters->values->rePassword ?>">
                     </div>
                     <div class="mb-3">
