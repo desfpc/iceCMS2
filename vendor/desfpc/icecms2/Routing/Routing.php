@@ -174,7 +174,8 @@ class Routing
 
             $path['base'] = rtrim(dirname($_SERVER['SCRIPT_NAME']), '\/');
             $path['call_utf8'] = substr(urldecode($requestPath[0]), strlen($path['base']) + 1);
-            $path['call'] = utf8_decode($path['call_utf8']);
+            //$path['call'] = utf8_decode($path['call_utf8']); deprecated
+            $path['call'] = mb_convert_encoding($path['call_utf8'], 'ISO-8859-1', 'UTF-8');
             if ($path['call'] == basename($_SERVER['PHP_SELF'])) {
                 $path['call'] = '';
             }
@@ -187,7 +188,8 @@ class Routing
 
             if (isset($requestPath[1])) {
                 $path['query_utf8'] = urldecode($requestPath[1]);
-                $path['query'] = utf8_decode(urldecode($requestPath[1]));
+                //$path['query'] = utf8_decode(urldecode($requestPath[1])); deprecated
+                $path['query'] = mb_convert_encoding(urldecode($requestPath[1]), 'ISO-8859-1', 'UTF-8');
             } else {
                 $path['query_utf8'] = '';
                 $path['query'] = '';
