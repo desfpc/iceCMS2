@@ -1,12 +1,13 @@
 <?php
 $routers = [
     '500' => ['controller' => 'ServerErrors', 'controllerMethod' => 'serverError', 'useVendor' => true],
-    '404' => ['controller' => 'ServerErrors', 'controllerMethod' => 'serverError', 'useVendor' => true],
+    '404' => ['controller' => 'ServerErrors', 'controllerMethod' => 'notFound', 'useVendor' => true],
 
     '' => ['controller' => 'Main', 'controllerMethod' => 'main', 'useVendor' => true],
     'authorize' => ['controller' => 'Authorize', 'controllerMethod' => 'main', 'useVendor' => true],
     'registration' => ['controller' => 'Authorize', 'controllerMethod' => 'registration', 'useVendor' => true],
     'reset-password' => ['controller' => 'Authorize', 'controllerMethod' => 'resetPassword', 'useVendor' => true],
+    'exit' => ['controller' => 'Authorize', 'controllerMethod' => 'exit', 'useVendor' => true],
 
     'admin/materials' => ['controller' => 'AdminMaterials', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/files' => ['controller' => 'AdminFiles', 'controllerMethod' => 'main', 'useVendor' => true],

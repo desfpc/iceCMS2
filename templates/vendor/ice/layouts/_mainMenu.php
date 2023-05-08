@@ -13,9 +13,20 @@ declare(strict_types=1);
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Models\User;
 
-/** @var User $user */
+
+$ifModeratorOrAdmin = false;
+
 if ($this->authorization->getAuthStatus()) {
+
+    /** @var User $user */
     $user = $this->authorization->getUser();
+
+    try {
+        $ifModeratorOrAdmin = in_array($user->get('role'), [User::ROLE_ADMIN, User::ROLE_MODERATOR]);
+    } catch (\iceCMS2\Tools\Exception $e) {
+        //do nothing
+    }
+
     $authorized = true;
 } else {
     $authorized = false;
@@ -44,11 +55,11 @@ if ($authorized && in_array($user->get('role'), [User::ROLE_ADMIN, User::ROLE_MO
                         echo 'active';
                     } ?>" href="/hello-world/">HelloWorld</a>
                 </li>
-                <li class="nav-item">
+                <?php if ($ifModeratorOrAdmin === true){ ?><li class="nav-item">
                     <a class="nav-link <?php if ($this->routing->route['controller'] === 'Admin'){
                         echo 'active';
                     } ?>" href="/admin/">Admin</a>
-                </li>
+                </li><?php } ?>
             </ul>
         </div><?php
         if ($authorized) {

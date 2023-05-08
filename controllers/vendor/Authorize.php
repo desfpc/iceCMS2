@@ -128,6 +128,18 @@ class Authorize extends AbstractController implements ControllerInterface
     }
 
     /**
+     * Logout user and redirect to main page
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function exit(): void
+    {
+        $this->authorization->exitAuth();
+        $this->_redirect('/');
+    }
+
+    /**
      * @return void
      * @throws Exception
      */

@@ -385,4 +385,34 @@ abstract class AbstractController implements ControllerInterface
             $this->_authorizeRedirect();
         }
     }
+
+    /**
+     * Check authorization for action method if needed special role (run it in the top of action, that need
+     * authorization)
+     *
+     * @param string|array $role
+     * @return void
+     * @throws Exception
+     */
+    protected function _authorizationCheckRole(string|array $role): void
+    {
+        $this->_authorizationCheck();
+
+        $user = $this->authorization->getUser();
+
+        if (is_null($user)) {
+            $this->_authorizeRedirect();
+        }
+
+        if (is_array($role)) {
+            if (!in_array($user->get('role'), $role)) {
+                $this->_redirect('/404');
+                //$this->_authorizeRedirect();
+            }
+        } else {
+            if ($user->get('role') !== $role) {
+                $this->_authorizeRedirect();
+            }
+        }
+    }
 }

@@ -12,6 +12,7 @@ namespace app\Controllers\vendor;
 
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
+use iceCMS2\Models\User;
 use iceCMS2\Tools\Exception;
 
 class Admin extends AbstractController implements ControllerInterface
@@ -23,7 +24,8 @@ class Admin extends AbstractController implements ControllerInterface
      */
     public function main(): void
     {
-        $this->_authorizationCheck();
+        $this->_authorizationCheckRole([User::ROLE_MODERATOR, User::ROLE_ADMIN]);
+        //$this->_authorizationCheck(); //for authorization check without special role(s)
 
         $this->renderTemplate('main');
     }
