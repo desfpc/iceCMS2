@@ -34,15 +34,25 @@ class MaterialType extends AbstractEntity
     {
         $this->_getChilds();
         $this->_getParents();
+        $this->_getExtraParams();
     }
 
     /**
-     * TODO Get Type extra params
+     * Get Type extra params with values
      *
      * @return void
+     *
      */
     private function _getExtraParams(): void
     {
+        $query = 'SELECT * FROM (SELECT * FROM `material_extra_params` `p`, `material_extra_values` `v`
+            WHERE `p`.`mtype_id` = ' . $this->_id . ' AND `p`.`id` = `v`.`param_id`) `params` 
+            LEFT JOIN `materials` `m` ON `params`.`material_id` = `m`.`id`';
+
+
+        if ($res = $this->_db->query($query)) {
+            $this->extraParams = $res;
+        }
     }
 
     /**

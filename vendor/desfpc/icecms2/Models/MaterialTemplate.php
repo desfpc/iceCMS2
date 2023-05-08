@@ -38,10 +38,19 @@ class MaterialTemplate extends AbstractEntity
         return 'template_' . $this->_values['type'];
     }
 
-    /** TODO getting connecting materials list */
+    /** Get connected materials list */
     private function _getConnectedMaterialTypes(): array
     {
+        $query = 'SELECT * FROM `material_types`
+         WHERE `template_list` = ' . $this->_id . ' OR `template_material` = ' . $this->_id
+            . ' OR `template_admin` = ' . $this->_id
+            . ' ORDER BY `id` ASC';
 
+        if ($res = $this->_db->query($query)) {
+            return $res;
+        } else {
+            return [];
+        }
     }
 
     /**
