@@ -84,6 +84,7 @@ abstract class AbstractEntity
         $this->_settings = $settings;
         $this->_db = DBFactory::get($this->_settings);
         $this->_db->connect();
+
         $this->_cacher = CachingFactory::instance($this->_settings);
 
         $this->_getTableCols();
@@ -259,10 +260,11 @@ abstract class AbstractEntity
      * Function that runs when get error while getting Entity DB table columns
      *
      * @return void
+     * @throws Exception
      */
     protected function _ifGetTableColsError(): void
     {
-
+        throw new Exception('Error while getting table columns for "' . $this->_dbtable . '"');
     }
 
     /**

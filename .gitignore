@@ -13,3 +13,4 @@ web/files_test
 .DS_Store
 *.log
 .DS_Store
+composer.phar

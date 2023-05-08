@@ -10,8 +10,9 @@ declare(strict_types=1);
 
 namespace iceCMS2\Caching;
 
-use desfpc\Redka\Redka;
 use iceCMS2\Tools\Exception;
+use Redis as Rediska;
+use Throwable;
 
 class Redis implements CachingInterface
 {
@@ -27,8 +28,8 @@ class Redis implements CachingInterface
     /** @var array Cacher errors array */
     public array $errors = [];
 
-    /** @var Redka Redis client object */
-    private Redka $redis;
+    /** @var ?Rediska $redis Redis client object */
+    private ?Rediska $redis = null;
 
     /**
      * Cacher constructor.
@@ -42,12 +43,9 @@ class Redis implements CachingInterface
         $this->port = $port;
 
         try {
-            $this->redis = new Redka($this->host, $this->port);
-            $this->redis->connect();
-            if ($this->redis->status == 1) {
-                $this->connected = true;
-            }
-        } catch (\Exception $e) {
+            $this->redis = new Rediska();
+            $this->redis->connect($this->host, $this->port);
+        } catch (Throwable $e) {
             $this->errors[] = $e->getMessage();
         }
     }
@@ -58,30 +56,24 @@ class Redis implements CachingInterface
      */
     public function has(string $key): bool
     {
-        if ($this->connected) {
-            try {
-                return ($this->redis->has($key));
-            } catch (\Exception $e) {
-                throw new Exception('Redis error: ' . $e->getMessage());
-            }
+        try {
+            return (bool)($this->redis->exists($key));
+        } catch (\Exception $e) {
+            throw new Exception('Redis error: ' . $e->getMessage());
         }
-        throw new Exception('No Redis connection');
     }
 
     /**
      * @inheritDoc
      * @throws Exception
      */
-    public function findKeys(string $pattern): mixed
+    public function findKeys(string $pattern): array|Rediska
     {
-        if ($this->connected) {
-            try {
-                return ($this->redis->findKeys($pattern));
-            } catch (\Exception $e) {
-                throw new Exception('Redis error: ' . $e->getMessage());
-            }
+        try {
+            return ($this->redis->keys($pattern));
+        } catch (\Exception $e) {
+            throw new Exception('Redis error: ' . $e->getMessage());
         }
-        throw new Exception('No Redis connection');
     }
 
     /**
@@ -90,19 +82,16 @@ class Redis implements CachingInterface
      */
     public function get(string $key, bool $decode = false): mixed
     {
-        if ($this->connected) {
-            try {
-                $value = $this->redis->get($key);
-            } catch (\Exception $e) {
-                throw new Exception('Redis error: ' . $e->getMessage());
-            }
-
-            if ($decode) {
-                return (json_decode($value, true));
-            }
-            return ($value);
+        try {
+            $value = $this->redis->get($key);
+        } catch (\Exception $e) {
+            throw new Exception('Redis error: ' . $e->getMessage());
         }
-        throw new Exception('No Redis connection');
+
+        if ($decode) {
+            return (json_decode($value, true));
+        }
+        return ($value);
     }
 
     /**
@@ -111,18 +100,13 @@ class Redis implements CachingInterface
      */
     public function set(string $key, mixed $value, ?int $expired = null): bool
     {
-        if ($this->connected) {
-            try {
-                $res = $this->redis->set($key, $value, $expired);
-            } catch (\Exception $e) {
-                throw new Exception('Redis error: ' . $e->getMessage());
-            }
-            if ($res === 'OK') {
-                return true;
-            }
-            return false;
+        try {
+            $res = $this->redis->set($key, $value, $expired);
+        } catch (\Exception $e) {
+            throw new Exception('Redis error: ' . $e->getMessage());
         }
-        throw new Exception('No Redis connection');
+
+        return $res;
     }
 
     /**
@@ -131,13 +115,10 @@ class Redis implements CachingInterface
      */
     public function del(string $key): bool
     {
-        if ($this->connected) {
-            $res = $this->redis->del($key);
-            if ($res === 'OK' || $res === '1' || $res === 1) {
-                return true;
-            }
-            return false;
+        $res = $this->redis->del($key);
+        if ($res === 1) {
+            return true;
         }
-        throw new Exception('No Redis connection');
+        return false;
     }
 }
