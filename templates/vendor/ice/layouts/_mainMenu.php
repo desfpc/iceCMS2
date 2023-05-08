@@ -66,6 +66,13 @@ if ($authorized && in_array($user->get('role'), [User::ROLE_ADMIN, User::ROLE_MO
             ?>
             <div class="justify-content-end main-menu-user">
                 <a href="/profile"><?= $user->get('email') ?></a>
+                <br><a href="/exit">Logout</a>
+            </div>
+            <?php
+        } else {
+            ?>
+            <div class="justify-content-end main-menu-user">
+                <a href="/authorize">Login</a>
             </div>
             <?php
         } ?>
