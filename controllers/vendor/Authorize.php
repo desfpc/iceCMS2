@@ -81,6 +81,11 @@ class Authorize extends AbstractController implements ControllerInterface
     {
         $this->_authorizationCheck();
 
+        $this->breadcrumbs = [
+            ['title' => 'Main', 'url' => '/'],
+            ['title' => 'Profile', 'url' => '/profile/']
+        ];
+
         $this->templateData['user'] = $this->authorization->getUser();
         $this->renderTemplate('profile');
     }

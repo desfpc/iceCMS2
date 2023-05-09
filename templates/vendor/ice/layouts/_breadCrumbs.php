@@ -12,5 +12,29 @@ declare(strict_types=1);
 
 use iceCMS2\Controller\AbstractController;
 
-?>
-<div>TODO breadcrumbs</div>
+if (!empty($this->breadcrumbs)) {
+    ?><div class="container">
+        <nav aria-label="breadcrumb" class="mb-0"><ol class="breadcrumb mb-0">
+            <?php
+
+            $i = 0;
+            $count = count($this->breadcrumbs);
+            foreach ($this->breadcrumbs as $breadcrumb) {
+                ++$i;
+                if ($i === $count) {
+                    $active = ' active';
+                    $aHrefStart = '';
+                    $aHrefEnd = '';
+                } else {
+                    $active = '';
+                    $aHrefStart = '<a href="' . $breadcrumb['url'] . '">';
+                    $aHrefEnd = '</a>';
+                }
+
+                echo '<li class="breadcrumb-item' . $active . '" aria-current="page">' . $aHrefStart . $breadcrumb['title'] . $aHrefEnd . '</li>';
+            }
+
+            ?>
+        </ol></nav>
+    </div><?php
+}

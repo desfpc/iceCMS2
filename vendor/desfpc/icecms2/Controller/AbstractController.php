@@ -110,6 +110,10 @@ abstract class AbstractController implements ControllerInterface
      */
     public function main(): void
     {
+        $this->breadcrumbs = [
+            ['title' => 'Main', 'url' => '/'],
+        ];
+
         $this->renderTemplate('main');
     }
 

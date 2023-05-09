@@ -17,7 +17,6 @@ use iceCMS2\Controller\AbstractController;
     <div class="row">
         <div class="col">
             <?php include($this->_getLayoutPath() . '_alerts.php'); ?>
-            <p>&nbsp;</p>
             <h1>Authorization</h1>
             <div class="col-6">
                 <form method="post" action="">

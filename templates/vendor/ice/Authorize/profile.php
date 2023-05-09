@@ -23,7 +23,6 @@ $user = $this->templateData['user'];
     <div class="row">
         <div class="col">
             <?php include($this->_getLayoutPath() . '_alerts.php'); ?>
-            <p>&nbsp;</p>
             <h1><?= $user->get('email'); ?> profile</h1>
 
             <p>&nbsp;</p>

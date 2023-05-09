@@ -17,7 +17,6 @@ use iceCMS2\Controller\AbstractController;
     <div class="row">
         <div class="col">
             <?php include($this->_getLayoutPath() . '_alerts.php'); ?>
-            <p>&nbsp;</p>
             <h1>Hello World!</h1>
             <h4>Hello World - example App controller!</h4>
         </div>

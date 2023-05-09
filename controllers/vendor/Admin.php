@@ -27,6 +27,11 @@ class Admin extends AbstractController implements ControllerInterface
         $this->_authorizationCheckRole([User::ROLE_MODERATOR, User::ROLE_ADMIN]);
         //$this->_authorizationCheck(); //for authorization check without special role(s)
 
+        $this->breadcrumbs = [
+            ['title' => 'Main', 'url' => '/'],
+            ['title' => 'Admin', 'url' => '/admin/']
+        ];
+
         $this->renderTemplate('main');
     }
 }
