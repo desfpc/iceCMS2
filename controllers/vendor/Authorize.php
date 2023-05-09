@@ -74,6 +74,18 @@ class Authorize extends AbstractController implements ControllerInterface
     }
 
     /**
+     * @return void
+     * @throws Exception
+     */
+    public function profile(): void
+    {
+        $this->_authorizationCheck();
+
+        $this->templateData['user'] = $this->authorization->getUser();
+        $this->renderTemplate('profile');
+    }
+
+    /**
      * User registration
      *
      * @return void

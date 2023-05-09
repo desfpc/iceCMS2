@@ -35,6 +35,7 @@ $this->_echoHeaders(); ?>
 </head>
 <body class="d-flex flex-column min-vh-100">
 <?php include '_mainMenu.php'; ?>
+<?php include '_breadCrumbs.php'; ?>
 <?php if ($this->isTemplate) { $this->_echoTemplateBody(); } ?>
 <?php include '_footer.php'; ?>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"

@@ -8,6 +8,7 @@ $routers = [
     'registration' => ['controller' => 'Authorize', 'controllerMethod' => 'registration', 'useVendor' => true],
     'reset-password' => ['controller' => 'Authorize', 'controllerMethod' => 'resetPassword', 'useVendor' => true],
     'exit' => ['controller' => 'Authorize', 'controllerMethod' => 'exit', 'useVendor' => true],
+    'profile' => ['controller' => 'Authorize', 'controllerMethod' => 'profile', 'useVendor' => true],
 
     'admin/materials' => ['controller' => 'AdminMaterials', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/files' => ['controller' => 'AdminFiles', 'controllerMethod' => 'main', 'useVendor' => true],

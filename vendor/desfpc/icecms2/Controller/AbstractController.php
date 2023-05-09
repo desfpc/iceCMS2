@@ -42,6 +42,9 @@ abstract class AbstractController implements ControllerInterface
     /** @var Routing|null Routing data */
     public ?Routing $routing = null;
 
+    /** @var array|null Breadcrumbs array */
+    public ?array $breadcrumbs = null;
+
     /** @var string Site Page Title */
     public string $title = '';
 
