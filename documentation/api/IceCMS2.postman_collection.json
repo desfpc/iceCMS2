@@ -1,0 +1,61 @@
+{
+	"info": {
+		"_postman_id": "64fec6ba-3348-4636-803a-4f35761d9fb2",
+		"name": "IceCMS2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1658687"
+	},
+	"item": [
+		{
+			"name": "Get User by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://icecms.local:7888/api/v1/user/5",
+					"protocol": "http",
+					"host": [
+						"icecms",
+						"local"
+					],
+					"port": "7888",
+					"path": [
+						"api",
+						"v1",
+						"user",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET Users list by IDs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://icecms.local:7888/api/v1/users?users=5,6,7",
+					"protocol": "http",
+					"host": [
+						"icecms",
+						"local"
+					],
+					"port": "7888",
+					"path": [
+						"api",
+						"v1",
+						"users"
+					],
+					"query": [
+						{
+							"key": "users",
+							"value": "5,6,7"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

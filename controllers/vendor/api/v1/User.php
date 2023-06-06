@@ -12,26 +12,52 @@ namespace app\Controllers\vendor\api\v1;
 
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
+use iceCMS2\Tools\Exception;
+use iceCMS2\Models\User as UserModel;
 
 class User extends AbstractController implements ControllerInterface
 {
     public string $title = 'User';
 
     /**
-     * TODO Return list of users JSON
+     * Return list of users JSON TODO caching
      *
      * @return void
+     * @throws Exception
      */
     public function list(): void
     {
-        $list = [1,2,3];
+        $this->requestParameters->getRequestValues(['users']);
+        if (empty($this->requestParameters->values->users)) {
+            $this->renderJson(['message' => 'Empty users ids string'], false);
+            return;
+        }
+
+        $list = explode(',', $this->requestParameters->values->users);
+
+        try {
+            $list = array_map(function ($userId) {
+                $user = new UserModel($this->settings);
+                if (!$user->load((int)$userId)) {
+                    throw new Exception('Wrong User ID');
+                }
+                $userValues = $user->get();
+                unset($userValues['password']);
+                return $userValues;
+            }, $list);
+        } catch (Exception $e) {
+            $this->renderJson(['message' => $e->getMessage()], false);
+            return;
+        }
+
         $this->renderJson($list, true);
     }
 
     /**
-     * TODO Return User by ID
+     * Return User by ID
      *
      * @return void
+     * @throws Exception
      */
     public function get(): void
     {
@@ -40,7 +66,22 @@ class User extends AbstractController implements ControllerInterface
             return;
         }
 
-        $id = $this->routing->pathInfo['query_vars']['id'];
-        $this->renderJson(['userId' => $id], true);
+        $userId = $this->routing->pathInfo['query_vars']['id'];
+
+        try {
+            $user = new UserModel($this->settings);
+        } catch (Exception $e) {
+            $this->renderJson(['message' => $e->getMessage()], false);
+            return;
+        }
+
+        if (!$user->load((int)$userId)) {
+            $this->renderJson(['message' => 'Wrong User ID'], false);
+        }
+
+        $out = $user->get();
+        unset($out['password']);
+
+        $this->renderJson($out, true);
     }
 }
