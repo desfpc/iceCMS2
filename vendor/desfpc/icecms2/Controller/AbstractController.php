@@ -264,7 +264,7 @@ abstract class AbstractController implements ControllerInterface
             foreach ($this->jsFiles as $jsFile) {
                 echo PHP_EOL;
                 if (!is_array($jsFile)) {
-                    echo  '<script src="' . $jsFile . '">';
+                    echo  '<script src="' . $jsFile . '"></script>';
                 } else {
                     echo '<script';
                     foreach ($jsFile as $key => $value) {
