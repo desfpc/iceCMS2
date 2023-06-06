@@ -29,6 +29,10 @@ class UniqueStringValidator extends AbstractValidator implements ValidatorInterf
             $params = [$value];
             $result = $db->queryBinded($sql, $params);
 
+            if ($result === false) {
+                throw new Exception('Error in UniqueStringValidator SQL query');
+            }
+
             if ($result[0]['cnt'] > 0) {
                 throw new Exception($name . ' must be unique');
             }
