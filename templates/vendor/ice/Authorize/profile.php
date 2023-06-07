@@ -51,7 +51,14 @@ $user = $this->templateData['user'];
                     </div>
                 </div>
                 <div class="row">
-                    
+                    <label for="name" class="col-sm-1 col-form-label text-end">Name: </label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" id="name" v-model="user.name">
+                    </div>
+                    <label for="nikname" class="col-sm-1 col-form-label text-end">Nickname: </label>
+                    <div class="col-sm-5">
+                        <input type="text" class="form-control" id="nikname" v-model="user.nikname">
+                    </div>
                 </div>
             </div>
 
