@@ -74,6 +74,8 @@ class Authorize extends AbstractController implements ControllerInterface
     }
 
     /**
+     * User profile page
+     *
      * @return void
      * @throws Exception
      */

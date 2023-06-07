@@ -235,7 +235,9 @@ abstract class AbstractController implements ControllerInterface
             . DIRECTORY_SEPARATOR;
     }
 
-    /** Echo Template File Body
+    /**
+     * Echo Template File Body
+     *
      * @throws Exception
      */
     protected function _echoTemplateBody(): void
@@ -247,7 +249,11 @@ abstract class AbstractController implements ControllerInterface
         }
     }
 
-    /** Echo JS script on document ready from $this->jsReady string */
+    /**
+     * Echo JS script on document ready from $this->jsReady string
+     *
+     * @return void
+     */
     protected function _echoOnReadyJS(): void
     {
         if (!empty($this->jsReady)) {
@@ -257,7 +263,11 @@ abstract class AbstractController implements ControllerInterface
         }
     }
 
-    /** Echo JS files (<script ...></script>) from $this->jsFiles array */
+    /**
+     * Echo JS files (<script ...></script>) from $this->jsFiles array
+     *
+     * @return void
+     */
     protected function _echoJS(): void
     {
         if (!empty($this->jsFiles)) {
@@ -276,7 +286,11 @@ abstract class AbstractController implements ControllerInterface
         }
     }
 
-    /** Echo CSS files (<link rel="stylesheet" href= ... >) from $this->cssFiles array */
+    /**
+     * Echo CSS files (<link rel="stylesheet" href= ... >) from $this->cssFiles array
+     *
+     * @return void
+     */
     protected function _echoCSS(): void
     {
         if (!empty($this->cssFiles)) {
@@ -315,7 +329,11 @@ abstract class AbstractController implements ControllerInterface
         ];
     }
 
-    /** Echo php heades() from $this->_headers array */
+    /**
+     * Echo php heades() from $this->_headers array
+     *
+     * @return void
+     */
     protected function _echoHeaders(): void
     {
         if (empty($this->_headers)) {

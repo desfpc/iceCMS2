@@ -14,7 +14,7 @@ use iceCMS2\Controller\AbstractController;
 
 if (!empty($this->breadcrumbs)) {
     ?><div class="container">
-        <nav aria-label="breadcrumb" class="mb-0"><ol class="breadcrumb mb-0">
+        <nav aria-label="breadcrumb" class="mb-3 mt-3"><ol class="breadcrumb mb-0">
             <?php
 
             $i = 0;
