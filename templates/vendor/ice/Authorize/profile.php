@@ -28,6 +28,33 @@ $user = $this->templateData['user'];
 
             <div id="app">
                 <div class="mb-3 row">
+                    <label for="status" class="col-sm-1 col-form-label text-end">Status: </label>
+                    <div class="col-sm-1">
+                        <input type="text" readonly class="form-control-plaintext" id="status" value="<?=
+                        $user->get('status'); ?>">
+                    </div>
+                    <label for="role" class="col-sm-1 col-form-label text-end">Role: </label>
+                    <div class="col-sm-1">
+                        <input type="text" readonly class="form-control-plaintext" id="role" value="<?=
+                        $user->get('role'); ?>">
+                    </div>
+                    <label for="role" class="col-sm-1 col-form-label text-end">Rating: </label>
+                    <div class="col-sm-1">
+                        <input type="text" readonly class="form-control-plaintext" id="rating" value="<?=
+                        $user->get('rating'); ?>">
+                    </div>
+                    <label for="email_approved" class="col-sm-2 col-form-label text-end">Email approved: </label>
+                    <div class="col-sm-1">
+                        <input type="text" readonly class="form-control-plaintext" id="email_approved" value="<?=
+                        $user->get('email_approved') ? 'true' : 'false'; ?>">
+                    </div>
+                    <label for="phone_approved" class="col-sm-2 col-form-label text-end">Phone approved: </label>
+                    <div class="col-sm-1">
+                        <input type="text" readonly class="form-control-plaintext" id="phone_approved" value="<?=
+                        $user->get('phone_approved') ? 'true' : 'false'; ?>">
+                    </div>
+                </div>
+                <div class="mb-3 row">
                     <label for="staticEmail" class="col-sm-1 col-form-label text-end">Email: </label>
                     <div class="col-sm-5">
                         <input type="text" readonly class="form-control" id="staticEmail" value="<?=
@@ -50,7 +77,7 @@ $user = $this->templateData['user'];
                         </select>
                     </div>
                 </div>
-                <div class="row">
+                <div class="mb-3 row">
                     <label for="name" class="col-sm-1 col-form-label text-end">Name: </label>
                     <div class="col-sm-5">
                         <input type="text" class="form-control" id="name" v-model="user.name">
