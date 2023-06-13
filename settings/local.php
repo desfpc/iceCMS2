@@ -30,7 +30,7 @@ $settings = [
         'name' => 'ice2_test',
         'host' => '127.0.0.1',
         'port' => '3306',
-        'login' => 'root',
+        'login' => 'ice2',
         'pass' => 'localRoot',
         'encoding' => 'UTF8',
     ],
