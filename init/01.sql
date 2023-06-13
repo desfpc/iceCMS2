@@ -1,5 +1,5 @@
 CREATE DATABASE IF NOT EXISTS `ice2`;
-GRANT ALL ON `ice2`.* TO 'user'@'%';
+GRANT ALL ON `ice2`.* TO 'mysql';
 
 CREATE DATABASE IF NOT EXISTS `ice2_test`;
-GRANT ALL ON `ice2`.* TO 'user'@'%';
+GRANT ALL ON `ice2_test`.* TO 'mysql';
