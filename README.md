@@ -27,6 +27,6 @@ iceCMS2\DB\DBInterface
 - run in php-fpm container: php cli.php migration-exec
 - view site in your browser http://localhost:8181
 
-
-- English Wiki - comming soon.
-- Русская Wiki - появится, но не так скоро...
+## Full Wiki?
+- English Wiki - comming soon
+- Русская Wiki - тоже будет
