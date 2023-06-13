@@ -44,9 +44,15 @@ class Redis implements CachingInterface
 
         try {
             $this->redis = new Rediska();
-            $this->redis->connect($this->host, $this->port);
+            if (!$this->redis->connect($this->host, $this->port)) {
+                $this->errors[] = 'Redis connection error';
+            }
         } catch (Throwable $e) {
             $this->errors[] = $e->getMessage();
+        }
+
+        if (!empty($this->errors)) {
+            throw new Exception('Error: ' . implode(', ', $this->errors));
         }
     }
 

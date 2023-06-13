@@ -11,7 +11,13 @@ services:
     links:
       - php-fpm
   php-fpm:
-    image: php:8.2-fpm-alpine
+    build:
+      context: docker/8.2-fpm
+      dockerfile: "Dockerfile"
+    environment:
+      - "ENV_SUBSTITUTION_ENABLE=true"
+      - "PHP_MEMORY_LIMIT=512M"
+      - "PHP_SESSION_GC_MAXLIFETIME=7200"
     depends_on:
       - db
       - redis
@@ -31,3 +37,5 @@ services:
       MYSQL_DATABASE: ice2
   redis:
     image: redis:latest
+    ports:
+      - "6382:6379"
