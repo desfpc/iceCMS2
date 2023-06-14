@@ -103,7 +103,7 @@ class User extends AbstractController implements ControllerInterface
         if ($file->savePostFile('file')) {
             if (!is_null($user->get('avatar'))) {
                 $oldAvatar = new FileImage($this->settings);
-                $oldAvatar->load($user->get('avatar'));
+                $oldAvatar->load((int)$user->get('avatar'));
                 $oldAvatar->del();
             }
 
@@ -111,9 +111,10 @@ class User extends AbstractController implements ControllerInterface
 
             $user->set('avatar', $fileId);
             $user->save();
-            $this->renderJson(['file' => $fileId, 'url' => $file->getUrl()], true);
+            $user->loadAvatar();
+            $this->renderJson(['file' => $fileId, 'url' => $user->avatarUrl], true);
+        } else {
+            $this->renderJson(['message' => 'Error in avatar uploading'], false);
         }
-
-        $this->renderJson(['message' => 'Error in avatar uploading'], false);
     }
 }
