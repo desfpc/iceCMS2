@@ -69,7 +69,10 @@ class FileImage extends File
                 $this->errors[] = 'Transferred file is not an image or its format is not supported';
                 return false;
         }
-        $this->_setByKeyAndValue('extension', $extension);
+
+        if ($this->get('extension') !== $extension) {
+            $this->_setByKeyAndValue('extension', $extension);
+        }
 
         return true;
     }
@@ -96,6 +99,7 @@ class FileImage extends File
         $doReformating = false;
         $doResizing = false;
         $oldExtension = $this->get('extension');
+        $imgPathFrom = $this->getPath(null, $oldExtension);
 
         if (self::IF_REFORMAT_ORIGINAL && $oldExtension !== self::DEFAULT_IMG_FORMAT) {
             $doReformating = true;
@@ -127,13 +131,12 @@ class FileImage extends File
         }
 
         if ($this->save()) {
-            $imgPathFrom = $this->getPath(null, $oldExtension);
             $imgPathTo = $this->getPath();
             if ($this->saveImageSize(
                 $imgPathFrom,
                 $imgPathTo,
-                $newX,
-                $newY,
+                (int)$newX,
+                (int)$newY,
                 $newExtension,
                 false,
                 0,

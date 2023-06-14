@@ -13,6 +13,8 @@ namespace iceCMS2\Models;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Types\UnixTime;
 
+use function PHPUnit\Framework\isInstanceOf;
+
 class File extends AbstractEntity
 {
     /** @var string Entity DB table name */
@@ -114,6 +116,10 @@ class File extends AbstractEntity
 
         if (!$this->_checkFileType($file)) {
             throw new Exception('Transferred file have incorrect type');
+        }
+
+        if ($extension !== $this->get('extension')) {
+            $extension = $this->get('extension');
         }
 
         //Creating a file record in DB
@@ -220,7 +226,12 @@ class File extends AbstractEntity
             $url .= 'private' . DIRECTORY_SEPARATOR;
         }
 
-        $url .= date('Ym', (new UnixTime($this->_values['created_time']))->get()) . DIRECTORY_SEPARATOR;
+        $time = $this->_values['created_time'];
+        if (!($time instanceof UnixTime)) {
+            $time = new UnixTime($this->_values['created_time']);
+        }
+
+        $url .= date('Ym', $time->get()) . DIRECTORY_SEPARATOR;
 
         return $url;
     }

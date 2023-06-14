@@ -11,11 +11,12 @@ planned. However, you can easily connect any database by writing a class that im
 iceCMS2\DB\DBInterface
 
 ## Setup:
-- Clone repository, setup your webserver to work with {repository foldder}/web
+- Clone repository, set up your webserver to work with {repository foldder}/web
 - cd to {repository foldder}
+- modify ./settings/local.php for set up your server settings
 - run: composer install (install composer first if needed)
 - run: php cli.php migration-exec
-- view site in your browser (bu url that setup in webserver hosts settings)
+- view site in your browser (use webserver hosts settings url)
 
 ## Setup with docker:
 - Clone repository
@@ -26,6 +27,14 @@ iceCMS2\DB\DBInterface
 - run in php-fpm container: composer install
 - run in php-fpm container: php cli.php migration-exec
 - view site in your browser http://localhost:8181
+
+## Work with iceCMS2 client:
+- cd to {repository foldder}
+- run: php cli.php help
+
+## Tests:
+- create test database, name set in ./settings/local.php
+- Run in ./test folder PHPUnit tests
 
 ## Full Wiki?
 - English Wiki - comming soon
