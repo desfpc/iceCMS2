@@ -12,6 +12,7 @@ namespace app\Controllers\vendor\api\v1;
 
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
+use iceCMS2\Models\FileImage;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Models\User as UserModel;
 
@@ -23,7 +24,6 @@ class User extends AbstractController implements ControllerInterface
      * Return list of users JSON TODO caching
      *
      * @return void
-     * @throws Exception
      */
     public function list(): void
     {
@@ -83,5 +83,37 @@ class User extends AbstractController implements ControllerInterface
         unset($out['password']);
 
         $this->renderJson($out, true);
+    }
+
+    /**
+     * Upload user avatar
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function uploadAvatar(): void
+    {
+        $this->_authorizationCheck();
+
+        /** @var UserModel $user */
+        $user = $this->authorization->getUser();
+
+        $file = new FileImage($this->settings);
+
+        if ($file->savePostFile('file')) {
+            if (!is_null($user->get('avatar'))) {
+                $oldAvatar = new FileImage($this->settings);
+                $oldAvatar->load($user->get('avatar'));
+                $oldAvatar->del();
+            }
+
+            $fileId = $file->get('id');
+
+            $user->set('avatar', $fileId);
+            $user->save();
+            $this->renderJson(['file' => $fileId, 'url' => $file->getUrl()], true);
+        }
+
+        $this->renderJson(['message' => 'Error in avatar uploading'], false);
     }
 }

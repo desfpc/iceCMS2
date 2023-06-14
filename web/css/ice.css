@@ -62,3 +62,11 @@
 h1 {
     margin-bottom: 30px;
 }
+
+.user_avatar {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    margin: 0 auto;
+    display: block;
+}

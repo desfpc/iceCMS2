@@ -24,6 +24,7 @@ $user = $this->templateData['user'];
         <div class="col">
             <?php include($this->_getLayoutPath() . '_alerts.php'); ?>
             <h1><?= $user->get('nikname'); ?> profile</h1>
+            <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
             <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
             <div id="app">
@@ -87,6 +88,12 @@ $user = $this->templateData['user'];
                         <input type="text" class="form-control" id="nikname" v-model="user.nikname">
                     </div>
                 </div>
+                <div class="mb-3 row">
+                    <div class="col-sm-3 text-center">
+                        <img :src="user.avatar" class="img-thumbnail user_avatar">
+                        <br><input type="file" class="form-control" id="file" ref="file" @change="onUploadFiles" />
+                    </div>
+                </div>
             </div>
 
             <script>
@@ -114,6 +121,25 @@ $user = $this->templateData['user'];
                                 { text: 'Русский', value: 'ru' },
                                 { text: 'ქართული', value: 'ge' },
                             ]
+                        }
+                    },
+
+                    methods: {
+                        onUploadFiles(event) {
+                            const files = event.target.files
+                            const formData = new FormData()
+                            formData.append('file', files[0])
+
+                            axios.post('/api/v1/profile/avatar', formData, {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                }
+                            }).then(response => {
+
+                                console.log(response)
+
+                                this.user.avatar = response.data.url
+                            })
                         }
                     }
                 }).mount('#app')
