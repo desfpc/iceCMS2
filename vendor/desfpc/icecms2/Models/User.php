@@ -97,6 +97,17 @@ class User extends AbstractEntity
     protected function _afterLoad(): void
     {
         //avatar load
+        $this->loadAvatar();
+    }
+
+    /**
+     * Load avatar
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function loadAvatar(): void
+    {
         if ($this->get('avatar') > 0) {
             $this->avatar = new FileImage($this->_settings, (int)$this->get('avatar'));
             if (!$this->avatar->load()){

@@ -18,6 +18,8 @@ use iceCMS2\Models\User;
 /** @var User $user */
 $user = $this->templateData['user'];
 
+
+
 ?>
 <div class="container">
     <div class="row">
@@ -111,7 +113,7 @@ $user = $this->templateData['user'];
                                 status: '<?= $user->get('status'); ?>',
                                 role: '<?= $user->get('role'); ?>',
                                 rating: '<?= $user->get('rating'); ?>',
-                                avatar: '<?= $user->get('avatar'); ?>',
+                                avatar: '<?= $user->avatarUrl; ?>',
                                 created_time: '<?= $user->get('created_time'); ?>',
                                 sex: '<?= $user->get('sex'); ?>',
                                 contacts: '<?= $user->get('contacts'); ?>',
@@ -138,7 +140,9 @@ $user = $this->templateData['user'];
 
                                 console.log(response)
 
-                                this.user.avatar = response.data.url
+                                if (response.data.success === true) {
+                                    this.user.avatar = response.data.data.url
+                                }
                             })
                         }
                     }
