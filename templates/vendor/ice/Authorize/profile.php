@@ -31,69 +31,77 @@ $user = $this->templateData['user'];
 
             <div id="app">
                 <div class="mb-3 row">
-                    <label for="status" class="col-sm-1 col-form-label text-end">Status: </label>
-                    <div class="col-sm-1">
-                        <input type="text" readonly class="form-control-plaintext" id="status" value="<?=
-                        $user->get('status'); ?>">
-                    </div>
-                    <label for="role" class="col-sm-1 col-form-label text-end">Role: </label>
-                    <div class="col-sm-1">
-                        <input type="text" readonly class="form-control-plaintext" id="role" value="<?=
-                        $user->get('role'); ?>">
-                    </div>
-                    <label for="role" class="col-sm-1 col-form-label text-end">Rating: </label>
-                    <div class="col-sm-1">
-                        <input type="text" readonly class="form-control-plaintext" id="rating" value="<?=
-                        $user->get('rating'); ?>">
-                    </div>
-                    <label for="email_approved" class="col-sm-2 col-form-label text-end">Email approved: </label>
-                    <div class="col-sm-1">
-                        <input type="text" readonly class="form-control-plaintext" id="email_approved" value="<?=
-                        $user->get('email_approved') ? 'true' : 'false'; ?>">
-                    </div>
-                    <label for="phone_approved" class="col-sm-2 col-form-label text-end">Phone approved: </label>
-                    <div class="col-sm-1">
-                        <input type="text" readonly class="form-control-plaintext" id="phone_approved" value="<?=
-                        $user->get('phone_approved') ? 'true' : 'false'; ?>">
+                    <div class="col-sm-12">
+                        <span class="me-3">Status: <span :class="statusBadge">{{ user.status }}</span></span>
+                        <span class="me-3">Role: <span :class="roleBadge">{{ user.role }}</span></span>
+                        <span class="me-3">Rating: <span :class="ratingBadge">{{ user.rating }}</span></span>
+                        <span class="me-3">Email approved: <span :class="emailApprovedBadge"><?=
+                                $user->get('email_approved') ? 'true' : 'false'; ?></span></span>
+                        <span class="me-3">Phone approved: <span :class="phoneApprovedBadge"><?=
+                                $user->get('phone_approved') ? 'true' : 'false'; ?></span></span>
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <label for="staticEmail" class="col-sm-1 col-form-label text-end">Email: </label>
-                    <div class="col-sm-5">
-                        <input type="text" readonly class="form-control" id="staticEmail" value="<?=
-                        $user->get('email'); ?>">
-                    </div>
-                    <label for="phone" class="col-sm-1 col-form-label text-end">Phone: </label>
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control" id="phone" v-model="user.phone">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="telegram" class="col-sm-1 col-form-label text-end">Telegram: </label>
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control" id="telegram" v-model="user.telegram">
-                    </div>
-                    <label for="language" class="col-sm-1 col-form-label text-end">Language: </label>
-                    <div class="col-sm-5">
-                        <select class="form-control" v-model="user.language">
-                            <option v-for="language in languages" :value="language.value">{{ language.text }}</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <label for="name" class="col-sm-1 col-form-label text-end">Name: </label>
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control" id="name" v-model="user.name">
-                    </div>
-                    <label for="nikname" class="col-sm-1 col-form-label text-end">Nickname: </label>
-                    <div class="col-sm-5">
-                        <input type="text" class="form-control" id="nikname" v-model="user.nikname">
-                    </div>
-                </div>
-                <div class="mb-3 row">
-                    <div class="col-sm-3 text-center">
+                    <div class="col-lg-3 text-center">
                         <img :src="user.avatar" class="img-thumbnail user_avatar">
                         <br><input type="file" class="form-control" id="file" ref="file" @change="onUploadFiles" />
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="mb-3 row">
+                            <label for="name" class="col-sm-1 col-form-label text-end">Sex: </label>
+                            <div class="col-sm-5">
+                                <select class="form-control" v-model="user.sex">
+                                    <option v-for="sex in sexes" :value="sex.value">{{ sex.text }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="staticEmail" class="col-sm-1 col-form-label text-end">Email: </label>
+                            <div class="col-sm-5">
+                                <input type="text" readonly class="form-control" id="staticEmail" value="<?=
+                                $user->get('email'); ?>">
+                            </div>
+                            <label for="name" class="col-sm-1 col-form-label text-end">Name: </label>
+                            <div class="col-sm-5">
+                                <input type="text" class="form-control" id="name" v-model="user.name">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="telegram" class="col-sm-1 col-form-label text-end">Telegram: </label>
+                            <div class="col-sm-5">
+                                <input type="text" class="form-control" id="telegram" v-model="user.telegram">
+                            </div>
+                            <label for="nikname" class="col-sm-1 col-form-label text-end">Nickname: </label>
+                            <div class="col-sm-5">
+                                <input type="text" class="form-control" id="nikname" v-model="user.nikname">
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="phone" class="col-sm-1 col-form-label text-end">Phone: </label>
+                            <div class="col-sm-5">
+                                <input type="text" class="form-control" id="phone" v-model="user.phone">
+                            </div>
+                            <label for="language" class="col-sm-1 col-form-label text-end">Language: </label>
+                            <div class="col-sm-5">
+                                <select class="form-control" v-model="user.language">
+                                    <option v-for="language in languages" :value="language.value">{{ language.text }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3 pt-3 row">
+                    <div class="col-sm-12 col-form-label"><h5>Additional Contacts: </h5></div>
+                </div>
+                <div class="row mb-3" v-for="contact in contacts">
+                    <label class="col-sm-1 col-form-label">{{ contact }} </label>
+                    <div class="col-sm-11">
+                        <input type="text" class="form-control" v-model="user.contacts[contact]">
+                    </div>
+                </div>
+                <div class="mb-3 pt-3 row">
+                    <div class="col-sm-1">
+                        <button type="button" class="btn btn-primary" @click="save">Save</button>
                     </div>
                 </div>
             </div>
@@ -116,13 +124,20 @@ $user = $this->templateData['user'];
                                 avatar: '<?= $user->avatarUrl; ?>',
                                 created_time: '<?= $user->get('created_time'); ?>',
                                 sex: '<?= $user->get('sex'); ?>',
-                                contacts: '<?= $user->get('contacts'); ?>',
+                                contacts: <?= is_null($user->get('contacts')) ? '{}' : $user->get('contacts'); ?>,
                             },
                             languages: [
                                 { text: 'English', value: 'en' },
                                 { text: 'Русский', value: 'ru' },
                                 { text: 'ქართული', value: 'ge' },
-                            ]
+                            ],
+                            sexes: [
+                                { text: 'Male', value: 'male' },
+                                { text: 'Female', value: 'female' },
+                                { text: 'Other', value: 'other' },
+                            ],
+                            contacts: [ 'Country', 'City', 'Address', 'Zip', 'Twitter', 'Instagram', 'LinkedIn',
+                                'YouTube', 'Discord', 'Website', 'Blog', 'Other' ],
                         }
                     },
 
@@ -144,7 +159,63 @@ $user = $this->templateData['user'];
                                     this.user.avatar = response.data.data.url
                                 }
                             })
+                        },
+
+                        save() {
+                            axios.post('/api/v1/profile/update', this.user).then(response => {
+                                console.log(response)
+                            })
                         }
+                    },
+
+                    computed: {
+                        statusBadge() {
+                            if (this.user.status === 'active') {
+                                return 'badge text-bg-success'
+                            } else if (this.user.status === 'created') {
+                                return 'badge text-bg-primary'
+                            } else if (this.user.status === 'deleted') {
+                                return 'badge text-bg-danger'
+                            } else {
+                                return 'badge text-bg-warning'
+                            }
+                        },
+                        roleBadge() {
+                            if (this.user.role === 'admin') {
+                                return 'badge text-bg-danger'
+                            } else if (this.user.role === 'moderator') {
+                                return 'badge text-bg-warning'
+                            } else if (this.user.role === 'user') {
+                                return 'badge text-bg-success'
+                            } else {
+                                return 'badge text-bg-primary'
+                            }
+                        },
+                        ratingBadge() {
+                            if (this.user.rating >= 0 && this.user.rating < 10) {
+                                return 'badge text-bg-danger'
+                            } else if (this.user.rating >= 10 && this.user.rating < 20) {
+                                return 'badge text-bg-warning'
+                            } else if (this.user.rating >= 20 && this.user.rating < 30) {
+                                return 'badge text-bg-success'
+                            } else {
+                                return 'badge text-bg-primary'
+                            }
+                        },
+                        emailApprovedBadge() {
+                            if (this.user.email_approved === true) {
+                                return 'badge text-bg-success'
+                            } else {
+                                return 'badge text-bg-danger'
+                            }
+                        },
+                        phoneApprovedBadge() {
+                            if (this.user.phone_approved === true) {
+                                return 'badge text-bg-success'
+                            } else {
+                                return 'badge text-bg-danger'
+                            }
+                        },
                     }
                 }).mount('#app')
             </script>

@@ -15,7 +15,7 @@
     font-size: 0.6em;
 }
 .developer_mode {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     right: 0;
     max-width: 100%;

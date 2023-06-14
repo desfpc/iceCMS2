@@ -39,4 +39,10 @@ $routers = [
         'controllerMethod' => 'uploadAvatar',
         'useVendor' => true
     ],
+    'api/v1/profile/update' => [
+        'method' => 'POST',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'User',
+        'controllerMethod' => 'updateProfile',
+        'useVendor' => true
+    ],
 ];

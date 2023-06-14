@@ -39,12 +39,12 @@ use iceCMS2\Controller\AbstractController;
                     <th><a href="https://github.com/desfpc" target="_blank">Sergey Peshalov</a></th>
                 </tr><tr>
                     <td>Programming language</td>
-                    <th>PHP 8.1</th>
+                    <th>PHP 8.2</th>
                 </tr><tr>
                     <td>Data Bases</td>
                     <th>MySql 8, Redis</th>
                 </tr></tbody></table>
-            <p>Technology stack: PHP 8.1, MySQL 8, Redis, Vue.js 3, Bootstrap 5</p>
+            <p>Technology stack: PHP 8.2, MySQL 8, Redis, Vue.js 3, Bootstrap 5</p>
             <p>The main principles of iceCMS2 are simplicity and speed. Therefore, there are not many "standard"
                 abstractions and principles, such as ORM and 100% SOLID adherence. Direct SQL queries and fast native
                 database drivers! No abstractions for the sake of abstractions!</p>

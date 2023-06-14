@@ -117,4 +117,33 @@ class User extends AbstractController implements ControllerInterface
             $this->renderJson(['message' => 'Error in avatar uploading'], false);
         }
     }
+
+    /**
+     * Update user profile
+     *
+     * @return void
+     */
+    public function updateProfile(): void
+    {
+        $this->_authorizationCheck();
+
+        /** @var UserModel $user */
+        $user = $this->authorization->getUser();
+
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (isset($data['avatar'])) {
+            unset($data['avatar']);
+        }
+        if (isset($data['email_approve_code'])) {
+            unset($data['email_approve_code']);
+        }
+        if (isset($data['email_approved'])) {
+            unset($data['email_approved']);
+        }
+        if (isset($data['email_send_time'])) {
+            unset($data['email_send_time']);
+        }
+
+        $this->renderJson(['data' => $data], false);
+    }
 }
