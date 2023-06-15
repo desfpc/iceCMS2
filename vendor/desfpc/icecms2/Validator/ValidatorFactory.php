@@ -56,6 +56,8 @@ class ValidatorFactory
                 return UnixTimeValidator::validate($db, $value);
             case 'int':
                 return IntValidator::validate($db, $value, $settings, $table, $name);
+            case 'json':
+                return JsonValidator::validate($db, $value, $settings, $table, $name);
             default:
                 if (class_exists($validator)) {
                     /** @var ValidatorInterface $validatorObj */

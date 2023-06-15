@@ -30,6 +30,9 @@ $user = $this->templateData['user'];
             <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
             <div id="app">
+                <div v-if="alert.show" :class="alert.class" role="alert">
+                    {{ alert.message }} <button type="button" class="btn-close float-end" aria-label="Close" @click="hideAlert()"></button>
+                </div>
                 <div class="mb-3 row">
                     <div class="col-sm-12">
                         <span class="me-3">Status: <span :class="statusBadge">{{ user.status }}</span></span>
@@ -126,6 +129,11 @@ $user = $this->templateData['user'];
                                 sex: '<?= $user->get('sex'); ?>',
                                 contacts: <?= is_null($user->get('contacts')) ? '{}' : $user->get('contacts'); ?>,
                             },
+                            alert: {
+                                show: false,
+                                class: 'alert',
+                                message: '',
+                            },
                             languages: [
                                 { text: 'English', value: 'en' },
                                 { text: 'Русский', value: 'ru' },
@@ -152,20 +160,38 @@ $user = $this->templateData['user'];
                                     'Content-Type': 'multipart/form-data'
                                 }
                             }).then(response => {
-
-                                console.log(response)
-
                                 if (response.data.success === true) {
                                     this.user.avatar = response.data.data.url
+                                    this.alert.class = 'alert alert-success sticky-top'
+                                    this.alert.message = 'Avatar updated'
+                                    this.alert.show = true
+                                } else {
+                                    this.alert.class = 'alert alert-danger sticky-top'
+                                    this.alert.message = 'Error in avatar update'
+                                    this.alert.show = true
                                 }
                             })
                         },
 
                         save() {
                             axios.post('/api/v1/profile/update', this.user).then(response => {
-                                console.log(response)
+
+                                if (response.data.success === true) {
+                                    this.alert.class = 'alert alert-success sticky-top'
+                                    this.alert.message = 'Profile updated'
+                                    this.alert.show = true
+                                } else {
+                                    this.alert.class = 'alert alert-danger sticky-top'
+                                    this.alert.message = 'Error in profile update'
+                                    this.alert.show = true
+                                }
+
                             })
-                        }
+                        },
+
+                        hideAlert() {
+                            this.alert.show = false
+                        },
                     },
 
                     computed: {
