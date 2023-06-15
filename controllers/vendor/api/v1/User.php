@@ -122,6 +122,7 @@ class User extends AbstractController implements ControllerInterface
      * Update user profile
      *
      * @return void
+     * @throws Exception
      */
     public function updateProfile(): void
     {
@@ -145,11 +146,16 @@ class User extends AbstractController implements ControllerInterface
             $data['contacts'] = json_encode($data['contacts']);
         }
 
-        $user->set($data);
-        if ($user->save()) {
-            $this->renderJson(['message' => 'Profile updated'], true);
-        } else {
-            $this->renderJson(['message' => 'Error in profile updating'], false);
+        try {
+            $user->set($data);
+            if ($user->save()) {
+                $this->renderJson(['message' => 'Profile updated'], true);
+            } else {
+                $this->renderJson(['message' => 'Error in profile updating'], false);
+            }
+        } catch (Exception $e) {
+            $this->renderJson(['message' => $e->getMessage()], false);
+            return;
         }
     }
 }

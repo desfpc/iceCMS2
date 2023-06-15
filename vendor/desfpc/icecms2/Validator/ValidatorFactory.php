@@ -58,6 +58,10 @@ class ValidatorFactory
                 return IntValidator::validate($db, $value, $settings, $table, $name);
             case 'json':
                 return JsonValidator::validate($db, $value, $settings, $table, $name);
+            case 'string':
+                return StringValidator::validate($db, $value, $settings, $table, $name);
+            case 'telegram':
+                return TelegramValidator::validate($db, $value, $settings, $table, $name);
             default:
                 if (class_exists($validator)) {
                     /** @var ValidatorInterface $validatorObj */
