@@ -61,7 +61,7 @@ $user = $this->templateData['user'];
                         <div class="mb-3 row">
                             <label for="staticEmail" class="col-sm-1 col-form-label text-end">Email: </label>
                             <div class="col-sm-5">
-                                <input type="text" readonly class="form-control" id="staticEmail" value="<?=
+                                <input type="text" readonly disabled class="form-control" id="staticEmail" value="<?=
                                 $user->get('email'); ?>">
                             </div>
                             <label for="name" class="col-sm-1 col-form-label text-end">Name: </label>
@@ -80,15 +80,31 @@ $user = $this->templateData['user'];
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="phone" class="col-sm-1 col-form-label text-end">Phone: </label>
-                            <div class="col-sm-5">
-                                <input type="text" class="form-control" id="phone" v-model="user.phone">
+                            <hr style="padding: 0 10px; background: #dddddd; width: 100%; height: 1px; border: 0;" />
+                            <div class="col-sm-6">
+                                <div class="row">
+                                    <label for="oldPassword" class="col-sm-12 col-form-label">Old password: </label>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <input type="password" class="form-control" id="oldPassword" v-model="password.old">
+                                    </div>
+                                </div>
                             </div>
-                            <label for="language" class="col-sm-1 col-form-label text-end">Language: </label>
-                            <div class="col-sm-5">
-                                <select class="form-control" v-model="user.language">
-                                    <option v-for="language in languages" :value="language.value">{{ language.text }}</option>
-                                </select>
+                            <div class="col-sm-6">
+                                <div class="row">
+                                    <label for="newPassword" class="col-sm-12 col-form-label">New password: </label>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <input type="password" class="form-control" id="newPasswordnn" v-model="password.new">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <div class="col-sm">
+                                <input type="button" class="btn btn-danger" :class="changePasswordStatus" @click="changePassword" value="Change password">
                             </div>
                         </div>
                     </div>
@@ -146,6 +162,10 @@ $user = $this->templateData['user'];
                             ],
                             contacts: [ 'Country', 'City', 'Address', 'Zip', 'Twitter', 'Instagram', 'LinkedIn',
                                 'YouTube', 'Discord', 'Website', 'Blog', 'Other' ],
+                            password: {
+                                old: '',
+                                new: '',
+                            },
                         }
                     },
 
@@ -173,6 +193,20 @@ $user = $this->templateData['user'];
                             })
                         },
 
+                        changePassword() {
+                            axios.post('/api/v1/profile/change-password', this.password).then(response => {
+                                if (response.data.success === true) {
+                                    this.alert.class = 'alert alert-success sticky-top'
+                                    this.alert.message = 'Password updated'
+                                    this.alert.show = true
+                                } else {
+                                    this.alert.class = 'alert alert-danger sticky-top'
+                                    this.alert.message = 'Error in password update'
+                                    this.alert.show = true
+                                }
+                            })
+                        },
+
                         save() {
                             axios.post('/api/v1/profile/update', this.user).then(response => {
 
@@ -195,6 +229,13 @@ $user = $this->templateData['user'];
                     },
 
                     computed: {
+                        changePasswordStatus() {
+                            if (this.password.old.length > 0 && this.password.new.length > 0) {
+                                return 'active'
+                            } else {
+                                return 'disabled'
+                            }
+                        },
                         statusBadge() {
                             if (this.user.status === 'active') {
                                 return 'badge text-bg-success'

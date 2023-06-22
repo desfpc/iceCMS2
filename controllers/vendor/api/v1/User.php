@@ -119,10 +119,51 @@ class User extends AbstractController implements ControllerInterface
     }
 
     /**
-     * Update user profile
+     * Update user password
      *
      * @return void
      * @throws Exception
+     */
+    public function changePassword(): void
+    {
+        $this->_authorizationCheck();
+
+        /** @var UserModel $user */
+        $user = $this->authorization->getUser();
+
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (empty($data) || empty($data['old']) || empty($data['new'])) {
+            $this->renderJson(['message' => 'Empty passwords', 'input' => $data], false);
+            return;
+        }
+
+        if ($data['old'] === $data['new']) {
+            $this->renderJson(['message' => 'Old and new passwords are equal'], false);
+            return;
+        }
+
+        if (!$user->checkPassword($data['old'])) {
+            $this->renderJson(['message' => 'Wrong old password'], false);
+            return;
+        }
+
+        try {
+            $user->set('password', $data['new']);
+            if ($user->save()) {
+                $this->renderJson(['message' => 'Password updated'], true);
+            } else {
+                $this->renderJson(['message' => 'Error in password updating'], false);
+            }
+        } catch (Exception $e) {
+            $this->renderJson(['message' => $e->getMessage()], false);
+        }
+    }
+
+    /**
+     * Update user profile
+     *
+     * @return void
      */
     public function updateProfile(): void
     {
