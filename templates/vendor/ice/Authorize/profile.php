@@ -36,14 +36,14 @@ $user = $this->templateData['user'];
 
                 <ul class="nav nav-tabs mb-5">
                     <li class="nav-item">
-                        <a class="tab-link nav-link active" id="tab_1_link" href="#" @click="selectTab('tab_1')">Profile</a>
+                        <a class="tab-link nav-link" :class="getTabClass('tab_1')" href="#" @click="selectTab('tab_1')">Profile</a>
                     </li>
                     <li class="nav-item">
-                        <a class="tab-link nav-link" tab="tab_2" id="tab_2_link" href="#" @click="selectTab('tab_2')">Social connections</a>
+                        <a class="tab-link nav-link" :class="getTabClass('tab_2')" href="#" @click="selectTab('tab_2')">Social connections</a>
                     </li>
                 </ul>
 
-                <div class="tab-content active" id="tab_1">
+                <div v-if="activeTab === 'tab_1'">
                     <div class="mb-3 row">
                         <div class="col-sm-12">
                             <span class="me-3">Status: <span :class="statusBadge">{{ user.status }}</span></span>
@@ -136,7 +136,7 @@ $user = $this->templateData['user'];
                     </div>
                 </div>
 
-                <div class="tab-content" id="tab_2">
+                <div v-if="activeTab === 'tab_2'">
                     test tab 2
                 </div>
 
@@ -162,6 +162,7 @@ $user = $this->templateData['user'];
                                 sex: '<?= $user->get('sex'); ?>',
                                 contacts: <?= is_null($user->get('contacts')) ? '{}' : $user->get('contacts'); ?>,
                             },
+                            activeTab: 'tab_1',
                             alert: {
                                 show: false,
                                 class: 'alert',
@@ -188,21 +189,11 @@ $user = $this->templateData['user'];
 
                     methods: {
                         selectTab(tabName) {
-                            let tabs = document.getElementsByClassName('tab-content')
-                            for (let tab of tabs) {
-                                tab.classList.remove('active')
-                            }
+                            this.activeTab = tabName
+                        },
 
-                            let tabLinks = document.getElementsByClassName('tab-link')
-                            for (let tab of tabLinks) {
-                                tab.classList.remove('active')
-                            }
-
-                            const tab = document.getElementById(tabName)
-                            tab.classList.add('active')
-
-                            const tabLink = document.getElementById(tabName + '_link')
-                            tabLink.classList.add('active')
+                        getTabClass(tabName) {
+                            return this.activeTab === tabName ? 'active' : ''
                         },
 
                         onUploadFiles(event) {

@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace app\Controllers\vendor;
 
-use desfpc\Visualijoper\Visualijoper;
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\Models\User;
