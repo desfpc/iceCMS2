@@ -70,3 +70,10 @@ h1 {
     margin: 0 auto;
     display: block;
 }
+
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
