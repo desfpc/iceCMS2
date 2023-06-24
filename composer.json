@@ -16,7 +16,8 @@
     "desfpc/pechkin": "0.*",
     "desfpc/visualijoper": "2.*",
     "ext-gd": "*",
-    "ext-redis": "*"
+    "ext-redis": "*",
+    "desfpc/vuebootstrap": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "9.5.21",
