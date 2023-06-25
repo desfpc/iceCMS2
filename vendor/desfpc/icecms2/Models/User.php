@@ -85,7 +85,6 @@ class User extends AbstractEntity
     /** @var array|null Modificators for values by key */
     protected ?array $_modificators = [
         'password' => 'password',
-        'created_time' => 'nowUnixtime',
     ];
 
     /**

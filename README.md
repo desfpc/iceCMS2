@@ -16,6 +16,7 @@ iceCMS2\DB\DBInterface
 - modify ./settings/local.php for set up your server settings
 - run: composer install (install composer first if needed)
 - run: php cli.php migration-exec
+- run: php cli.php make-symlinks
 - view site in your browser (use webserver hosts settings url)
 
 ## Setup with docker:
@@ -26,6 +27,7 @@ iceCMS2\DB\DBInterface
 - run in php-fpm container: cd /var/www/html
 - run in php-fpm container: composer install
 - run in php-fpm container: php cli.php migration-exec
+- run in php-fpm container: php cli.php make-symlinks
 - view site in your browser http://localhost:8181
 
 ## Work with iceCMS2 client:

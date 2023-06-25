@@ -17,7 +17,7 @@
     "desfpc/visualijoper": "2.*",
     "ext-gd": "*",
     "ext-redis": "*",
-    "desfpc/vuebootstrap": "dev-master"
+    "desfpc/vuebootstrap": "0.21"
   },
   "require-dev": {
     "phpunit/phpunit": "9.5.21",

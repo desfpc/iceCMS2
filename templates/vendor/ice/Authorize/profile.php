@@ -143,9 +143,11 @@ $user = $this->templateData['user'];
             </div>
 
             <script>
+
+                //import Validation from "/js/vuebootstrap/validation.js"
                 const { createApp } = Vue
 
-                createApp({
+                const app = createApp({
                     data() {
                         return {
                             user: {
@@ -310,7 +312,10 @@ $user = $this->templateData['user'];
                             }
                         },
                     }
-                }).mount('#app')
+                })
+
+                app.mount('#app')
+
             </script>
             <p>&nbsp;</p>
         </div>

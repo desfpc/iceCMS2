@@ -15,3 +15,4 @@ web/files_test
 .DS_Store
 composer.phar
 web/files/*
+web/js/vuebootstrap

@@ -64,6 +64,8 @@ class App
                 echo "\n" . 'migration-rollback - Rollback last DB migration.';
                 echo "\n";
                 echo "\n" . 'cache-clear-all - Clear all caches.';
+                echo "\n";
+                echo "\n" . 'make-symlinks - Make symlinks from vendor to project folders';
                 echo "\n\n";
                 break;
             case 'migration-create':
@@ -113,6 +115,33 @@ class App
                         }
                     }
                 }
+                break;
+            case 'make-symlinks':
+                echo "\n" . 'IceCMS2 Make symlinks';
+
+                $symlinks = [
+                    '/vendor/desfpc/vuebootstrap/src' => '/web/js/vuebootstrap',
+                ];
+
+                foreach ($symlinks as $key => $value) {
+                    echo "\n";
+
+                    if (file_exists($this->_settings->path . $value)) {
+                        unlink($this->_settings->path . $value);
+                    }
+
+                    if (symlink(
+                        $this->_settings->path . $key,
+                        $this->_settings->path . $value
+                    )) {
+                        echo "\e[32m" . $value . ' - [OK]' . "\e[39m";
+                    } else {
+                        echo "\e[31m" . $value . ' - [ERROR]' . "\e[39m";
+                    }
+                }
+
+                echo "\n";
+
                 break;
             default:
                 echo "\n\e[31m" . 'Wrong command "' . $this->_argv[1] . '". Type "php cli.php help" for command help.' . "\e[39m";
