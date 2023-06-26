@@ -16,3 +16,4 @@ web/files_test
 composer.phar
 web/files/*
 web/js/vuebootstrap
+web/js/vendor
