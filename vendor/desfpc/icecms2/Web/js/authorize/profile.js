@@ -167,8 +167,6 @@ export default {
     mounted() {
         const startData = JSON.parse(document.getElementById('start-data').innerHTML)
 
-        console.log(startData)
-
         this.user = startData.user
         this.languages = startData.languages
         this.sexes = startData.sexes

@@ -77,3 +77,7 @@ h1 {
 .tab-content.active {
     display: block;
 }
+
+.invalid-feedback.visible {
+    display: block;
+}

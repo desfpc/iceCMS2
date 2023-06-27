@@ -107,6 +107,9 @@ $user = $this->templateData['user'];
                                 <label for="name" class="col-sm-1 col-form-label text-end">Name: </label>
                                 <div class="col-sm-5">
                                     <input type="text" class="form-control" id="name" v-model="user.name">
+                                    <Validate v-slot="{ errorClass }" :rule="$validationRules.string" :value="user.name" :func="$globalValidation">
+                                        <input type="text" class="form-control" :class="errorClass" id="name" v-model="user.name">
+                                    </Validate>
                                 </div>
                             </div>
                             <div class="mb-3 row">
