@@ -93,9 +93,11 @@ $user = $this->templateData['user'];
                             <div class="mb-3 row">
                                 <label for="name" class="col-sm-1 col-form-label text-end">Sex: </label>
                                 <div class="col-sm-5">
-                                    <select class="form-control" v-model="user.sex">
-                                        <option v-for="sex in sexes" :value="sex.value">{{ sex.text }}</option>
-                                    </select>
+                                    <Validate v-slot="{ errorClass }" :rule="$validationRules.string" :value="user.sex" :func="$globalValidation">
+                                        <select class="form-control" :class="errorClass" v-model="user.sex">
+                                            <option v-for="sex in sexes" :value="sex.value">{{ sex.text }}</option>
+                                        </select>
+                                    </Validate>
                                 </div>
                             </div>
                             <div class="mb-3 row">
@@ -106,8 +108,7 @@ $user = $this->templateData['user'];
                                 </div>
                                 <label for="name" class="col-sm-1 col-form-label text-end">Name: </label>
                                 <div class="col-sm-5">
-                                    <input type="text" class="form-control" id="name" v-model="user.name">
-                                    <Validate v-slot="{ errorClass }" :rule="$validationRules.string" :value="user.name" :func="$globalValidation">
+                                    <Validate v-slot="{ errorClass }" :rule="$validationRules.empty" :value="user.name" :func="$globalValidation">
                                         <input type="text" class="form-control" :class="errorClass" id="name" v-model="user.name">
                                     </Validate>
                                 </div>
@@ -115,11 +116,15 @@ $user = $this->templateData['user'];
                             <div class="mb-3 row">
                                 <label for="telegram" class="col-sm-1 col-form-label text-end">Telegram: </label>
                                 <div class="col-sm-5">
-                                    <input type="text" class="form-control" id="telegram" v-model="user.telegram">
+                                    <Validate v-slot="{ errorClass }" :rule="$validationRules.empty" :value="user.telegram" :func="$globalValidation">
+                                        <input type="text" class="form-control" :class="errorClass" id="telegram" v-model="user.telegram">
+                                    </Validate>
                                 </div>
                                 <label for="nikname" class="col-sm-1 col-form-label text-end">Nickname: </label>
                                 <div class="col-sm-5">
-                                    <input type="text" class="form-control" id="nikname" v-model="user.nikname">
+                                    <Validate v-slot="{ errorClass }" :rule="$validationRules.string" :value="user.nikname" :func="$globalValidation">
+                                        <input type="text" class="form-control" :class="errorClass" id="nikname" v-model="user.nikname">
+                                    </Validate>
                                 </div>
                             </div>
                             <div class="mb-3 row">

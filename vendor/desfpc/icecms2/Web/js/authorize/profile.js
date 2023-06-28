@@ -87,19 +87,25 @@ export default {
         },
 
         save() {
-            axios.post('/api/v1/profile/update', this.user).then(response => {
 
-                if (response.data.success === true) {
-                    this.alert.class = 'alert alert-success sticky-top'
-                    this.alert.message = 'Profile updated'
-                    this.alert.show = true
-                } else {
-                    this.alert.class = 'alert alert-danger sticky-top'
-                    this.alert.message = 'Error in profile update'
-                    this.alert.show = true
-                }
+            if (this.$checkValidation()) {
+                axios.post('/api/v1/profile/update', this.user).then(response => {
 
-            })
+                    if (response.data.success === true) {
+                        this.alert.class = 'alert alert-success sticky-top'
+                        this.alert.message = 'Profile updated'
+                        this.alert.show = true
+                    } else {
+                        this.alert.class = 'alert alert-danger sticky-top'
+                        this.alert.message = 'Error in profile update'
+                        this.alert.show = true
+                    }
+                })
+            } else {
+                this.alert.class = 'alert alert-danger sticky-top'
+                this.alert.message = 'Form not valid!'
+                this.alert.show = true
+            }
         },
 
         hideAlert() {

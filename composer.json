@@ -15,9 +15,9 @@
     "ext-json": "*",
     "desfpc/pechkin": "0.*",
     "desfpc/visualijoper": "2.*",
+    "desfpc/vuebootstrap": "1.01",
     "ext-gd": "*",
-    "ext-redis": "*",
-    "desfpc/vuebootstrap": "1.*"
+    "ext-redis": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "9.5.21",
