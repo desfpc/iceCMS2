@@ -72,6 +72,7 @@ class Settings
             'useRedis' => 1,
             'redisHost' => 0,
             'redisPort' => 0,
+            'redisDB' => 0,
         ],
         'routes' => [],
         'isUseCms' => 1,
