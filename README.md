@@ -1,6 +1,6 @@
 # iceCMS2 v0.1a
 
-Technology stack: PHP 8.2, MySQL 8, Redis, Vue.js 3, Bootstrap 5
+Technology stack: PHP 8.2, MySQL 8 / MariaDB 11, Redis, Vue.js 3, Bootstrap 5
 
 The main principles of iceCMS2 are simplicity and speed. Therefore, there are not many "standard" abstractions and
 principles, such as ORM and 100% SOLID adherence. Direct SQL queries and fast native database drivers! No abstractions
