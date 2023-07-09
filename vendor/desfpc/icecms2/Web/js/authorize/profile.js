@@ -15,6 +15,24 @@ export default {
                 sex: null,
                 contacts: {},
             },
+            socialData: {
+                friends: {
+                    page: 0,
+                    total: 0,
+                    entries: [],
+                },
+                subscribers: {
+                    page: 0,
+                    total: 0,
+                    entries: [],
+                },
+                subscriptions: {
+                    page: 0,
+                    total: 0,
+                    entries: [],
+                },
+                limit: 20,
+            },
             activeTab: 'tab_1',
             alert: {
                 show: false,
@@ -106,6 +124,10 @@ export default {
                 this.alert.message = 'Form not valid!'
                 this.alert.show = true
             }
+        },
+
+        loadSocialData() {
+
         },
 
         hideAlert() {
