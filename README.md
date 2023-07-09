@@ -41,3 +41,13 @@ iceCMS2\DB\DBInterface
 ## Full Wiki?
 - English Wiki - comming soon
 - Русская Wiki - тоже будет
+
+# Support the project:
+1. **Binance**  
+Scan via the Binance App to send  
+![Binance](https://github.com/desfpc/iceCMS2/assets/783571/342b15d9-b85d-4b08-b146-bc90c4074fb4 "Binance")  
+My Pay ID: 444136543  
+2. **USDT (TRC20)**  
+TFK8xk5BE2YJjuf9mh9jVUchSCayZr9yJa  
+3. **USDT (ERC20)**  
+0x7dda48aad71e1319939b30eeda91efa9ea5582de  
