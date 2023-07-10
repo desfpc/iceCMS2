@@ -34,6 +34,10 @@ iceCMS2\DB\DBInterface
 - cd to {repository foldder}
 - run: php cli.php help
 
+## Create `admin` user:
+- Create user (http://localhost:8181/registration if you use Docker)
+- Manualy edit database table `users` and set `role` to `admin`
+
 ## Tests:
 - create test database, name set in ./settings/local.php
 - Run in ./test folder PHPUnit tests
