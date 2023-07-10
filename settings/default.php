@@ -62,6 +62,7 @@ $settings = [
         'useRedis' => true,
         'redisHost' => '127.0.0.1',
         'redisPort' => 6379,
+        'redisDB' => 1,
     ],
     'routes' => $routers,
     'isUseCms' => true,

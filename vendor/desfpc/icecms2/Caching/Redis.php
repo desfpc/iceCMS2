@@ -25,6 +25,9 @@ class Redis implements CachingInterface
     /** @var int Redis port */
     public int $port;
 
+    /** @var int|null Redis DB number */
+    public ?int $db = null;
+
     /** @var array Cacher errors array */
     public array $errors = [];
 
@@ -36,17 +39,25 @@ class Redis implements CachingInterface
      *
      * @param string $host
      * @param int $port
+     * @param int|null $db
+     * @throws Exception
      */
-    public function __construct(string $host = 'localhost', int $port = 6379)
+    public function __construct(string $host = 'localhost', int $port = 6379, ?int $db = null)
     {
         $this->host = $host;
         $this->port = $port;
+        $this->db = $db;
 
         try {
             $this->redis = new Rediska();
             if (!$this->redis->connect($this->host, $this->port)) {
                 $this->errors[] = 'Redis connection error';
             }
+
+            if (!is_null($this->db)) {
+                $this->redis->select($this->db);
+            }
+
         } catch (Throwable $e) {
             $this->errors[] = $e->getMessage();
         }

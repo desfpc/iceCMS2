@@ -120,7 +120,8 @@ class App
                 echo "\n" . 'IceCMS2 Make symlinks';
 
                 $symlinks = [
-                    '/vendor/desfpc/vuebootstrap/src' => '/web/js/vuebootstrap',
+                    'vendor/desfpc/vuebootstrap/src' => 'web/js/vuebootstrap',
+                    'vendor/desfpc/icecms2/Web/js' => 'web/js/vendor',
                 ];
 
                 foreach ($symlinks as $key => $value) {
@@ -136,7 +137,8 @@ class App
                     )) {
                         echo "\e[32m" . $value . ' - [OK]' . "\e[39m";
                     } else {
-                        echo "\e[31m" . $value . ' - [ERROR]' . "\e[39m";
+                        echo "\e[31m" . $value . ' - [ERROR] (' . $this->_settings->path . $key . ' -> '
+                            . $this->_settings->path . $value . ')' . "\e[39m";
                     }
                 }
 
