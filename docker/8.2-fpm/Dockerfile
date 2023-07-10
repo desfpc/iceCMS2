@@ -8,12 +8,6 @@ ARG COMPOSER_VERSION="2.5.8"
 ARG COMPOSER_SUM="f07934fad44f9048c0dc875a506cca31cc2794d6aebfc1867f3b1fbf48dce2c5"
 ARG COMPOSER_ALLOW_SUPERUSER=1
 
-# Swoole - https://github.com/swoole/swoole-src
-ARG SWOOLE_VERSION="5.0.3"
-
-# Phalcon - https://github.com/phalcon/cphalcon
-ARG PHALCON_VERSION="5.2.1"
-
 # Install dependencies
 RUN set -eux \
     && apk add --no-cache \
@@ -32,7 +26,6 @@ RUN set -eux \
         libjpeg-turbo \
         libpng \
         libpq \
-        librdkafka \
         libssh2 \
         libstdc++ \
         libtool \
@@ -72,7 +65,6 @@ RUN set -eux \
         libc-dev \
         libjpeg-turbo-dev \
         libpng-dev \
-        librdkafka-dev \
         libssh2-dev \
         libwebp-dev \
         libxml2-dev \
@@ -150,18 +142,8 @@ RUN set -eux \
     && docker-php-ext-install -j$(nproc) imap \
     && true \
 \
-# Install imagick
-    && pecl install imagick \
-    && docker-php-ext-enable imagick \
-    && true \
-\
 # Install intl
     && docker-php-ext-install -j$(nproc) intl \
-    && true \
-\
-# Install memcache
-    && pecl install memcache \
-    && docker-php-ext-enable memcache \
     && true \
 \
 # Install mongodb
@@ -195,13 +177,6 @@ RUN set -eux \
     && docker-php-ext-install -j$(nproc) pcntl \
     && true \
 \
-# Install phalcon
-    && git clone --depth=1 --branch=v${PHALCON_VERSION} https://github.com/phalcon/cphalcon.git \
-    && cd cphalcon/build \
-    && sh ./install \
-    && docker-php-ext-enable phalcon \
-    && true \
-\
 # Install pdo_pgsql
     && docker-php-ext-install -j$(nproc) pdo_pgsql \
     && true \
@@ -232,11 +207,6 @@ RUN set -eux \
     && docker-php-ext-enable redis \
     && true \
 \
-# Install rdkafka
-    && pecl install rdkafka \
-    && docker-php-ext-enable rdkafka \
-    && true \
-\
 # Install soap
     && docker-php-ext-install -j$(nproc) soap \
     && true \
@@ -253,20 +223,6 @@ RUN set -eux \
         sysvsem \
         sysvshm \
     && docker-php-source extract \
-    && true \
-\
-# Install swoole
-    && mkdir /usr/src/php/ext/swoole \
-    && curl -Lo swoole.tar.gz https://github.com/swoole/swoole-src/archive/v${SWOOLE_VERSION}.tar.gz \
-    && tar xfz swoole.tar.gz --strip-components=1 -C /usr/src/php/ext/swoole \
-    && docker-php-ext-configure swoole \
-            --enable-mysqlnd \
-            --enable-sockets \
-            --enable-openssl \
-            --enable-swoole-curl \
-    && docker-php-ext-install -j$(nproc) swoole \
-    && rm -rf swoole.tar.gz $HOME/.composer/*-old.phar \
-    && docker-php-ext-enable swoole \
     && true \
 \
 # Install tidy
