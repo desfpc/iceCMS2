@@ -106,7 +106,7 @@ class User extends AbstractController implements ControllerInterface
     public string $title = 'User';
 
     /**
-     * TODO Get SQL query by logic status
+     * TODO Get SQL query by logic status for getting user connections list
      *
      * @param string $logicStatus
      * @return string
