@@ -21,7 +21,15 @@ class User extends AbstractController implements ControllerInterface
     public string $title = 'User';
 
     /**
-     * Return list of users JSON TODO caching
+     * Return list of user friends (or pendings/subscribers/ignore) JSON
+     */
+    public function friends(): void
+    {
+
+    }
+
+    /**
+     * Return list of users (full entities) by IDs //TODO caching
      *
      * @return void
      */
