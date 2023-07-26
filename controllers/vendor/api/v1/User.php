@@ -18,13 +18,122 @@ use iceCMS2\Models\User as UserModel;
 
 class User extends AbstractController implements ControllerInterface
 {
+    public const LOGIC_STATUS_FRIENDS = 'friends';
+    public const LOGIC_STATUS_SUBSCRIBERS = 'subscribers';
+    public const LOGIC_STATUS_SUBSCRIPTIONS = 'subscriptions';
+    public const LOGIC_STATUS_IGNORE = 'ignore';
+    public const LOGIC_STATUS_REQUESTS = 'requests';
+    public const LOGIC_STATUS_CONFIRMATIONS = 'confirmations';
+    public const LOGIC_STATUSES = [
+        self::LOGIC_STATUS_FRIENDS,
+        self::LOGIC_STATUS_SUBSCRIBERS,
+        self::LOGIC_STATUS_SUBSCRIPTIONS,
+        self::LOGIC_STATUS_IGNORE,
+        self::LOGIC_STATUS_REQUESTS,
+        self::LOGIC_STATUS_CONFIRMATIONS,
+    ];
+
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_FRIEND = 'friend';
+    public const STATUS_SUBSCRIBER = 'subscriber';
+    public const STATUS_IGNORE = 'ignore';
+    public const STATUSES = [
+        self::STATUS_PENDING,
+        self::STATUS_FRIEND,
+        self::STATUS_SUBSCRIBER,
+        self::STATUS_IGNORE,
+    ];
+
+    public const TYPE_FRIEND = 'friend';
+    public const TYPE_FAMILY = 'family member';
+    public const TYPE_TEAMMATE = 'teammate';
+    public const TYPE_OTHER = 'other';
+    public const TYPES = [
+        self::TYPE_FRIEND,
+        self::TYPE_FAMILY,
+        self::TYPE_TEAMMATE,
+        self::TYPE_OTHER,
+    ];
+
+    /** @var array Logic Status rules for real db user_friends status and initiator  */
+    public const LOGIC_STATUS_RULES = [
+        self::LOGIC_STATUS_FRIENDS => [
+            [
+                'status' => self::STATUS_FRIEND,
+                'initiator' => null,
+            ],
+        ],
+        self::LOGIC_STATUS_SUBSCRIBERS => [
+            [
+                'status' => self::STATUS_SUBSCRIBER,
+                'initiator' => false,
+            ],
+            [
+                'status' => self::STATUS_PENDING,
+                'initiator' => false,
+            ],
+        ],
+        self::LOGIC_STATUS_SUBSCRIPTIONS => [
+            [
+                'status' => self::STATUS_SUBSCRIBER,
+                'initiator' => true,
+            ],
+            [
+                'status' => self::STATUS_PENDING,
+                'initiator' => true,
+            ],
+        ],
+        self::LOGIC_STATUS_IGNORE => [
+            [
+                'status' => self::STATUS_IGNORE,
+                'initiator' => true,
+            ],
+        ],
+        self::LOGIC_STATUS_REQUESTS => [
+            [
+                'status' => self::STATUS_PENDING,
+                'initiator' => true,
+            ],
+        ],
+        self::LOGIC_STATUS_CONFIRMATIONS => [
+            [
+                'status' => self::STATUS_PENDING,
+                'initiator' => false,
+            ],
+        ],
+    ];
+
     public string $title = 'User';
 
     /**
-     * Return list of user friends (or pendings/subscribers/ignore) JSON
+     * TODO Get SQL query by logic status
+     *
+     * @param string $logicStatus
+     * @return string
      */
-    public function friends(): void
+    private function _makeLogicStatusRulesQuery(string $logicStatus): string
     {
+        return '';
+    }
+
+    /**
+     * Return list of user friends (or pendings/subscribers/ignore)
+     *
+     * @param string|null $logicStatus
+     * @param string|null $type
+     * @return array|null
+     * @throws Exception
+     */
+    public function friends(?string $logicStatus = null, ?string $type = null): ?array
+    {
+        if (!is_null($logicStatus) && !in_array($logicStatus, self::LOGIC_STATUSES)) {
+            throw new Exception('Wrong logic status');
+        }
+
+        if (!is_null($type) && !in_array($type, self::TYPES)) {
+            throw new Exception('Wrong type');
+        }
+
 
     }
 

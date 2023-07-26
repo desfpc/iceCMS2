@@ -30,7 +30,7 @@ class UnixTime
      *
      * @return false|int|null
      */
-    public function get()
+    public function get(): bool|int|null
     {
         return $this->_timestamp;
     }
@@ -41,7 +41,7 @@ class UnixTime
      * @param int|string|null $time
      * @return void
      */
-    public function set(int|string|null $time = null)
+    public function set(int|string|null $time = null): void
     {
         if (is_null($time)) {
             $time = time();
