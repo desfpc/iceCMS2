@@ -106,14 +106,56 @@ class User extends AbstractController implements ControllerInterface
     public string $title = 'User';
 
     /**
-     * TODO Get SQL query by logic status for getting user connections list
+     * Get SQL query by logic status for getting user connections list
      *
-     * @param string $logicStatus
-     * @return string
+     * @param string|null $logicStatus
+     * @param int $userId
+     * @return array
+     * @throws Exception
      */
-    private function _makeLogicStatusRulesQuery(string $logicStatus): string
+    private function _makeLogicStatusRulesQuery(?string $logicStatus, int $userId): array
     {
-        return '';
+        $query = '';
+        $bindValues = [];
+
+        if (!is_null($logicStatus)) {
+            if (empty(self::LOGIC_STATUS_RULES[$logicStatus])) {
+                throw new Exception('Wrong logic status');
+            }
+
+            $rules = self::LOGIC_STATUS_RULES[$logicStatus];
+
+            foreach ($rules as $ruleKey => $rule) {
+                $prefix = $logicStatus . '_' . $ruleKey;
+
+                if (!empty($query)) {
+                    $query .= ' UNION ALL ';
+                }
+
+                $query .= '(SELECT `' . $prefix . '`.`parent_id` `id` FROM `user_friends` `' . $prefix . '`
+            WHERE 1 = 1';
+
+                foreach ($rule as $key => $value) {
+                    if ($key === 'status') {
+                        $operand = '=';
+                        $bindValues[] = $value;
+                    } else {
+                        if ($value === true) {
+                            $operand = '=';
+                        } else {
+                            $operand = '<>';
+                        }
+                        $bindValues[] = $userId;
+                    }
+
+                    $query .= ' AND `' . $prefix . '`.`' . $key . '` ' . $operand . ' ?';
+                }
+
+                $query .= ')';
+            }
+        }
+
+        return [$query, $bindValues];
     }
 
     /**
@@ -134,6 +176,7 @@ class User extends AbstractController implements ControllerInterface
             throw new Exception('Wrong type');
         }
 
+        [$query, $values] = $this->_makeLogicStatusRulesQuery($logicStatus ?? self::LOGIC_STATUS_FRIENDS, $this->user->id);
 
     }
 
