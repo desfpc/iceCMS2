@@ -31,6 +31,12 @@ $routers = [
         'controllerMethod' => 'list',
         'useVendor' => true
     ],
+    'api/v1/friends' => [ //Friends list
+        'method' => 'GET',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'User',
+        'controllerMethod' => 'friends',
+        'useVendor' => true
+    ],
     'api/v1/user/$id' => [ //User by ID
         'method' => 'GET',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'User',

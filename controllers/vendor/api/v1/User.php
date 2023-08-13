@@ -106,7 +106,7 @@ class User extends AbstractController implements ControllerInterface
     public string $title = 'User';
 
     /**
-     * Get SQL query by logic status for getting user connections list
+     * Get SQL query by logic status for getting user connections list TODO move to User model
      *
      * @param string|null $logicStatus
      * @param int $userId
@@ -161,13 +161,25 @@ class User extends AbstractController implements ControllerInterface
     /**
      * Return list of user friends (or pendings/subscribers/ignore)
      *
-     * @param string|null $logicStatus
-     * @param string|null $type
      * @return array|null
      * @throws Exception
      */
-    public function friends(?string $logicStatus = null, ?string $type = null): ?array
+    public function friends(): ?array
     {
+        $this->requestParameters->getRequestValues(['logicStatus', 'type']);
+
+        if (empty($this->requestParameters->values->logicStatus)) {
+            $logicStatus = null;
+        } else {
+            $logicStatus = $this->requestParameters->values->logicStatus;
+        }
+
+        if (empty($this->requestParameters->values->type)) {
+            $type = null;
+        } else {
+            $type = $this->requestParameters->values->type;
+        }
+
         if (!is_null($logicStatus) && !in_array($logicStatus, self::LOGIC_STATUSES)) {
             throw new Exception('Wrong logic status');
         }
@@ -178,6 +190,11 @@ class User extends AbstractController implements ControllerInterface
 
         [$query, $values] = $this->_makeLogicStatusRulesQuery($logicStatus ?? self::LOGIC_STATUS_FRIENDS, $this->user->id);
 
+        if ($friends = $this->_db->queryBinded($query, $values)) {
+            $this->renderJson($friends, true);
+        } else {
+            $this->renderJson(['message' => $this->_db->getErrorText()], false);
+        }
     }
 
     /**

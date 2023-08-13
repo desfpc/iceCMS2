@@ -12,6 +12,8 @@ namespace iceCMS2\Controller;
 
 use iceCMS2\Authorization\AuthorizationFactory;
 use iceCMS2\Authorization\AuthorizationInterface;
+use iceCMS2\DB\DBFactory;
+use iceCMS2\DB\DBInterface;
 use iceCMS2\Routing\Routing;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\FlashVars;
@@ -35,6 +37,9 @@ abstract class AbstractController implements ControllerInterface
 
     /** @var array<string, mixed> Data for template */
     public array $templateData = [];
+
+    /** @var DBInterface DB Resource */
+    protected DBInterface $_db;
 
     /** @var Settings|null Project settings */
     public ?Settings $settings = null;
@@ -81,11 +86,21 @@ abstract class AbstractController implements ControllerInterface
     /** @var string[] Headers for php header() function */
     protected array $_headers = [];
 
-    /** Class constructor */
+    /**
+     * Class constructor
+     * @param Routing|null $routing
+     * @param Settings|null $settings
+     *
+     * @throws Exception
+     */
     public function __construct(?Routing $routing, ?Settings $settings)
     {
         $this->routing = $routing;
         $this->settings = $settings;
+
+        $this->_db = DBFactory::get($this->settings);
+        $this->_db->connect();
+
         $this->authorization = AuthorizationFactory::instance($this->settings, static::AUTHORIZE_TYPE);
         $this->requestParameters = new RequestParameters();
     }
