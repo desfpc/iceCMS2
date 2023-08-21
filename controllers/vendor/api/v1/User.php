@@ -165,7 +165,15 @@ class User extends AbstractController implements ControllerInterface
             }
         }
 
-        $query = 'SELECT `t`.* FROM (' . $query . ') `t`;';
+        $query = 'SELECT `t`.*, 
+       `p`.`nikname` `parent_nik`, `p`.`avatar` `parent_avatar`,
+       `c`.`nikname` `child_nik`, `c`.`avatar` `child_avatar`
+        FROM (' . $query . ') `t`
+        INNER JOIN `users` `p` ON `p`.`id` = `t`.`parent_id`
+        INNER JOIN `users` `c` ON `c`.`id` = `t`.`child_id`;';
+
+        var_dump($query, $bindValues);
+        die();
 
         return [$query, $bindValues];
     }
