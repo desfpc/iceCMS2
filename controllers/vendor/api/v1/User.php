@@ -60,7 +60,7 @@ class User extends AbstractController implements ControllerInterface
         self::LOGIC_STATUS_FRIENDS => [
             [
                 'status' => self::STATUS_FRIEND,
-                'initiator' => null,
+                'ids' => true,
             ],
         ],
         self::LOGIC_STATUS_SUBSCRIBERS => [
@@ -143,7 +143,11 @@ class User extends AbstractController implements ControllerInterface
                     if ($key === 'status') {
                         $operand = '=';
                         $bindValues[] = $value;
-                    } else {
+                    } elseif ($key === 'ids') {
+                        $addQuery = false;
+                        $query .= ' AND (`' . $prefix . '`.`parent_id` = ' . $userId . ' OR `' . $prefix . '`.`child_id` = ' . $userId . ')';
+                    }
+                    else {
                         if (!is_null($value)) {
                             if ($value === true) {
                                 $operand = '=';
