@@ -132,28 +132,40 @@ class User extends AbstractController implements ControllerInterface
                     $query .= ' UNION ALL ';
                 }
 
-                $query .= '(SELECT `' . $prefix . '`.`parent_id` `id` FROM `user_friends` `' . $prefix . '`
+                $query .= '(SELECT `' . $prefix . '`.`parent_id`, `' . $prefix . '`.`child_id`, `' . $prefix . '`.`initiator`
+                FROM `user_friends` `' . $prefix . '`
             WHERE 1 = 1';
 
                 foreach ($rule as $key => $value) {
+
+                    $addQuery = true;
+
                     if ($key === 'status') {
                         $operand = '=';
                         $bindValues[] = $value;
                     } else {
-                        if ($value === true) {
-                            $operand = '=';
+                        if (!is_null($value)) {
+                            if ($value === true) {
+                                $operand = '=';
+                            } else {
+                                $operand = '<>';
+                            }
+                            $bindValues[] = $userId;
                         } else {
-                            $operand = '<>';
+                            $addQuery = false;
                         }
-                        $bindValues[] = $userId;
                     }
 
-                    $query .= ' AND `' . $prefix . '`.`' . $key . '` ' . $operand . ' ?';
+                    if ($addQuery) {
+                        $query .= ' AND `' . $prefix . '`.`' . $key . '` ' . $operand . ' ?';
+                    }
                 }
 
                 $query .= ')';
             }
         }
+
+        $query = 'SELECT `t`.* FROM (' . $query . ') `t`;';
 
         return [$query, $bindValues];
     }
@@ -166,6 +178,11 @@ class User extends AbstractController implements ControllerInterface
      */
     public function friends(): ?array
     {
+        $this->_authorizationCheck();
+
+        /** @var UserModel $user */
+        $user = $this->authorization->getUser();
+
         $this->requestParameters->getRequestValues(['logicStatus', 'type']);
 
         if (empty($this->requestParameters->values->logicStatus)) {
@@ -180,7 +197,7 @@ class User extends AbstractController implements ControllerInterface
             $type = $this->requestParameters->values->type;
         }
 
-        if (!is_null($logicStatus) && !in_array($logicStatus, self::LOGIC_STATUSES)) {
+        if (is_null($logicStatus) || !in_array($logicStatus, self::LOGIC_STATUSES)) {
             throw new Exception('Wrong logic status');
         }
 
@@ -188,12 +205,19 @@ class User extends AbstractController implements ControllerInterface
             throw new Exception('Wrong type');
         }
 
-        [$query, $values] = $this->_makeLogicStatusRulesQuery($logicStatus ?? self::LOGIC_STATUS_FRIENDS, $this->user->id);
+        try {
+            [$query, $values] = $this->_makeLogicStatusRulesQuery($logicStatus ?? self::LOGIC_STATUS_FRIENDS, (int)$user->get('id'));
 
-        if ($friends = $this->_db->queryBinded($query, $values)) {
-            $this->renderJson($friends, true);
-        } else {
-            $this->renderJson(['message' => $this->_db->getErrorText()], false);
+            /*var_dump($query, $values);
+            die();*/
+
+            if ($friends = $this->_db->queryBinded($query, $values)) {
+                $this->renderJson($friends, true);
+            } else {
+                $this->renderJson(['message' => $this->_db->getErrorText()], false);
+            }
+        } catch (\Throwable $e) {
+            $this->renderJson(['message' => $e->getMessage()], false);
         }
     }
 

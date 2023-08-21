@@ -175,14 +175,21 @@ abstract class AbstractController implements ControllerInterface
         require($this->_getFullLayoutPath());
 
         if (!$success) {
+            $this->_headers = $this->_getDefaultHeaders();
             $this->_headers[] = 'HTTP/1.0 500 Internal Server Error';
             $this->_headers[] = 'Status: 500 Internal Server Error';
+            $this->_headers[] = 'Content-Type: application/json; charset=utf-8';
+            $this->_echoHeaders();
         }
 
         echo json_encode([
             'success' => $success,
             'data' => $data,
         ]);
+
+        if (!$success) {
+            die();
+        }
     }
 
     /**

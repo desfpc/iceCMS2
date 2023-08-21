@@ -9,7 +9,11 @@ declare(strict_types=1);
  *
  * @var iceCMS2\Controller\AbstractController $this
  */
-$this->_headers = $this->_getDefaultHeaders();
+
+if (empty($this->_headers)) {
+    $this->_headers = $this->_getDefaultHeaders();
+}
+
 $this->_headers[] = 'Content-Type: application/json; charset=utf-8';
 $this->_echoHeaders();
 if ($this->isTemplate) { $this->_echoTemplateBody(); }

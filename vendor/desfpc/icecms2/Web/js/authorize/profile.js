@@ -61,6 +61,13 @@ export default {
     methods: {
         selectTab(tabName) {
             this.activeTab = tabName
+            this.runTab(tabName)
+        },
+
+        runTab(tabName) {
+            if (tabName === 'tab_2') {
+                this.loadSocialData()
+            }
         },
 
         getTabClass(tabName) {
@@ -127,7 +134,11 @@ export default {
         },
 
         loadSocialData() {
-
+            axios.get('/api/v1/friends?logicStatus=friends').then(response => {
+                console.log(response)
+            }).error(error => {
+                console.log(error)
+            })
         },
 
         hideAlert() {

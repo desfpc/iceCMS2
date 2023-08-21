@@ -12,7 +12,7 @@ namespace iceCMS2\Tools;
 
 use Throwable;
 
-class Exception extends \Exception
+class Exception extends \Exception implements Throwable
 {
     /** @var string FlashVars key for Exception */
     public const EXEPTION_FLASHVARS_KEY = 'ControllerErrors';
