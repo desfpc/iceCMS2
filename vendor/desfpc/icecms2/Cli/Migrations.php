@@ -101,6 +101,7 @@ class Migrations
         }
 
         $migrationFolderFiles = scandir(substr($this->_migrationsFolder,0,-1));
+
         foreach ($migrationFolderFiles as $file) {
             if (!in_array($file, ['.', '..', 'template.txt'])) {
                 $migration = $this->_getMigrationData($file);

@@ -63,7 +63,9 @@ class App
                 echo "\n" . 'migration-exec - Execute DB migrations.';
                 echo "\n" . 'migration-rollback - Rollback last DB migration.';
                 echo "\n";
-                echo "\n" . 'cache-clear-all - Clear all caches.';
+                echo "\n" . 'cache-clear-all - Clear all DB caches.';
+                echo "\n";
+                echo "\n" . 'phpcache-clear - Clear PHP caches.';
                 echo "\n";
                 echo "\n" . 'make-symlinks - Make symlinks from vendor to project folders';
                 echo "\n\n";
@@ -115,6 +117,13 @@ class App
                         }
                     }
                 }
+                break;
+            case 'phpcache-clear':
+                echo "\n" . 'IceCMS2 Clear PHP caches';
+                opcache_reset();
+                echo "\n\e[32m" . 'OPCaches cleared!' . "\e[39m";
+                clearstatcache();
+                echo "\n\e[32m" . 'Stat caches cleared!' . "\e[39m" . PHP_EOL;
                 break;
             case 'make-symlinks':
                 echo "\n" . 'IceCMS2 Make symlinks';

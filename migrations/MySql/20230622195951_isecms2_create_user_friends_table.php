@@ -33,8 +33,8 @@ class Isecms2CreateUserFriendsTable extends AbstractMigration
             PRIMARY KEY (`parent_id`, `child_id`),
             CONSTRAINT `user_friends_parent_id` FOREIGN KEY (`parent_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
             CONSTRAINT `user_friends_child_id` FOREIGN KEY (`child_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-            INDEX `user_friends_parent`(`parent_id`, `status`, `initiator`) USING BTREE,
-            INDEX `user_friends_child`(`child_id`, `status`, `initiator`) USING BTREE
+            INDEX `user_friends_parent_id_status` (`parent_id`, `status`) USING BTREE,
+            INDEX `user_friends_child_id_status` (`child_id`, `status`) USING BTREE
         ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
         ";
     }
