@@ -174,7 +174,7 @@ $user = $this->templateData['user'];
                 </div>
 
                 <div v-if="activeTab === 'tab_2'">
-                    <div class="accordion" id="accordionExample">
+                    <!--<div class="accordion" id="accordionExample">
                         <div class="accordion-item">
                             <h2 class="accordion-header">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -223,7 +223,7 @@ $user = $this->templateData['user'];
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
 
             </div>

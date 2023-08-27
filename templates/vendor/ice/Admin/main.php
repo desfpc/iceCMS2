@@ -17,7 +17,7 @@ use iceCMS2\Controller\AbstractController;
     <div class="row">
         <div class="col">
             <?php include($this->_getLayoutPath() . '_alerts.php'); ?>
-            <h1>Admin dashboard</h1>
+            <h1><?= $this->title ?></h1>
 
             <hr>
             <h2>IceCMS2</h2>
