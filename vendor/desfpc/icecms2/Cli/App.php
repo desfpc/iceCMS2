@@ -131,6 +131,7 @@ class App
                 $symlinks = [
                     'vendor/desfpc/vuebootstrap/src' => 'web/js/vuebootstrap',
                     'vendor/desfpc/icecms2/Web/js' => 'web/js/vendor',
+                    'vendor/desfpc/icecms2/Templates/ice' => 'templates/vendor/ice'
                 ];
 
                 foreach ($symlinks as $key => $value) {
