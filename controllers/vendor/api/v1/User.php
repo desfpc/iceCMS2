@@ -176,9 +176,6 @@ class User extends AbstractController implements ControllerInterface
         INNER JOIN `users` `p` ON `p`.`id` = `t`.`parent_id`
         INNER JOIN `users` `c` ON `c`.`id` = `t`.`child_id`;';
 
-        var_dump($query, $bindValues);
-        die();
-
         return [$query, $bindValues];
     }
 

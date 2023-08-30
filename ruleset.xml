@@ -39,6 +39,7 @@
     <rule ref="rulesets/design.xml">
         <exclude name="CouplingBetweenObjects"/>
         <exclude name="NumberOfChildren" />
+        <exclude name="ExitExpression" />
     </rule>
 
     <rule ref="rulesets/codesize.xml">
