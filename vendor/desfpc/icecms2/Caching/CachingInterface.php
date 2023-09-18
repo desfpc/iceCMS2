@@ -27,7 +27,7 @@ interface CachingInterface
      * Finding Keys in the Cache
      *
      * @param string $pattern
-     * @return false|array
+     * @return mixed
      */
     public function findKeys(string $pattern): mixed;
 

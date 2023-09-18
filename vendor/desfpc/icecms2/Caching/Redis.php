@@ -133,6 +133,7 @@ class Redis implements CachingInterface
     public function del(string $key): bool
     {
         $res = $this->redis->del($key);
+
         if ($res === 1) {
             return true;
         }

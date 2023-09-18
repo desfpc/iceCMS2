@@ -32,6 +32,7 @@ class Authorize extends AbstractController implements ControllerInterface
     /**
      * @param Routing|null $routing
      * @param Settings|null $settings
+     * @throws Exception
      */
     public function __construct(?Routing $routing, ?Settings $settings)
     {
