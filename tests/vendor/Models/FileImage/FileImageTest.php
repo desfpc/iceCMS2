@@ -164,7 +164,8 @@ class FileImageTest extends Ice2CMSTestCase
         }
 
         $watermarkFile = new FileImage(self::$_testSettings);
-        $watermarkFile->load(1);
+
+        $this->assertTrue($watermarkFile->load((int)$imageFile->get('id')));
         $this->assertTrue($watermarkFile->del());
 
         $testFile = new FileImage(self::$_testSettings);

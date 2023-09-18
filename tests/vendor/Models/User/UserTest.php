@@ -63,8 +63,6 @@ class UserTest extends Ice2CMSTestCase
         $this->assertTrue($imageFile->savePostFile('testFile'));
         $avatarId = $imageFile->get('id');
 
-        $this->assertEquals(1, $avatarId);
-
         //Creating user
         $userPass = '123#@$%#_VCff';
         $user = new User(self::$_testSettings);
@@ -88,6 +86,6 @@ class UserTest extends Ice2CMSTestCase
 
         $avatarUrl = $user->avatarUrl;
         $this->assertNotNull($avatarUrl);
-        $this->assertStringContainsString('1_avatar.webp', $avatarUrl);
+        $this->assertStringContainsString($avatarId . '_avatar.webp', $avatarUrl);
     }
 }

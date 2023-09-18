@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace iceCMS2\Tests;
 
+use AllowDynamicProperties;
 use iceCMS2\DB\DBFactory;
 use iceCMS2\DB\DBInterface;
 use iceCMS2\Settings\Settings;
@@ -17,6 +18,7 @@ use iceCMS2\Tools\Exception;
 use PHPUnit\Framework\TestCase;
 use \ReflectionClass;
 
+#[AllowDynamicProperties]
 abstract class Ice2CMSTestCase extends TestCase
 {
     /**

@@ -56,12 +56,16 @@ class ValidatorFactory
                 return UnixTimeValidator::validate($db, $value);
             case 'int':
                 return IntValidator::validate($db, $value, $settings, $table, $name);
+            case 'float':
+                return FloatValidator::validate($db, $value, $settings, $table, $name);
             case 'json':
                 return JsonValidator::validate($db, $value, $settings, $table, $name);
             case 'string':
                 return StringValidator::validate($db, $value, $settings, $table, $name);
             case 'telegram':
                 return TelegramValidator::validate($db, $value, $settings, $table, $name);
+            case 'phone':
+                return PhoneValidator::validate($db, $value, $settings, $table, $name);
             default:
                 if (class_exists($validator)) {
                     /** @var ValidatorInterface $validatorObj */

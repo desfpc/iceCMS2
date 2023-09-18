@@ -70,16 +70,17 @@ class FileTest extends Ice2CMSTestCase
         $this->assertTrue($file->savePostFile('testFile'));
         $path = $file->getPath();
         $fileValues = $file->get();
+
         unset($fileValues['created_time']);
         $this->assertEquals([
-            'id' => 1,
+            'id' => $file->get('id'),
             'name' => 'LICENSE.txt',
             'filename' => 'LICENSE.txt',
             'extension' => 'txt',
             'anons' => 'File description text',
             'filetype' => 'file',
             'size' => '11357',
-            'url' => '/files_test/' . date('Y') . date('m') . '/1.txt',
+            'url' => '/files_test/' . date('Y') . date('m') . '/' . $file->get('id') . '.txt',
             'image_width' => null,
             'image_height' => null,
             'user_id' => null,

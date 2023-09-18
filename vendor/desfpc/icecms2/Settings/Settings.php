@@ -10,10 +10,12 @@ declare(strict_types=1);
 
 namespace iceCMS2\Settings;
 
+use AllowDynamicProperties;
 use Exception;
 use stdClass;
 use Throwable;
 
+#[AllowDynamicProperties]
 class Settings
 {
     /**

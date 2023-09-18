@@ -56,8 +56,9 @@ $settings = [
     ],
     'cache' => [
         'useRedis' => true,
-        'redisHost' => '127.0.0.1',
+        'redisHost' => 'redis',
         'redisPort' => 6379,
+        'redisDB' => 2,
     ],
     'routes' => [
         '404' => '404',
