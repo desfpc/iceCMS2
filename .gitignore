@@ -3,7 +3,6 @@ composer.lock
 vendor/
 !vendor/desfpc/icecms2
 !tests/vendor
-!controllers/vendor
 !templates/vendor
 settings/local.php
 settings/product.php
@@ -12,9 +11,9 @@ settings/product.php
 web/files_test
 .DS_Store
 *.log
-.DS_Store
 composer.phar
 web/files/*
 web/js/vuebootstrap
 web/js/vendor
 templates/vendor/ice
+controllers/vendor
