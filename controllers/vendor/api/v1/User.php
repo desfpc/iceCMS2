@@ -182,10 +182,10 @@ class User extends AbstractController implements ControllerInterface
     /**
      * Return list of user friends (or pendings/subscribers/ignore)
      *
-     * @return array|null
+     * @return void
      * @throws Exception
      */
-    public function friends(): ?array
+    public function friends(): void
     {
         $this->_authorizationCheck();
 
@@ -381,9 +381,7 @@ class User extends AbstractController implements ControllerInterface
 
         /** @var UserModel $user */
         $user = $this->authorization->getUser();
-
         $data = json_decode(file_get_contents('php://input'), true);
-
         $unsetArr = ['avatar', 'email_approve_code', 'email_approved', 'email_send_time', 'phone_approve_code',
             'password', 'phone_approved', 'phone_send_time', 'created_at',];
 
@@ -394,7 +392,11 @@ class User extends AbstractController implements ControllerInterface
         }
 
         if (isset($data['contacts'])) {
-            $data['contacts'] = json_encode($data['contacts']);
+            try {
+                $data['contacts'] = json_encode($data['contacts']);
+            } catch (\Throwable $e) {
+                $data['contacts'] = [];
+            }
         }
 
         try {
@@ -402,7 +404,7 @@ class User extends AbstractController implements ControllerInterface
             if ($user->save()) {
                 $this->renderJson(['message' => 'Profile updated'], true);
             } else {
-                $this->renderJson(['message' => 'Error in profile updating'], false);
+                $this->renderJson(['message' => 'Error in profile updating', 'errors' => $user->errors], false);
             }
         } catch (Exception $e) {
             $this->renderJson(['message' => $e->getMessage()], false);
