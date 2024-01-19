@@ -8,7 +8,7 @@ use iceCMS2\Controller\AbstractController;
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * User main template file
+ * Caches main template file
  *
  * @var AbstractController $this
  */

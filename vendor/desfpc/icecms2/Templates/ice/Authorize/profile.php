@@ -63,6 +63,12 @@ $user = $this->templateData['user'];
                     {{ alert.message }} <button type="button" class="btn-close float-end" aria-label="Close" @click="hideAlert()"></button>
                 </div>
 
+                <Tabs tabsjson='[{"name": "Test_Tab1", "id": "test_tab_1"},
+                {"name": "Test_Tab2", "id": "test_tab_2"}]' startactivetab="test_tab_1">
+                    <div>ass</div>
+                    <div>ass2</div>
+                </Tabs>
+
                 <ul class="nav nav-tabs mb-5">
                     <li class="nav-item">
                         <a class="tab-link nav-link" :class="getTabClass('tab_1')" href="#" @click="selectTab('tab_1')">Profile</a>
