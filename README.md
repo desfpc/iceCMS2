@@ -22,9 +22,8 @@ iceCMS2\DB\DBInterface
 ## Setup with docker:
 - Clone repository
 - cd to {repository foldder}
-- run: docker-compose up
-- run project php-fpm container's terminal:
-- run in php-fpm container: cd /var/www/html
+- run: docker compose up --build -d
+- run project php-fpm container's terminal: docker compose exec -it php-fpm-icecms sh
 - run in php-fpm container: composer install
 - run in php-fpm container: php cli.php migration-exec
 - run in php-fpm container: php cli.php make-symlinks
