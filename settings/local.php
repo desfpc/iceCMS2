@@ -19,7 +19,7 @@ $settings = [
     'db' => [
         'type' => 'MySQL',
         'name' => 'ice2',
-        'host' => 'db',
+        'host' => 'db-icecms',
         'port' => '3306',
         'login' => 'root',
         'pass' => 'localRoot',
@@ -28,7 +28,7 @@ $settings = [
     'dbTest' => [
         'type' => 'MySQL',
         'name' => 'ice2_test',
-        'host' => 'db',
+        'host' => 'db-icecms',
         'port' => '3306',
         'login' => 'root',
         'pass' => 'localRoot',
@@ -60,7 +60,7 @@ $settings = [
     ],
     'cache' => [
         'useRedis' => true,
-        'redisHost' => 'redis',
+        'redisHost' => 'redis-icecms',
         'redisPort' => 6379,
         'redisDB' => 1,
     ],

@@ -1,16 +1,18 @@
 version: '3.9'
 
 services:
-  web:
+  web-icecms:
     image: nginx:latest
+    container_name: web-icecms
     ports:
       - '8181:80'
     volumes:
       - ./:/var/www/html
       - ./default.conf:/etc/nginx/conf.d/default.conf
     links:
-      - php-fpm
-  php-fpm:
+      - php-fpm-icecms
+  php-fpm-icecms:
+    container_name: php-fpm-icecms
     build:
       context: docker/8.2-fpm
       dockerfile: "Dockerfile"
@@ -19,11 +21,12 @@ services:
       - "PHP_MEMORY_LIMIT=512M"
       - "PHP_SESSION_GC_MAXLIFETIME=7200"
     depends_on:
-      - db
-      - redis
+      - db-icecms
+      - redis-icecms
     volumes:
       - ./:/var/www/html
-  db:
+  db-icecms:
+    container_name: db-icecms
     image: mariadb:latest
     command: --default-authentication-plugin=mysql_native_password
     restart: always
@@ -34,7 +37,8 @@ services:
       MARIADB_ROOT_PASSWORD: localRoot
       MARIADB_DATABASE: ice2
       MARIADB_ROOT_HOST: '%' # allow root login from any host
-  redis:
+  redis-icecms:
+    container_name: redis-icecms
     image: redis:latest
     ports:
       - "6382:6379"
