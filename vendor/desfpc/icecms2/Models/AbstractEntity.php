@@ -396,7 +396,7 @@ abstract class AbstractEntity
     {
         $this->_needLoaded();
 
-        if (!is_null($id)) {
+        if (!is_null($id) && empty($this->_idKeys)) {
             $this->_id = $id;
         }
 

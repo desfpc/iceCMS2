@@ -48,6 +48,9 @@ abstract class AbstractEntityList
     /** @var ?int Query results count (page size) */
     protected ?int $_size = 10;
 
+    /** @var ?int Query results cache in seconds */
+    protected ?int $_cacheSeconds = 0;
+
     /**
      * Entity list constructor
      *
@@ -56,16 +59,24 @@ abstract class AbstractEntityList
      * @param array $order
      * @param int $page
      * @param ?int $size
+     * @param int $cacheSeconds
      * @throws Exception
      */
-    public function __construct(Settings $settings, array $conditions = [], array $order = [], int $page = 1, ?int $size = 10)
-    {
+    public function __construct(
+        Settings $settings,
+        array $conditions = [],
+        array $order = [],
+        int $page = 1,
+        ?int $size = 10,
+        int $cacheSeconds = 0
+    ) {
         $this->_settings = $settings;
         $this->_db = DBFactory::get($this->_settings);
         $this->_conditions = $conditions;
         $this->_order = $order;
         $this->_page = $page;
         $this->_size = $size;
+        $this->_cacheSeconds = $cacheSeconds;
     }
 
     /**
@@ -77,7 +88,7 @@ abstract class AbstractEntityList
     {
         [$query, $bindedParams] = $this->_getFullQuery(true);
         if ($res = $this->_db->queryBinded($query, $bindedParams)) {
-            return $res[0]['cnt'];
+            return (int) $res[0]['cnt'];
         }
         return false;
     }
@@ -85,13 +96,39 @@ abstract class AbstractEntityList
     /**
      * Getting array of entity's
      *
-     * @return array|bool
+     * @return array|bool|int
+     * @throws Exception
      */
-    public function get(): array|bool
+    public function get(): array|bool|int
     {
         [$query, $bindedParams] = $this->_getFullQuery();
 
+        if ($this->_cacheSeconds > 0) {
+
+            $key = $this->_getQueryCacheKey($query, $bindedParams);
+
+            if ($this->_cacher->has($key)) {
+                return $this->_cacher->get($key);
+            } else {
+                $res = $this->_db->queryBinded($query, $bindedParams);
+                $this->_cacher->set($key, $res, $this->_cacheSeconds);
+                return $res;
+            }
+        }
+
         return $this->_db->queryBinded($query, $bindedParams);
+    }
+
+    /**
+     * Get cache key for list query
+     *
+     * @param string $query
+     * @param array $bindedParams
+     * @return string
+     */
+    protected function _getQueryCacheKey(string $query, array $bindedParams): string
+    {
+        return $this->_settings->db->name . '_' . $this->_dbtable . '_' . md5($query) . '_' . md5(serialize($bindedParams));
     }
 
     /**
