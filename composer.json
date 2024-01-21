@@ -15,7 +15,7 @@
     "ext-json": "*",
     "desfpc/pechkin": "0.*",
     "desfpc/visualijoper": "2.*",
-    "desfpc/vuebootstrap": "1.01",
+    "desfpc/vuebootstrap": "1.02",
     "ext-gd": "*",
     "ext-redis": "*",
     "ext-zend-opcache": "*"

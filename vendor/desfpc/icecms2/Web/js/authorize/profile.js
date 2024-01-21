@@ -33,7 +33,6 @@ export default {
                 },
                 limit: 20,
             },
-            activeTab: 'tab_1',
             alert: {
                 show: false,
                 class: 'alert',
@@ -59,21 +58,6 @@ export default {
     },
 
     methods: {
-        selectTab(tabName) {
-            this.activeTab = tabName
-            this.runTab(tabName)
-        },
-
-        runTab(tabName) {
-            if (tabName === 'tab_2') {
-                this.loadSocialData()
-            }
-        },
-
-        getTabClass(tabName) {
-            return this.activeTab === tabName ? 'active' : ''
-        },
-
         onUploadFiles(event) {
             const files = event.target.files
             const formData = new FormData()
@@ -131,14 +115,6 @@ export default {
                 this.alert.message = 'Form not valid!'
                 this.alert.show = true
             }
-        },
-
-        loadSocialData() {
-            axios.get('/api/v1/friends?logicStatus=friends').then(response => {
-                console.log(response)
-            }).error(error => {
-                console.log(error)
-            })
         },
 
         hideAlert() {
