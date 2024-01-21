@@ -17,20 +17,24 @@ class UserSubscriberList extends AbstractEntityList
     /** @var string Entity DB table name */
     protected string $_dbtable = 'user_subscribers';
 
+    /** @var array|null columns for ID */
+    protected ?array $_idColumns = ['parent_id', 'child_id'];
+
     /**
      * User subscriptions list
      *
      * @param int $userId
      * @param array $order
-     * @return array
+     * @return bool|array
      * @throws Exception
      */
-    public function getSubscriptions(int $userId, array $order = ['date_add' => 'DESC']): array
+    public function getSubscriptions(int $userId, array $order = ['date_add' => 'DESC']): bool|array
     {
         $this->_conditions = [
             'parent_id' => $userId,
         ];
         $this->_order = $order;
+
         return $this->get();
     }
 

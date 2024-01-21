@@ -51,6 +51,9 @@ abstract class AbstractEntityList
     /** @var ?int Query results cache in seconds */
     protected ?int $_cacheSeconds = 0;
 
+    /** @var array|null columns for ID */
+    protected ?array $_idColumns = null;
+
     /**
      * Entity list constructor
      *
@@ -87,6 +90,7 @@ abstract class AbstractEntityList
     public function getCnt(): int|bool
     {
         [$query, $bindedParams] = $this->_getFullQuery(true);
+
         if ($res = $this->_db->queryBinded($query, $bindedParams)) {
             return (int) $res[0]['cnt'];
         }
@@ -160,7 +164,11 @@ abstract class AbstractEntityList
     protected function _getSelectQuery(bool $ifCnt = false): string
     {
         if ($ifCnt) {
-            $query = 'SELECT COUNT(`dbtable`.`id`) `cnt` ';
+            if (is_null($this->_idColumns)) {
+                $query = 'SELECT COUNT(`dbtable`.`id`) `cnt` ';
+            } else {
+                $query = 'SELECT COUNT(*) `cnt` ';
+            }
         } else {
             if (is_null($this->_selectedFields)) {
                 $query = 'SELECT `dbtable`.* ';
