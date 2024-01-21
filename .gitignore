@@ -2,6 +2,7 @@
 composer.lock
 vendor/
 !vendor/desfpc/icecms2
+!vendor/desfpc/icecms2/*
 !tests/vendor
 !templates/vendor
 settings/local.php

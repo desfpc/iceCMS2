@@ -56,7 +56,7 @@ $settings = [
     ],
     'cache' => [
         'useRedis' => true,
-        'redisHost' => 'redis',
+        'redisHost' => 'redis-icecms',
         'redisPort' => 6379,
         'redisDB' => 2,
     ],
