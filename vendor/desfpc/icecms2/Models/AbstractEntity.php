@@ -14,6 +14,7 @@ use iceCMS2\Caching\CachingFactory;
 use iceCMS2\DB\DBFactory;
 use iceCMS2\DB\DBInterface;
 use iceCMS2\Caching\CachingInterface;
+use iceCMS2\Helpers\Strings;
 use iceCMS2\Modificator\ModificatorFactory;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
@@ -92,6 +93,43 @@ abstract class AbstractEntity
         if (!empty($id)) {
             $this->load();
         }
+    }
+
+    /**
+     * Param getter for Entity
+     *
+     * @param string $key
+     * @return void
+     * @throws Exception
+     */
+    public function __get(string $key)
+    {
+        if ($this->isLoaded) {
+
+            $snakeCaseKey = Strings::camelToSnake($key);
+
+            if (isset($this->_values[$snakeCaseKey])) {
+                return $this->_values[$snakeCaseKey];
+            } else {
+                throw new Exception('Field "' . $key . '" missing in table "' . $this->_dbtable . '"');
+            }
+        } else {
+            throw new Exception('You must load entity before calling this method');
+        }
+    }
+
+    /**
+     * Param setter for Entity
+     *
+     * @param string $key
+     * @param string|int|float|bool|UnixTime|null $value
+     * @return void
+     * @throws Exception
+     */
+    public function __set(string $key, string|int|float|bool|UnixTime|null $value): void
+    {
+        $snakeCaseKey = Strings::camelToSnake($key);
+        $this->set($snakeCaseKey, $value);
     }
 
     /**

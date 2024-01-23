@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * Abstract entityes list class
+ * Abstract entity's list class
  */
 
 namespace iceCMS2\Models;
@@ -13,6 +13,7 @@ namespace iceCMS2\Models;
 use iceCMS2\Caching\CachingInterface;
 use iceCMS2\DB\DBFactory;
 use iceCMS2\DB\DBInterface;
+use iceCMS2\DTO\DtoInterface;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
 
@@ -121,6 +122,19 @@ abstract class AbstractEntityList
         }
 
         return $this->_db->queryBinded($query, $bindedParams);
+    }
+
+    /**
+     * Getting array of entity as DTO object array
+     *
+     * @param DtoInterface $dto
+     * @return array|bool|int
+     * @throws Exception
+     */
+    public function getDtoFields(DtoInterface $dto): array|bool|int
+    {
+        $this->_selectedFields = $dto->getParams();
+        return $this->get();
     }
 
     /**

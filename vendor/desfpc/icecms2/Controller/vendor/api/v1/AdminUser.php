@@ -12,6 +12,7 @@ namespace app\Controllers\vendor\api\v1;
 
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
+use iceCMS2\DTO\UserListAdminDto;
 use iceCMS2\Models\User;
 use iceCMS2\Models\UserList;
 use iceCMS2\Tools\Exception;
@@ -31,7 +32,7 @@ class AdminUser extends AbstractController implements ControllerInterface
         $this->requestParameters->getRequestValues(['page','']);
 
         $userList = new UserList($this->settings);
-        $users = $userList->get();
+        $users = $userList->getDtoFields(new UserListAdminDto());
 
         $this->renderJson([$users], true);
     }
