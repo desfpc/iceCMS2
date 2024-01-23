@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace iceCMS2\Models;
 
+use iceCMS2\Caching\CachingFactory;
 use iceCMS2\Caching\CachingInterface;
 use iceCMS2\DB\DBFactory;
 use iceCMS2\DB\DBInterface;
@@ -81,6 +82,8 @@ abstract class AbstractEntityList
         $this->_page = $page;
         $this->_size = $size;
         $this->_cacheSeconds = $cacheSeconds;
+
+        $this->_cacher = CachingFactory::instance($this->_settings);
     }
 
     /**
@@ -113,10 +116,10 @@ abstract class AbstractEntityList
             $key = $this->_getQueryCacheKey($query, $bindedParams);
 
             if ($this->_cacher->has($key)) {
-                return $this->_cacher->get($key);
+                return json_decode($this->_cacher->get($key));
             } else {
                 $res = $this->_db->queryBinded($query, $bindedParams);
-                $this->_cacher->set($key, $res, $this->_cacheSeconds);
+                $this->_cacher->set($key, json_encode($res), $this->_cacheSeconds);
                 return $res;
             }
         }
