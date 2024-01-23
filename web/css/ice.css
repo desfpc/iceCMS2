@@ -81,3 +81,12 @@ h1 {
 .invalid-feedback.visible {
     display: block;
 }
+
+.atable-order {
+    float: right;
+    width: 20px;
+    height: 20px;
+    display: block;
+    position: relative;
+    cursor: pointer;
+}

@@ -28,12 +28,74 @@ class AdminUser extends AbstractController implements ControllerInterface
     public function list(): void
     {
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+        $nullDto = new UserListAdminDto();
 
-        $this->requestParameters->getRequestValues(['page','']);
+        $out = [
+            'cols' => [
+                [
+                    'id' => 'id',
+                    'name' => 'ID',
+                    'ordered' => true,
+                ],
+                [
+                    'id' => 'email',
+                    'name' => 'Email',
+                    'ordered' => true,
+                ],
+                [
+                    'id' => 'role',
+                    'name' => 'Role',
+                    'ordered' => true,
+                ],
+                [
+                    'id' => 'status',
+                    'name' => 'Status',
+                    'ordered' => true,
+                ],
+                [
+                    'id' => 'created_time',
+                    'name' => 'Created Time',
+                    'ordered' => true,
+                ],
+                [
+                    'id' => 'actions',
+                    'name' => 'Actions',
+                    'ordered' => false,
+                ],
+            ]
+        ];
 
-        $userList = new UserList($this->settings);
-        $users = $userList->getDtoFields(new UserListAdminDto());
+        $this->requestParameters->getRequestValues(['page','filters','limit','order']);
 
-        $this->renderJson([$users], true);
+        if (!empty($this->requestParameters->values->page)) {
+            $page = (int)$this->requestParameters->values->page;
+        } else {
+            $page = 1;
+        }
+
+        $conditions = [];
+        $orderQuery = [
+            'col' => 'id',
+            'order' => 'DESC',
+        ];
+
+        if (
+            !empty($this->requestParameters->values->order)
+            && ($orderArr = json_decode($this->requestParameters->values->order, true))
+            && !empty($orderArr['col'])
+            && !empty($orderArr['order'])
+        ) {
+            $orderQuery = $orderArr;
+        }
+
+        $order = [$orderQuery['col'] => $orderQuery['order']];
+
+        $userList = new UserList($this->settings, $conditions, $order, $page, 2);
+        $users = $userList->getDtoFields($nullDto);
+
+        $out['rows'] = $users;
+        $out['order'] = $orderQuery;
+
+        $this->renderJson($out, true);
     }
 }

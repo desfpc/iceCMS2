@@ -36,6 +36,6 @@ class UserListAdminDto extends AbstractDto implements DtoInterface
      */
     protected function _setAdditionalData(array $data): void
     {
-        $this->_data['created_time'] = date('Y-m-d H:i:s', $data['created_time']);
+        // do nothing
     }
 }
