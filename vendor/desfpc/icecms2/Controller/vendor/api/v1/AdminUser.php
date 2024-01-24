@@ -81,7 +81,7 @@ class AdminUser extends AbstractController implements ControllerInterface
 
         if (
             !empty($this->requestParameters->values->order)
-            && ($orderArr = json_decode($this->requestParameters->values->order, true))
+            && ($orderArr = $this->_paramStringToJson($this->requestParameters->values->order))
             && !empty($orderArr['col'])
             && !empty($orderArr['order'])
         ) {
@@ -97,5 +97,20 @@ class AdminUser extends AbstractController implements ControllerInterface
         $out['order'] = $orderQuery;
 
         $this->renderJson($out, true);
+    }
+
+    /**
+     * Decode GET param string to JSON
+     *
+     * @param string $param
+     * @return false|array
+     */
+    private function _paramStringToJson(string $param): false|array
+    {
+        $out = [];
+        if (!empty($param)) {
+            $out = json_decode(htmlspecialchars_decode(urldecode($param)), true);
+        }
+        return $out;
     }
 }
