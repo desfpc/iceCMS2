@@ -13,12 +13,15 @@ namespace app\Controllers\vendor\api\v1;
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\DTO\UserListAdminDto;
+use iceCMS2\Helpers\Strings;
 use iceCMS2\Models\User;
 use iceCMS2\Models\UserList;
 use iceCMS2\Tools\Exception;
 
 class AdminUser extends AbstractController implements ControllerInterface
 {
+    private const ROWS_COUNT = 2;
+
     /**
      * Admin User list
      *
@@ -30,6 +33,7 @@ class AdminUser extends AbstractController implements ControllerInterface
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
         $nullDto = new UserListAdminDto();
 
+        // Columns
         $out = [
             'cols' => [
                 [
@@ -73,7 +77,57 @@ class AdminUser extends AbstractController implements ControllerInterface
             $page = 1;
         }
 
-        $conditions = [];
+        // Filters
+        $conditionsArr = [];
+        $filters = [
+            'search' => [
+                'id' => 'search',
+                'name' => 'Search',
+                'type' => 'string',
+                'value' => '',
+            ],
+            'role' => [
+                'id' => 'role',
+                'name' => 'Role',
+                'type' => 'select',
+                'value' => '',
+                'array' => [
+                    'all' => ['name' => 'All', 'value' => ''],
+                    'user' => ['name' => 'User', 'value' => 'user'],
+                    'moderator' => ['name' => 'Moderator', 'value' => 'moderator'],
+                    'admin' => ['name' => 'Admin', 'value' => 'admin'],
+                ],
+            ],
+            'status' => [
+                'id' => 'status',
+                'name' => 'Status',
+                'type' => 'select',
+                'value' => '',
+                'array' => [
+                    'all' => ['name' => 'All', 'value' => ''],
+                    'created' => ['name' => 'Created', 'value' => 'created'],
+                    'active' => ['name' => 'Active', 'value' => 'active'],
+                    'deleted' => ['name' => 'Deleted', 'value' => 'deleted'],
+                ],
+            ],
+        ];
+
+        if (
+            !empty($this->requestParameters->values->filters)
+            && ($filtersArr = Strings::paramStringToJson($this->requestParameters->values->filters))
+        )
+        {
+            foreach ($filtersArr as $filterKey => $filterValue) {
+                if (isset($filters[$filterKey]) && !empty($filterValue['value'])) {
+
+                    $filters[$filterKey]['value'] = $filterValue['value'];
+
+                    $this->_changeConditionsArr($conditionsArr, $filterKey, $filterValue['value']);
+                }
+            }
+        }
+
+        // Order
         $orderQuery = [
             'col' => 'id',
             'order' => 'DESC',
@@ -81,7 +135,7 @@ class AdminUser extends AbstractController implements ControllerInterface
 
         if (
             !empty($this->requestParameters->values->order)
-            && ($orderArr = $this->_paramStringToJson($this->requestParameters->values->order))
+            && ($orderArr = Strings::paramStringToJson($this->requestParameters->values->order))
             && !empty($orderArr['col'])
             && !empty($orderArr['order'])
         ) {
@@ -90,27 +144,62 @@ class AdminUser extends AbstractController implements ControllerInterface
 
         $order = [$orderQuery['col'] => $orderQuery['order']];
 
-        $userList = new UserList($this->settings, $conditions, $order, $page, 2);
+        $userList = new UserList(
+            $this->settings, $this->_makeConditions($conditionsArr), $order, $page, (self::ROWS_COUNT + 1)
+        );
         $users = $userList->getDtoFields($nullDto);
+
+        if (count($users) === (self::ROWS_COUNT + 1)) {
+            $out['nextPage'] = $page + 1;
+            array_pop($users);
+        } else {
+            $out['nextPage'] = null;
+        }
 
         $out['rows'] = $users;
         $out['order'] = $orderQuery;
+        $out['filters'] = $filters;
 
         $this->renderJson($out, true);
     }
 
     /**
-     * Decode GET param string to JSON
-     *
-     * @param string $param
-     * @return false|array
+     * @param array $conditionsArr
+     * @param string $filterKey
+     * @param string $filterValue
+     * @return void
      */
-    private function _paramStringToJson(string $param): false|array
+    private function _changeConditionsArr(array &$conditionsArr, string $filterKey, string $filterValue): void
     {
-        $out = [];
-        if (!empty($param)) {
-            $out = json_decode(htmlspecialchars_decode(urldecode($param)), true);
+        if ($filterValue !== '') {
+            $conditionsArr[$filterKey] = $filterValue;
         }
-        return $out;
+    }
+
+    /**
+     * @param array $conditionsArr
+     * @return array
+     */
+    private function _makeConditions(array $conditionsArr): array
+    {
+        $conditions = [];
+
+        if (!empty($conditionsArr['search'])) {
+            $conditions['email'] = [
+                'logic' => 'AND',
+                'sign' => 'LIKE',
+                'value' => '%' . mb_strtolower($conditionsArr['search'], 'UTF-8') . '%',
+            ];
+        }
+
+        if (!empty($conditionsArr['role'])) {
+            $conditions['role'] = $conditionsArr['role'];
+        }
+
+        if (!empty($conditionsArr['status'])) {
+            $conditions['status'] = $conditionsArr['status'];
+        }
+
+        return $conditions;
     }
 }

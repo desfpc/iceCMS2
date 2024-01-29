@@ -172,4 +172,23 @@ class Strings
     {
         return $settings->site->primaryDomain . '_' . $key;
     }
+
+    /**
+     * Decode GET param string to JSON
+     *
+     * @param string $param
+     * @return false|array
+     */
+    public static function paramStringToJson(string $param): false|array
+    {
+        try {
+            $out = [];
+            if (!empty($param)) {
+                $out = json_decode(htmlspecialchars_decode(urldecode($param)), true);
+            }
+            return $out;
+        } catch (\Throwable $th) {
+            return false;
+        }
+    }
 }
