@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace iceCMS2\Logger;
 
-use iceCMS2\Models\AbstractLogEntity;
+use iceCMS2\Models\AbstractEntity;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
 
@@ -22,15 +22,20 @@ class DBLogger implements LoggerInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameters)
      */
-    public static function log(Settings $settings, string $type, mixed $data): bool
+    public static function log(string $type, mixed $data, Settings $settings): bool
     {
         if ($data instanceof AbstractLogEntity) {
             return $data->save();
         } elseif (is_array($data)) {
-            $fullClassName = 'iceCMS2\Models\\' . $type . 'Log';
-            /** @var AbstractLogEntity $log */
+            $fullClassName = 'iceCMS2\Models\Log';
+            /** @var AbstractEntity $log */
             $log = new $fullClassName($settings);
-            $log->set($data);
+            $log->set([
+                'alias' => $type,
+                'value' => $data,
+                'created_time' => time(),
+                'updated_time' => time(),
+            ]);
             return $log->save();
         }
 

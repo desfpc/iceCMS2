@@ -1,4 +1,5 @@
 <?php
+
 $routers = [
     //Error pages
     '500' => ['controller' => 'ServerErrors', 'controllerMethod' => 'serverError', 'useVendor' => true],
@@ -19,8 +20,16 @@ $routers = [
     'admin/materials' => ['controller' => 'AdminMaterials', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/files' => ['controller' => 'AdminFiles', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/users' => ['controller' => 'AdminUsers', 'controllerMethod' => 'main', 'useVendor' => true],
-    'admin/caches/clear-php' => ['controller' => 'AdminCaches', 'controllerMethod' => 'clearPHPCaches', 'useVendor' => true],
-    'admin/caches/clear' => ['controller' => 'AdminCaches', 'controllerMethod' => 'clearAllCaches', 'useVendor' => true],
+    'admin/caches/clear-php' => [
+        'controller' => 'AdminCaches',
+        'controllerMethod' => 'clearPHPCaches',
+        'useVendor' => true
+    ],
+    'admin/caches/clear' => [
+        'controller' => 'AdminCaches',
+        'controllerMethod' => 'clearAllCaches',
+        'useVendor' => true
+    ],
     'admin/caches' => ['controller' => 'AdminCaches', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/settings' => ['controller' => 'AdminSettings', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/logs' => ['controller' => 'AdminLogs', 'controllerMethod' => 'main', 'useVendor' => true],
@@ -61,6 +70,12 @@ $routers = [
         'method' => 'POST',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'User',
         'controllerMethod' => 'changePassword',
+        'useVendor' => true
+    ],
+    'api/v1/get-logs/$nameFile' => [ //Get filename from logs folder
+        'method' => 'GET',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminLog',
+        'controllerMethod' => 'getLogByNameFile',
         'useVendor' => true
     ],
 ];

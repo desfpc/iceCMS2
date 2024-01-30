@@ -19,7 +19,7 @@ class FileLogger implements LoggerInterface
      * @inheritDoc
      * @throws Exception
      */
-    public static function log(Settings $settings, string $type, mixed $data): bool
+    public static function log(string $type, mixed $data, Settings $settings): bool
     {
         $logFile = $settings->path . '/logs/' . $type . match ($settings->logs->period) {
             'day' => '_' . date('Y-m-d') . '.log',
