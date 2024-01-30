@@ -20,16 +20,8 @@ $routers = [
     'admin/materials' => ['controller' => 'AdminMaterials', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/files' => ['controller' => 'AdminFiles', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/users' => ['controller' => 'AdminUsers', 'controllerMethod' => 'main', 'useVendor' => true],
-    'admin/caches/clear-php' => [
-        'controller' => 'AdminCaches',
-        'controllerMethod' => 'clearPHPCaches',
-        'useVendor' => true
-    ],
-    'admin/caches/clear' => [
-        'controller' => 'AdminCaches',
-        'controllerMethod' => 'clearAllCaches',
-        'useVendor' => true
-    ],
+    'admin/caches/clear-php' => ['controller' => 'AdminCaches', 'controllerMethod' => 'clearPHPCaches', 'useVendor' => true],
+    'admin/caches/clear' => ['controller' => 'AdminCaches', 'controllerMethod' => 'clearAllCaches', 'useVendor' => true],
     'admin/caches' => ['controller' => 'AdminCaches', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/settings' => ['controller' => 'AdminSettings', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/logs' => ['controller' => 'AdminLogs', 'controllerMethod' => 'main', 'useVendor' => true],
