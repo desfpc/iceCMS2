@@ -19,6 +19,7 @@ $routers = [
     //Admin pages
     'admin/materials' => ['controller' => 'AdminMaterials', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/files' => ['controller' => 'AdminFiles', 'controllerMethod' => 'main', 'useVendor' => true],
+    'admin/user/$id/edit' => ['controller' => 'AdminUser', 'controllerMethod' => 'edit', 'useVendor' => true],
     'admin/users' => ['controller' => 'AdminUsers', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/caches/clear-php' => ['controller' => 'AdminCaches', 'controllerMethod' => 'clearPHPCaches', 'useVendor' => true],
     'admin/caches/clear' => ['controller' => 'AdminCaches', 'controllerMethod' => 'clearAllCaches', 'useVendor' => true],

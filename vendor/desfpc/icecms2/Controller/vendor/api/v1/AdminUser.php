@@ -40,6 +40,9 @@ class AdminUser extends AbstractController implements ControllerInterface
                     'id' => 'id',
                     'name' => 'ID',
                     'ordered' => true,
+                    'action' => 'link',
+                    'actionUrl' => '/admin/user/{id}/edit/',
+                    'icon' => 'arrow-return-right',
                 ],
                 [
                     'id' => 'email',
@@ -65,6 +68,9 @@ class AdminUser extends AbstractController implements ControllerInterface
                     'id' => 'actions',
                     'name' => 'Actions',
                     'ordered' => false,
+                    'buttons' => [
+
+                    ],
                 ],
             ]
         ];
