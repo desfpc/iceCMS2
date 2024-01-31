@@ -41,7 +41,7 @@ function echoAlerts(array $alerts, string $alert): void {
             default:
                 $class = 'primary';
                 $ariaLabel = 'Notice';
-                $img = 'info-fill';
+                $img = 'info-circle-fill';
                 break;
         }
 

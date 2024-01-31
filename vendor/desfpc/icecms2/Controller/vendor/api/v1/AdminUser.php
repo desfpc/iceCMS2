@@ -69,7 +69,30 @@ class AdminUser extends AbstractController implements ControllerInterface
                     'name' => 'Actions',
                     'ordered' => false,
                     'buttons' => [
-
+                        [
+                            'name' => '',
+                            'icon' => 'eye',
+                            'action' => 'link',
+                            'actionUrl' => '/user/{id}',
+                            'class' => 'btn btn-primary btn-sm me-1',
+                            'description' => 'View user profile',
+                        ],
+                        [
+                            'name' => '',
+                            'icon' => 'pencil',
+                            'action' => 'link',
+                            'actionUrl' => '/admin/user/{id}/edit/',
+                            'class' => 'btn btn-warning btn-sm me-1',
+                            'description' => 'Edit user',
+                        ],
+                        [
+                            'name' => '',
+                            'icon' => 'trash',
+                            'action' => 'ajax',
+                            'actionUrl' => '/api/v1/admin/user/{id}/delete/',
+                            'class' => 'btn btn-danger btn-sm',
+                            'description' => 'Delete user',
+                        ],
                     ],
                 ],
             ]

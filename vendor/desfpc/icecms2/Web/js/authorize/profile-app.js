@@ -1,5 +1,5 @@
 const { createApp } = Vue
-import App from '/js/vendor/admin/user/user.js'
+import App from '/js/vendor/authorize/profile.js'
 import Validation from '/js/vuebootstrap/validation.js'
 import Validate from '/js/vuebootstrap/validate.js'
 import Tabs from '/js/vuebootstrap/tabs.js'

@@ -19,7 +19,7 @@ $routers = [
     //Admin pages
     'admin/materials' => ['controller' => 'AdminMaterials', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/files' => ['controller' => 'AdminFiles', 'controllerMethod' => 'main', 'useVendor' => true],
-    'admin/user/$id/edit' => ['controller' => 'AdminUser', 'controllerMethod' => 'edit', 'useVendor' => true],
+    'admin/user/$id/edit' => ['controller' => 'AdminUsers', 'controllerMethod' => 'edit', 'useVendor' => true],
     'admin/users' => ['controller' => 'AdminUsers', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/caches/clear-php' => ['controller' => 'AdminCaches', 'controllerMethod' => 'clearPHPCaches', 'useVendor' => true],
     'admin/caches/clear' => ['controller' => 'AdminCaches', 'controllerMethod' => 'clearAllCaches', 'useVendor' => true],
@@ -35,6 +35,13 @@ $routers = [
         'method' => 'GET',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
         'controllerMethod' => 'list',
+        'useVendor' => true
+    ],
+
+    '/api/v1/admin/user/{id}/delete/' => [
+        'method' => 'POST',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
+        'controllerMethod' => 'delete',
         'useVendor' => true
     ],
 
