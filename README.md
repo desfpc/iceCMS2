@@ -42,8 +42,8 @@ iceCMS2\DB\DBInterface
 - Run in ./test folder PHPUnit tests
 
 ## Full Wiki?
-- English Wiki - comming soon
-- Русская Wiki - тоже будет
+- [English Wiki](https://github.com/desfpc/iceCMS2/wiki) - in work
+- [Русская Wiki](https://github.com/desfpc/iceCMS2/wiki/Главная) - в работе
 
 # Support the project:
 1. **Binance**  
