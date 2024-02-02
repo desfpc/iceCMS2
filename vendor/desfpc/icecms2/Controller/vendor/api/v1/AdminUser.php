@@ -15,12 +15,49 @@ use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\DTO\UserListAdminDto;
 use iceCMS2\Helpers\Strings;
 use iceCMS2\Models\User;
+use iceCMS2\Models\User as UserModel;
 use iceCMS2\Models\UserList;
 use iceCMS2\Tools\Exception;
 
 class AdminUser extends AbstractController implements ControllerInterface
 {
     private const ROWS_COUNT = 2;
+
+    /**
+     * Delete User by ID
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function delete(): void
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+
+        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
+            $this->renderJson(['message' => 'No User ID passed'], false);
+            return;
+        }
+
+        $userId = (int)$this->routing->pathInfo['query_vars']['id'];
+
+        try {
+            $user = new UserModel($this->settings);
+        } catch (Exception $e) {
+            $this->renderJson(['message' => $e->getMessage()], false);
+            return;
+        }
+
+        if (!$user->load((int)$userId)) {
+            $this->renderJson(['message' => 'Wrong User ID'], false);
+            return;
+        }
+
+        if ($user->del()) {
+            $this->renderJson(['message' => 'User deleted'], true);
+        } else {
+            $this->renderJson(['message' => 'User not deleted'], false);
+        }
+    }
 
     /**
      * Admin User list
@@ -81,7 +118,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                             'name' => '',
                             'icon' => 'pencil',
                             'action' => 'link',
-                            'actionUrl' => '/admin/user/{id}/edit/',
+                            'actionUrl' => '/admin/user/{id}/edit',
                             'class' => 'btn btn-warning btn-sm me-1',
                             'description' => 'Edit user',
                         ],
@@ -89,7 +126,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                             'name' => '',
                             'icon' => 'trash',
                             'action' => 'ajax',
-                            'actionUrl' => '/api/v1/admin/user/{id}/delete/',
+                            'actionUrl' => '/api/v1/admin/user/{id}/delete',
                             'class' => 'btn btn-danger btn-sm',
                             'description' => 'Delete user',
                         ],
@@ -173,8 +210,10 @@ class AdminUser extends AbstractController implements ControllerInterface
 
         $order = [$orderQuery['col'] => $orderQuery['order']];
 
+        $offset = ($page - 1) * self::ROWS_COUNT;
+
         $userList = new UserList(
-            $this->settings, $this->_makeConditions($conditionsArr), $order, $page, (self::ROWS_COUNT + 1)
+            $this->settings, $this->_makeConditions($conditionsArr), $order, $offset, (self::ROWS_COUNT + 1), 0, true
         );
         $users = $userList->getDtoFields($nullDto);
 

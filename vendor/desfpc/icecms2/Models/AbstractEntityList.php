@@ -56,6 +56,9 @@ abstract class AbstractEntityList
     /** @var array|null columns for ID */
     protected ?array $_idColumns = null;
 
+    /** @var bool Use offset instead of page */
+    protected bool $_useOffset = false;
+
     /**
      * Entity list constructor
      *
@@ -65,6 +68,7 @@ abstract class AbstractEntityList
      * @param int $page
      * @param ?int $size
      * @param int $cacheSeconds
+     * @param bool $useOffset
      * @throws Exception
      */
     public function __construct(
@@ -73,7 +77,8 @@ abstract class AbstractEntityList
         array $order = [],
         int $page = 1,
         ?int $size = 10,
-        int $cacheSeconds = 0
+        int $cacheSeconds = 0,
+        bool $useOffset = false,
     ) {
         $this->_settings = $settings;
         $this->_db = DBFactory::get($this->_settings);
@@ -82,6 +87,7 @@ abstract class AbstractEntityList
         $this->_page = $page;
         $this->_size = $size;
         $this->_cacheSeconds = $cacheSeconds;
+        $this->_useOffset = $useOffset;
 
         $this->_cacher = CachingFactory::instance($this->_settings);
     }
@@ -317,7 +323,13 @@ abstract class AbstractEntityList
         if (is_null($this->_size)) {
             return '';
         }
-        $offset = ($this->_page - 1) * $this->_size;
+
+        if ($this->_useOffset) {
+            $offset = $this->_page;
+        } else {
+            $offset = ($this->_page - 1) * $this->_size;
+        }
+
         return 'LIMIT ' . $offset . ', ' . $this->_size;
     }
 }

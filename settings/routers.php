@@ -38,7 +38,7 @@ $routers = [
         'useVendor' => true
     ],
 
-    '/api/v1/admin/user/{id}/delete/' => [
+    'api/v1/admin/user/$id/delete' => [
         'method' => 'POST',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
         'controllerMethod' => 'delete',
