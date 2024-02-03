@@ -68,6 +68,7 @@ class Settings
         'locales' => [],
         'logs' => [
             'period' => 1,
+            'periodClear' => 1,
             'type' => 1,
         ],
         'cache' => [

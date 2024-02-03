@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 /**
  * iceCMS2 v0.1a
@@ -9,7 +10,7 @@ declare(strict_types=1);
  */
 
 /** @var array $routers */
-require_once ('routers.php');
+require('routers.php');
 
 $settings = [
     'path' => str_replace('settings', '', dirname(__FILE__)),
@@ -51,12 +52,14 @@ $settings = [
         'jsScriptsVersion' => '1',
     ],
     'locales' => [
-        'en', 'ru',
+        'en',
+        'ru',
     ],
     'locale' => 'en',
     'logs' => [
         'period' => 'month',
-        'type' => 'db',
+        'periodClear' => 'month',
+        'type' => 'file',
     ],
     'cache' => [
         'useRedis' => true,
