@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 /**
  * iceCMS2 v0.1a
@@ -48,10 +49,12 @@ $settings = [
         'jsScriptsVersion' => '1',
     ],
     'locales' => [
-        'en', 'ru',
+        'en',
+        'ru',
     ],
     'logs' => [
         'period' => 'month',
+        'period_clear' => 'day',
         'type' => 'db',
     ],
     'cache' => [

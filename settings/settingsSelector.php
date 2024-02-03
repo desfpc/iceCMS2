@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 /**
  * iceCMS2 v0.1a
@@ -10,14 +11,14 @@ declare(strict_types=1);
  * Gitignore this file for CI/CD
  *
  * Put it on the server manually with the choice:
- * require_once('product.php');
- * //require_once('local.php');
+ * require('product.php');
+ * //require('local.php');
  *
  * In local machine your choice would be:
- * //require_once('product.php');
- * require_once('local.php');
+ * //require('product.php');
+ * require('local.php');
  */
 
-//require_once('product.php');
-require_once('local.php');
+//require('product.php');
+require('local.php');
 //require('default.php');

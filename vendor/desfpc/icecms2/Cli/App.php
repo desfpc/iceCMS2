@@ -11,6 +11,8 @@ declare(strict_types=1);
 namespace iceCMS2\Cli;
 
 use iceCMS2\Caching\CachingFactory;
+use iceCMS2\Commands\Logs\ClearAllLogs;
+use iceCMS2\Commands\Logs\ClearOnPeriodLogs;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
 
@@ -27,6 +29,7 @@ class App
      *
      * @param array $settings
      * @param array $argv
+     *
      * @throws Exception
      */
     public function __construct(array $settings, array $argv)
@@ -68,6 +71,10 @@ class App
                 echo "\n" . 'phpcache-clear - Clear PHP caches.';
                 echo "\n";
                 echo "\n" . 'make-symlinks - Make symlinks from vendor to project folders';
+                echo "\n";
+                echo "\n" . 'clear-all-logs - Delete all log files';
+                echo "\n";
+                echo "\n" . 'clear-period-logs - Delete all log files for the period - day||month||year';
                 echo "\n\n";
                 break;
             case 'migration-create':
@@ -152,9 +159,17 @@ class App
                             . $this->_settings->path . $value . ')' . "\e[39m";
                     }
                 }
-
                 echo "\n";
-
+                break;
+            case 'clear-all-logs':
+                echo "\n" . 'IceCMS2 Delete all log files';
+                ClearAllLogs::main();
+                echo "\n\e[32m" . 'Cleared logs!' . "\e[39m" . PHP_EOL;
+                break;
+            case 'clear-period-logs':
+                echo "\n" . 'IceCMS2 Delete all log files for the period - day||month||year';
+               ClearOnPeriodLogs::main($this->_argv[2] ?? null);
+                echo "\n\e[32m" . 'Cleared logs!' . "\e[39m" . PHP_EOL;
                 break;
             default:
                 echo "\n\e[31m" . 'Wrong command "' . $this->_argv[1] . '". Type "php cli.php help" for command help.' . "\e[39m";

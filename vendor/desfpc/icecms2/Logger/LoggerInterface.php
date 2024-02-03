@@ -22,5 +22,5 @@ interface LoggerInterface
      * @param mixed $data
      * @return bool
      */
-    public static function log(Settings $settings, string $type, mixed $data): bool;
+    public static function log(string $type, mixed $data, Settings $settings): bool;
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 /**
  * iceCMS2 v0.1a
@@ -13,12 +14,9 @@ namespace vendor\Logger;
 use DateTime;
 use iceCMS2\Caching\CachingFactory;
 use iceCMS2\Caching\Redis;
-use iceCMS2\Logger\DBLogger;
-use iceCMS2\Logger\FileLogger;
 use iceCMS2\Logger\LoggerFactory;
 use iceCMS2\Messages\FakeEmailTransport;
 use iceCMS2\Messages\MessageFactory;
-use iceCMS2\Models\MessageLog;
 use iceCMS2\Tests\Ice2CMSTestCase;
 use iceCMS2\Tools\Exception;
 
@@ -27,7 +25,7 @@ class LoggerTest extends Ice2CMSTestCase
     /**
      * DB Tables used for testing
      */
-    protected static array $_dbTables = ['message_log'];
+    protected static array $_dbTables = ['logs'];
 
     /**
      * Test Logger class
@@ -40,24 +38,24 @@ class LoggerTest extends Ice2CMSTestCase
         /** @var FakeEmailTransport $message */
         $message = MessageFactory::instance(self::$_testSettings, 'fake');
         $message->setFrom('test@email.com', 'Test Sender')
-            ->setTo('to@test.com','Test Recipient')
+            ->setTo('to@test.com', 'Test Recipient')
             ->setTheme('Test Subject')
             ->setText('Test Body')
             ->send();
 
         //File log test
-        self::$_settings->logs->type = 'file';
+        self::$_testSettings->logs->type = 'file';
 
-        /** @var FileLogger $logger */
+        /** @var LoggerFactory $logger */
         $logger = LoggerFactory::instance(self::$_testSettings);
         $this->assertSame('iceCMS2\Logger\FileLogger', get_class($logger));
 
         $dateTime = new DateTime();
-        $testLogPath = self::$_testSettings->path . '/logs/test_' . $dateTime->format('Y-m') . '.log';
+        $testLogPath = self::$_testSettings->path . 'logs/test_' . $dateTime->format('Y-m') . '.log';
         if (file_exists($testLogPath)) {
             unlink($testLogPath);
         }
-        $this->assertTrue($logger::log(self::$_settings, 'test', $message));
+        $this->assertTrue(LoggerFactory::log('test', $message, self::$_settings));
         $this->assertTrue(file_exists($testLogPath));
 
         $logContent = file_get_contents($testLogPath);
@@ -67,31 +65,27 @@ class LoggerTest extends Ice2CMSTestCase
         $this->assertStringContainsString('to@test.com', $logContent);
 
         //DB log test
-        self::$_settings->logs->type = 'db';
+        self::$_testSettings->logs->type = 'db';
 
-        /** @var DBLogger $logger */
+        /** @var LoggerFactory $logger */
         $logger = LoggerFactory::instance(self::$_testSettings);
         $this->assertSame('iceCMS2\Logger\DBLogger', get_class($logger));
-
-        $messageLogObj = new MessageLog(self::$_testSettings);
 
         $messageArray = json_decode(json_encode($message->__serialize()), true);
         $messageArray['from_name'] = $messageArray['fromName'];
         unset($messageArray['fromName']);
         $messageArray['to_name'] = $messageArray['toName'];
         unset($messageArray['toName']);
-        $messageLogObj->set($messageArray);
+        $this->assertTrue(LoggerFactory::log('Message', $messageArray, self::$_testSettings));
+        $this->assertTrue(LoggerFactory::log('Message', $messageArray, self::$_testSettings));
 
-        $this->assertTrue($logger::log(self::$_settings, 'Message', $messageLogObj));
-        $this->assertTrue($logger::log(self::$_settings, 'Message', $messageArray));
-
-        $query = 'SELECT * FROM message_log_' . date('Ym') . ' ORDER BY id ASC';
+        $query = 'SELECT * FROM logs ORDER BY id ASC';
         $res = self::$_db->query($query);
 
         $this->assertCount(2, $res);
 
         //clear log table
-        $this->assertTrue(self::$_db->query('DROP TABLE message_log_' . date('Ym') . ';'));
+        $this->assertTrue(self::$_db->query('DROP TABLE logs;'));
         /** @var Redis $cacher */
         $cacher = CachingFactory::instance(self::$_testSettings);
         $keys = $cacher->findKeys(self::$_testSettings->db->name . '*');

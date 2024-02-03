@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 /**
  * iceCMS2 v0.1a
@@ -24,7 +25,10 @@ class SettingsTest extends TestCase
     {
         // empty array
         $settings = new Settings([]);
-        $this->assertEquals('Failed to load settings: Settings file error - there is no required field: path', $settings->errors->text);
+        $this->assertEquals(
+            'Failed to load settings: Settings file error - there is no required field: path',
+            $settings->errors->text
+        );
 
         // valid settings array
         $validSettings = [
@@ -67,10 +71,12 @@ class SettingsTest extends TestCase
                 'jsScriptsVersion' => '1',
             ],
             'locales' => [
-                'en', 'ru',
+                'en',
+                'ru',
             ],
             'logs' => [
                 'period' => 'month',
+                'period_clear' => 'day',
                 'type' => 'db',
             ],
             'cache' => [
@@ -95,13 +101,19 @@ class SettingsTest extends TestCase
         unset($wrongSettings['site']);
         $settings = new Settings($wrongSettings);
         $this->assertEquals(1, $settings->errors->flag);
-        $this->assertEquals('Failed to load settings: Settings file error - there is no required field: site', $settings->errors->text);
+        $this->assertEquals(
+            'Failed to load settings: Settings file error - there is no required field: site',
+            $settings->errors->text
+        );
 
         // wrong settings #2
         $wrongSettings = $validSettings;
         unset($wrongSettings['site']['redirectToPrimaryDomain']);
         $settings = new Settings($wrongSettings);
         $this->assertEquals(1, $settings->errors->flag);
-        $this->assertEquals('Failed to load settings: Settings file error - there is no required field: site-redirectToPrimaryDomain', $settings->errors->text);
+        $this->assertEquals(
+            'Failed to load settings: Settings file error - there is no required field: site-redirectToPrimaryDomain',
+            $settings->errors->text
+        );
     }
 }
