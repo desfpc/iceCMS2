@@ -168,10 +168,11 @@ abstract class AbstractEntity
      */
     protected function _setByKeyAndValue(
         string $key,
-        string|int|float|bool|UnixTime|null $value = null,
+        string|int|float|bool|UnixTime|array|null $value = null,
         bool $checkKey = true
     ): void {
         if ($checkKey && !isset($this->_cols[$key])) {
+
             throw new Exception('Field "' . $key . '" missing in table "' . $this->_dbtable . '"');
         }
         if ((!isset($this->_values[$key]) || $this->_values[$key] !== $value) && $this->_validate($key, $value)) {
