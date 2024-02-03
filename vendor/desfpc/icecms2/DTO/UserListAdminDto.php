@@ -23,6 +23,7 @@ class UserListAdminDto extends AbstractDto implements DtoInterface
     public const PARAMS = [
         'id',
         'email',
+        'telegram',
         'role',
         'status',
         'created_time',

@@ -35,8 +35,10 @@ use iceCMS2\Controller\AbstractController;
                     <td>Version</td>
                     <th>0.1</th>
                 </tr><tr>
-                    <td>Developer</td>
-                    <th><a href="https://github.com/desfpc" target="_blank">Sergey Peshalov</a></th>
+                    <td>Developers</td>
+                    <th><a href="https://github.com/desfpc" target="_blank">Sergei Peshalov</a>
+                        <br><a href="https://github.com/feniksdv" target="_blank">Anton Karavaev</a>
+                    </th>
                 </tr><tr>
                     <td>Programming language</td>
                     <th>PHP 8.2</th>

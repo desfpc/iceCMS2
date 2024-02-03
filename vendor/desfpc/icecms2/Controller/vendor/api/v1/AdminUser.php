@@ -21,7 +21,7 @@ use iceCMS2\Tools\Exception;
 
 class AdminUser extends AbstractController implements ControllerInterface
 {
-    private const ROWS_COUNT = 2;
+    private const ROWS_COUNT = 20;
 
     /**
      * Delete User by ID
@@ -87,14 +87,38 @@ class AdminUser extends AbstractController implements ControllerInterface
                     'ordered' => true,
                 ],
                 [
+                    'id' => 'telegram',
+                    'name' => 'Telegram',
+                    'ordered' => true,
+                    'editable' => true,
+                    'editUrl' => '/api/v1/admin/user/{id}/edit',
+                    'inputType' => 'input',
+                ],
+                [
                     'id' => 'role',
                     'name' => 'Role',
                     'ordered' => true,
+                    'editable' => true,
+                    'editUrl' => '/api/v1/admin/user/{id}/edit',
+                    'inputType' => 'select',
+                    'selectArray' => [
+                        'user' => 'User',
+                        'moderator' => 'Moderator',
+                        'admin' => 'Admin',
+                    ],
                 ],
                 [
                     'id' => 'status',
                     'name' => 'Status',
                     'ordered' => true,
+                    'editable' => true,
+                    'editUrl' => '/api/v1/admin/user/{id}/edit',
+                    'inputType' => 'select',
+                    'selectArray' => [
+                        'created' => 'Created',
+                        'active' => 'Active',
+                        'deleted' => 'Deleted',
+                    ],
                 ],
                 [
                     'id' => 'created_time',
@@ -129,6 +153,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                             'actionUrl' => '/api/v1/admin/user/{id}/delete',
                             'class' => 'btn btn-danger btn-sm',
                             'description' => 'Delete user',
+                            'confirm' => 'Are you sure?',
                         ],
                     ],
                 ],
