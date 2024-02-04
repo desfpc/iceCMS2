@@ -42,7 +42,7 @@ final class ClearLogs
     public static function clearAllLogs(): array|bool|int
     {
         [$logger,$settings] = self::getInstans();
-        return $logger->clearAllLogs($settings);
+        return $logger::clearAllLogs($settings);
     }
 
     /**
@@ -54,7 +54,7 @@ final class ClearLogs
     public static function clearOnPeriodLogs(): array|bool|int
     {
         [$logger,$settings] = self::getInstans();
-        return $logger->clearOnPeriodLogs($settings);
+        return $logger::clearOnPeriodLogs($settings);
     }
 
     private static function getInstans()

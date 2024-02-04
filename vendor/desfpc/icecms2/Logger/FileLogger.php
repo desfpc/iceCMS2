@@ -45,7 +45,7 @@ class FileLogger implements LoggerInterface
      *
      * @return bool
      */
-    public function clearOnPeriodLogs(Settings $settings): bool
+    public static function clearOnPeriodLogs(Settings $settings): bool
     {
         $period = isset($settings->logs->periodClear) ? $settings->logs->periodClear : 'month';
 
@@ -75,7 +75,7 @@ class FileLogger implements LoggerInterface
      *
      * @return bool
      */
-    public function clearAllLogs(Settings $settings): bool
+    public static function clearAllLogs(Settings $settings): bool
     {
         $files = glob(self::PATH . '/*');
         $i = 0;
