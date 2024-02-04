@@ -287,6 +287,7 @@ class User extends AbstractController implements ControllerInterface
 
         if (!$user->load((int)$userId)) {
             $this->renderJson(['message' => 'Wrong User ID'], false);
+            return;
         }
 
         $out = $user->get();

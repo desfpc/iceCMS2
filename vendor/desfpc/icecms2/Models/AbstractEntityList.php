@@ -5,14 +5,16 @@ declare(strict_types=1);
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * Abstract entityes list class
+ * Abstract entity's list class
  */
 
 namespace iceCMS2\Models;
 
+use iceCMS2\Caching\CachingFactory;
 use iceCMS2\Caching\CachingInterface;
 use iceCMS2\DB\DBFactory;
 use iceCMS2\DB\DBInterface;
+use iceCMS2\DTO\DtoInterface;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
 
@@ -54,6 +56,9 @@ abstract class AbstractEntityList
     /** @var array|null columns for ID */
     protected ?array $_idColumns = null;
 
+    /** @var bool Use offset instead of page */
+    protected bool $_useOffset = false;
+
     /**
      * Entity list constructor
      *
@@ -63,6 +68,7 @@ abstract class AbstractEntityList
      * @param int $page
      * @param ?int $size
      * @param int $cacheSeconds
+     * @param bool $useOffset
      * @throws Exception
      */
     public function __construct(
@@ -71,7 +77,8 @@ abstract class AbstractEntityList
         array $order = [],
         int $page = 1,
         ?int $size = 10,
-        int $cacheSeconds = 0
+        int $cacheSeconds = 0,
+        bool $useOffset = false,
     ) {
         $this->_settings = $settings;
         $this->_db = DBFactory::get($this->_settings);
@@ -80,6 +87,9 @@ abstract class AbstractEntityList
         $this->_page = $page;
         $this->_size = $size;
         $this->_cacheSeconds = $cacheSeconds;
+        $this->_useOffset = $useOffset;
+
+        $this->_cacher = CachingFactory::instance($this->_settings);
     }
 
     /**
@@ -112,15 +122,28 @@ abstract class AbstractEntityList
             $key = $this->_getQueryCacheKey($query, $bindedParams);
 
             if ($this->_cacher->has($key)) {
-                return $this->_cacher->get($key);
+                return json_decode($this->_cacher->get($key));
             } else {
                 $res = $this->_db->queryBinded($query, $bindedParams);
-                $this->_cacher->set($key, $res, $this->_cacheSeconds);
+                $this->_cacher->set($key, json_encode($res), $this->_cacheSeconds);
                 return $res;
             }
         }
 
         return $this->_db->queryBinded($query, $bindedParams);
+    }
+
+    /**
+     * Getting array of entity as DTO object array
+     *
+     * @param DtoInterface $dto
+     * @return array|bool|int
+     * @throws Exception
+     */
+    public function getDtoFields(DtoInterface $dto): array|bool|int
+    {
+        $this->_selectedFields = $dto->getParams();
+        return $this->get();
     }
 
     /**
@@ -300,7 +323,13 @@ abstract class AbstractEntityList
         if (is_null($this->_size)) {
             return '';
         }
-        $offset = ($this->_page - 1) * $this->_size;
+
+        if ($this->_useOffset) {
+            $offset = $this->_page;
+        } else {
+            $offset = ($this->_page - 1) * $this->_size;
+        }
+
         return 'LIMIT ' . $offset . ', ' . $this->_size;
     }
 }

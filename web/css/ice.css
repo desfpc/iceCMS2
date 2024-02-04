@@ -81,3 +81,32 @@ h1 {
 .invalid-feedback.visible {
     display: block;
 }
+
+.atable-order {
+    float: right;
+    width: 14px;
+    height: 14px;
+    display: block;
+    position: relative;
+    cursor: pointer;
+    top: 5px;
+}
+.atable-order::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 14px 7px 0 7px;
+    border-color: #404040 transparent transparent transparent;
+}
+.atable-order.ASC::before {
+    border-width: 0 7px 14px 7px;
+    border-color: transparent transparent #fff transparent;
+}
+.atable-order.DESC::before {
+    border-width: 14px 7px 0 7px;
+    border-color: #fff transparent transparent transparent;
+}
