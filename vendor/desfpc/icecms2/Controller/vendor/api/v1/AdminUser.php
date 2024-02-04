@@ -15,13 +15,65 @@ use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\DTO\UserListAdminDto;
 use iceCMS2\Helpers\Strings;
 use iceCMS2\Models\User;
-use iceCMS2\Models\User as UserModel;
 use iceCMS2\Models\UserList;
 use iceCMS2\Tools\Exception;
 
 class AdminUser extends AbstractController implements ControllerInterface
 {
     private const ROWS_COUNT = 20;
+    private const EDITABLE_PROPS = [
+        'telegram',
+        'role',
+        'status',
+    ];
+
+    /**
+     * Edit User separate params
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function edit(): void
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+
+        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
+            $this->renderJson(['message' => 'No User ID passed'], false);
+            return;
+        }
+
+        $id = (int)$this->routing->pathInfo['query_vars']['id'];
+        $user = new User($this->settings);
+        if (!$user->load($id)) {
+            $this->renderJson(['message' => 'Wrong User ID'], false);
+            return;
+        }
+
+        $this->requestParameters->getRequestValues(['property', 'value']);
+
+        if (empty($this->requestParameters->values->property) || empty($this->requestParameters->values->value)) {
+            $this->renderJson(['message' => 'No property or value passed'], false);
+            return;
+        }
+
+        if (!in_array($this->requestParameters->values->property, self::EDITABLE_PROPS)) {
+            $this->renderJson(['message' => 'Property not editable'], false);
+            return;
+        }
+
+        $property = $this->requestParameters->values->property;
+        $value = $this->requestParameters->values->value;
+
+        try {
+            $user->$property = $value;
+            $user->save();
+        } catch (Exception $e) {
+            $this->renderJson(['message' => $e->getMessage()], false);
+            return;
+        }
+
+        $this->renderJson(['message' => 'User updated'], true);
+    }
 
     /**
      * Delete User by ID
