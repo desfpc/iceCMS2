@@ -23,4 +23,18 @@ interface LoggerInterface
      * @return bool
      */
     public static function log(string $type, mixed $data, Settings $settings): bool;
+
+    /**
+     * @param Settings $settings
+     *
+     * @return bool
+     */
+    public static function clearAllLogs(Settings $settings): array|bool|int;
+
+    /**
+     * @param Settings $settings
+     *
+     * @return bool
+     */
+    public static function clearOnPeriodLogs(Settings $settings): array|bool|int;
 }

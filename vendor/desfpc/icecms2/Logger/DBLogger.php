@@ -56,9 +56,9 @@ class DBLogger implements LoggerInterface
      * @return array|bool|int
      * @throws Exception
      */
-    public function clearOnPeriodLogs(Settings $settings): array|bool|int
+    public static function clearOnPeriodLogs(Settings $settings): array|bool|int
     {
-        $db = $this->getDDFactory($settings);
+        $db = self::getDDFactory($settings);
 
         $query = match ($settings->logs->periodClear) {
             'day' => [
@@ -84,9 +84,9 @@ class DBLogger implements LoggerInterface
      * @return array|bool|int
      * @throws Exception
      */
-    public function clearAllLogs(Settings $settings): array|bool|int
+    public static function clearAllLogs(Settings $settings): array|bool|int
     {
-        $db = $this->getDDFactory($settings);
+        $db = self::getDDFactory($settings);
         return $db->query('TRUNCATE TABLE logs');
     }
 
@@ -96,7 +96,7 @@ class DBLogger implements LoggerInterface
      * @return DBInterface|null
      * @throws Exception
      */
-    private function getDDFactory(Settings $settings): ?DBInterface
+    private static function getDDFactory(Settings $settings): ?DBInterface
     {
         $db = (new DBFactory($settings))->db;
         $db->connect();
