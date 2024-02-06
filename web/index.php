@@ -19,10 +19,10 @@ require_once '../settings/settingsSelector.php';
 
 use iceCMS2\Loader\Loader;
 
-$app = new Loader($settings);
-
 try {
+    $app = new Loader($settings);
     $app->loadController();
 } catch (Exception $e) {
-    $app->loadController('ServerErrors', 'serverError');
+    $app->setServerErrorsController();
+    $app->loadController();
 }

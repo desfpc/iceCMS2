@@ -28,7 +28,6 @@ class Admin extends AbstractController implements ControllerInterface
         //$this->_authorizationCheck(); //for authorization check without special role(s)
 
         $this->breadcrumbs = [
-            ['title' => 'Admin dashboard', 'url' => '/'],
             ['title' => 'Admin dashboard', 'url' => '/admin/']
         ];
 

@@ -17,6 +17,9 @@ use iceCMS2\Tools\Exception;
 
 class Loader
 {
+    public const SERVER_ERROR_CONTROLLER = 'ServerErrors';
+    public const SERVER_ERROR_METHOD = 'serverError';
+
     public Settings $settings;
     public Routing $routing;
     public ControllerInterface $controller;
@@ -33,6 +36,36 @@ class Loader
         $this->routing = new Routing();
         $this->routing->parseURL();
         $this->routing->getRoute($this->settings);
+    }
+
+    /**
+     * Set route to ServerErrors controller
+     *
+     * @return void
+     */
+    public function setServerErrorsController(): void
+    {
+        $route = $this->settings->routes[500];
+        $this->manuallySetRoute($route['controller'], $route['controllerMethod'], $route['useVendor']);
+    }
+
+    /**
+     * Set route array manually
+     *
+     * @param string $controller
+     * @param string $controllerMethod
+     * @param bool $useVendor
+     * @param array $parts
+     * @return void
+     */
+    public function manuallySetRoute(string $controller, string $controllerMethod, bool $useVendor, array $parts = []): void
+    {
+        $this->routing->route = [
+            'controller' => $controller,
+            'controllerMethod' => $controllerMethod,
+            'useVendor' => $useVendor,
+            'parts' => $parts,
+        ];
     }
 
     /**
