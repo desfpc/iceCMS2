@@ -60,7 +60,6 @@ class App
     private function existMethod(): void
     {
         $method = ($this->_argv[1] && mb_substr($this->_argv[1], -8) === '-command') ? 'help' : $this->_argv[1];
-        var_dump($method);
         $param = $this->_argv;
         if ('help' === $method) {
             $this->help();
@@ -72,6 +71,10 @@ class App
                 ). 'Command';
             $fileName = $className. '.php';
             $fullPath = $this->findFileByName($fileName);
+            if(is_null($fullPath)){
+                $this->help();
+                exit();
+            }
             $namespace = $this->getNamespaceFromFile($fullPath);
             $fullClassName = $namespace . '\\' . $className;
             if (class_exists($fullClassName)) {

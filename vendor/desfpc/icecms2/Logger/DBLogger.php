@@ -52,26 +52,35 @@ class DBLogger implements LoggerInterface
 
     /**
      * @param Settings $settings
+     * @param string|null $period
      *
      * @return array|bool|int
      * @throws Exception
      */
-    public static function clearOnPeriodLogs(Settings $settings): array|bool|int
+    public static function clearOnPeriodLogs(Settings $settings, ?string $period = null): array|bool|int
     {
         $db = self::getDDFactory($settings);
 
-        $query = match ($settings->logs->periodClear) {
-            'day' => [
-                'qyery' => 'DELETE FROM logs WHERE DATE(created_time) = ?',
-                'param' => [date('Y-m-d')]
+        $query = match (is_null($period) ? $settings->logs->periodClear : $period) {
+            'm' => [
+                'qyery' => 'DELETE FROM logs WHERE YEAR(created_time) = ? AND MONTH(created_time) = ?',
+                'param' => [date('Y'), date('m')]
             ],
             'month' => [
                 'qyery' => 'DELETE FROM logs WHERE YEAR(created_time) = ? AND MONTH(created_time) = ?',
                 'param' => [date('Y'), date('m')]
             ],
+            'y' => [
+                'qyery' => 'DELETE FROM logs WHERE YEAR(created_time) = ?',
+                'param' => [date('Y')]
+            ],
             'year' => [
                 'qyery' => 'DELETE FROM logs WHERE YEAR(created_time) = ?',
                 'param' => [date('Y')]
+            ],
+            default => [
+                'qyery' => 'DELETE FROM logs WHERE DATE(created_time) = ?',
+                'param' => [date('Y-m-d')]
             ],
         };
 

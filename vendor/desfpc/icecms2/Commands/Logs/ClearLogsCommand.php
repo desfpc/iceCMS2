@@ -19,7 +19,7 @@ use iceCMS2\Settings\Settings;
 final class ClearLogsCommand implements CommandInterface
 {
     /** @var string */
-    public string $info = 'clear-all-logs - Delete all log files \n clear-period-logs - Delete all log files for the period - day||month||year';
+    public string $info = 'clear-logs - Delete all log or period log files or DB. Example: clear-logs all OR clear-logs period d|m|y';
 
     /** @var string */
     private const PATH = __DIR__ . '/../../../../../settings/settingsSelector.php';
@@ -47,12 +47,14 @@ final class ClearLogsCommand implements CommandInterface
     }
 
     /**
+     * @param string|null $period
+     *
      * @return array|bool|int
      */
-    public static function clearOnPeriodLogs(): array|bool|int
+    public static function clearOnPeriodLogs(?string $period = null): array|bool|int
     {
         [$logger, $settings] = self::getInstans();
-        return $logger::clearOnPeriodLogs($settings);
+        return $logger::clearOnPeriodLogs($settings, $period);
     }
 
     /**
@@ -77,7 +79,7 @@ final class ClearLogsCommand implements CommandInterface
     public static function run(Settings $settings, ?array $param = null): string
     {
         $params = ['d', 'm', 'y',];
-        $result = "\n" . 'IceCMS2 Delete all or period log files. Example: clear-logs all OR clear-logs period d|m|y';
+        $result = "\n" . 'IceCMS2 Delete all or period log files or DB. Example: clear-logs all OR clear-logs period d|m|y';
 
         if ($param && $param[2] === 'all') {
             self::clearAllLogs();
@@ -85,15 +87,13 @@ final class ClearLogsCommand implements CommandInterface
         }
 
         if ($param && $param[2] === 'period' && isset($param[3]) && in_array($param[3], $params)) {
-            //TODO ПЕРедать period clearOnPeriodLogs(param) то что пользователь ввел
-            self::clearOnPeriodLogs();
+            self::clearOnPeriodLogs($param[3]);
             $result .= "\n\e[32m" . "Cleared in period $param[3] logs!" . "\e[39m" . PHP_EOL;
         } elseif ($param && $param[2] === 'period' && isset($param[3]) && !in_array($param[3], $params)) {
             $result = "\n" . 'Sorry, but IceCMS2 Delete all or period log files. Example: clear-logs all OR clear-logs period d|m|y';
         }
 
         if ($param && $param[2] === 'period' && !isset($param[3])) {
-            //TODO ПЕРедать period clearOnPeriodLogs(param) из settings
             self::clearOnPeriodLogs();
             $result .= "\n\e[32m" . "Cleared in period logs!" . "\e[39m" . PHP_EOL;
         }
