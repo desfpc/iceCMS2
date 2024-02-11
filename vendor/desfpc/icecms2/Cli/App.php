@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 /**
  * iceCMS2 v0.1a
@@ -10,11 +11,10 @@ declare(strict_types=1);
 
 namespace iceCMS2\Cli;
 
-use iceCMS2\Caching\CachingFactory;
-use iceCMS2\Commands\Logs\ClearAllLogs;
-use iceCMS2\Commands\Logs\ClearOnPeriodLogs;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 class App
 {
@@ -23,6 +23,12 @@ class App
 
     /** @var array console arguments */
     private array $_argv;
+
+    /** @var string */
+    private const DIR_FRAMEWORK = __DIR__ . '/../Commands';
+
+    /** @var string */
+    private const DIR_CUSTOM = __DIR__ . '/../../../../classes/commands';
 
     /**
      * Class constructor
@@ -45,135 +51,133 @@ class App
             throw new Exception('No command found. Type "php cli.php help" for command help.');
         }
         $this->_argv = $argv;
-        $this->_requestParsing();
+        $this->existMethod();
     }
 
     /**
-     * Parsing Request
+     * @return void
+     */
+    private function existMethod(): void
+    {
+        $method = ($this->_argv[1] && mb_substr($this->_argv[1], -8) === '-command') ? 'help' : $this->_argv[1];
+        $param = $this->_argv;
+        if ('help' === $method) {
+            $this->help();
+        } else {
+            $className = str_replace(
+                    ' ',
+                    '',
+                    ucwords(str_replace('-', ' ', $method))
+                ). 'Command';
+            $fileName = $className. '.php';
+            $fullPath = $this->findFileByName($fileName);
+            if(is_null($fullPath)){
+                $this->help();
+                exit();
+            }
+            $namespace = $this->getNamespaceFromFile($fullPath);
+            $fullClassName = $namespace . '\\' . $className;
+            if (class_exists($fullClassName)) {
+                $classInstance = new $fullClassName();
+                if (method_exists($classInstance, 'run')) {
+                    echo $classInstance->run($this->_settings, $param) . "\n";
+                }
+            }
+        }
+    }
+
+    /**
+     * @return void
+     */
+    private function help(): void
+    {
+        echo "\n" . 'IceCMS2 Help';
+        echo "\n" . 'Type framework command after php cli.php:';
+        echo "\n";
+        $this->scanDirectory(self::DIR_FRAMEWORK);
+        echo "\n" . 'Type custom command after php cli.php:';
+        echo "\n";
+        $this->scanDirectory(self::DIR_CUSTOM);
+    }
+
+    /**
+     * @param $dir
      *
      * @return void
-     * @throws Exception
      */
-    private function _requestParsing(): void
+    private function scanDirectory($dir): void
     {
-        switch ($this->_argv[1]) {
-            case 'help':
-                echo "\n" . 'IceCMS2 Help';
-                echo "\n" . 'Type command after php cli.php:';
-                echo "\n\n" . 'help - IceCMS2 Help';
-                echo "\n";
-                echo "\n" . 'migration-create {name} - Create blank new DB migration with name {name}. Name must be in CamelCase.';
-                echo "\n" . 'migration-exec - Execute DB migrations.';
-                echo "\n" . 'migration-rollback - Rollback last DB migration.';
-                echo "\n";
-                echo "\n" . 'cache-clear-all - Clear all DB caches.';
-                echo "\n";
-                echo "\n" . 'phpcache-clear - Clear PHP caches.';
-                echo "\n";
-                echo "\n" . 'make-symlinks - Make symlinks from vendor to project folders';
-                echo "\n";
-                echo "\n" . 'clear-all-logs - Delete all log files';
-                echo "\n";
-                echo "\n" . 'clear-period-logs - Delete all log files for the period - day||month||year';
-                echo "\n\n";
-                break;
-            case 'migration-create':
-                echo "\n" . 'IceCMS2 Migration Creating';
-                if (empty($this->_argv[2])) {
-                    $this->_argv[2] = null;
-                }
-                $migrations = new Migrations($this->_settings);
-                if (!$migrations->create($this->_argv[2])) {
-                    echo "\n\e[31m" . 'Error when trying create migration: ' . $migrations->getError() . "\e[39m";
-                } else {
-                    echo "\n\e[32m" . 'Migration created!' . "\e[39m";
-                }
-                echo "\n\n";
-                break;
-            case 'migration-exec':
-                echo "\n" . 'IceCMS2 Migration Executing';
-                $migrations = new Migrations($this->_settings);
-                if (!$migrations->exec()) {
-                    echo "\n\e[31m" . 'Error when trying execute migrations: ' . $migrations->getError() . "\e[39m";
-                } else {
-                    echo "\n\e[32m" . 'Migrations executed!' . "\e[39m";
-                }
-                echo "\n\n";
-                break;
-            case 'migration-rollback':
-                echo "\n" . 'IceCMS2 Migration Rollback';
-                $migrations = new Migrations($this->_settings);
-                if (!$migrations->rollback()) {
-                    echo "\n\e[31m" . 'Error when trying rollback migration: ' . $migrations->getError() . "\e[39m";
-                } else {
-                    echo "\n\e[32m" . 'Migration rollbacked!' . "\e[39m";
-                }
-                echo "\n\n";
-                break;
-            case 'cache-clear-all':
-                echo "\n" . 'IceCMS2 Clear all caches';
-                $cacher = CachingFactory::instance($this->_settings);
-                $keys = $cacher->findKeys($this->_settings->db->name . '*');
-                if (!empty($keys)) {
-                    foreach ($keys as $key) {
-                        echo "\n" . $key . ' ';
-                        if ($cacher->del($key)) {
-                            echo "\e[32m" . '[DELETED]' . "\e[39m";
-                        } else {
-                            echo "\e[31m" . '[ERROR]' . "\e[39m";
-                        }
-                    }
-                }
-                break;
-            case 'phpcache-clear':
-                echo "\n" . 'IceCMS2 Clear PHP caches';
-                opcache_reset();
-                echo "\n\e[32m" . 'OPCaches cleared!' . "\e[39m";
-                clearstatcache();
-                echo "\n\e[32m" . 'Stat caches cleared!' . "\e[39m" . PHP_EOL;
-                break;
-            case 'make-symlinks':
-                echo "\n" . 'IceCMS2 Make symlinks';
-
-                $symlinks = [
-                    'vendor/desfpc/vuebootstrap/src' => 'web/js/vuebootstrap',
-                    'vendor/desfpc/icecms2/Web/js' => 'web/js/vendor',
-                    'vendor/desfpc/icecms2/Templates/ice' => 'templates/vendor/ice',
-                    'vendor/desfpc/icecms2/Controller/vendor' => 'controllers/vendor'
-                ];
-
-                foreach ($symlinks as $key => $value) {
-                    echo "\n";
-
-                    if (file_exists($this->_settings->path . $value)) {
-                        unlink($this->_settings->path . $value);
-                    }
-
-                    if (symlink(
-                        $this->_settings->path . $key,
-                        $this->_settings->path . $value
-                    )) {
-                        echo "\e[32m" . $value . ' - [OK]' . "\e[39m";
-                    } else {
-                        echo "\e[31m" . $value . ' - [ERROR] (' . $this->_settings->path . $key . ' -> '
-                            . $this->_settings->path . $value . ')' . "\e[39m";
-                    }
-                }
-                echo "\n";
-                break;
-            case 'clear-all-logs':
-                echo "\n" . 'IceCMS2 Delete all log files';
-                ClearAllLogs::main();
-                echo "\n\e[32m" . 'Cleared logs!' . "\e[39m" . PHP_EOL;
-                break;
-            case 'clear-period-logs':
-                echo "\n" . 'IceCMS2 Delete all log files for the period - day||month||year';
-               ClearOnPeriodLogs::main($this->_argv[2] ?? null);
-                echo "\n\e[32m" . 'Cleared logs!' . "\e[39m" . PHP_EOL;
-                break;
-            default:
-                echo "\n\e[31m" . 'Wrong command "' . $this->_argv[1] . '". Type "php cli.php help" for command help.' . "\e[39m";
-                break;
+        $files = scandir($dir);
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..' || $file === 'AbstractCommand.php') {
+                continue;
+            }
+            $path = $dir . '/' . $file;
+            if (is_dir($path)) {
+                $this->scanDirectory($path);
+            } elseif (pathinfo($path, PATHINFO_EXTENSION) === 'php' && str_contains($file, 'Command.php')) {
+                $this->getInfo($path);
+            }
         }
+    }
+
+    /**
+     * @param string $file
+     *
+     * @return void
+     */
+    private function getInfo(string $file): void
+    {
+        $namespace = $this->getNamespaceFromFile($file);
+        $fileName = basename($file, '.php');
+
+        $fullClassName = $namespace . '\\' . $fileName;
+
+        if (class_exists($fullClassName)) {
+            $classInstance = new $fullClassName();
+            if (property_exists($classInstance, 'info')) {
+                echo "      " . $classInstance->info . "\n";
+            }
+        }
+    }
+
+    /**
+     * @param string $filePath
+     *
+     * @return string|null
+     */
+    private function getNamespaceFromFile(string $filePath): ?string
+    {
+        $result = null;
+        $content = file_get_contents($filePath);
+        if (preg_match('/namespace\s+([^\s;]+)/', $content, $matches)) {
+            $result = $matches[1];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $fileName
+     *
+     * @return string|null
+     */
+    private function findFileByName(string $fileName): ?string
+    {
+        $result = null;
+        $dirs = [
+            self::DIR_FRAMEWORK,
+            self::DIR_CUSTOM,
+        ];
+
+        foreach ($dirs as $dir) {
+            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+            foreach ($iterator as $file) {
+                if ($file->isFile() && $file->getFilename() === $fileName) {
+                    $result = $file->getPathname();
+                }
+            }
+        }
+        return $result;
     }
 }

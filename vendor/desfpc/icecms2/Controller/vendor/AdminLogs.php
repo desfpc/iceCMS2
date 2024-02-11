@@ -10,18 +10,10 @@ declare(strict_types=1);
 
 namespace app\Controllers\vendor;
 
-use iceCMS2\Caching\CachingFactory;
-use iceCMS2\Commands\Logs\ClearAllLogs;
-use iceCMS2\Commands\Logs\ClearLogs;
-use iceCMS2\Commands\Logs\ClearOnPeriodLogs;
+use iceCMS2\Commands\Logs\ClearLogsCommand;
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
-use iceCMS2\Logger\DBLogger;
-use iceCMS2\Logger\FileLogger;
-use iceCMS2\Logger\LoggerInterface;
-use iceCMS2\Models\Log;
 use iceCMS2\Models\User;
-use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Tools\FlashVars;
 
@@ -111,7 +103,7 @@ class AdminLogs extends AbstractController implements ControllerInterface
      */
     public function clearAllLogs(): void
     {
-        $result = ClearLogs::clearAllLogs();
+        $result = ClearLogsCommand::clearAllLogs();
 
         $this->getMessage($result, 'Clear All Logs');
 
@@ -124,7 +116,7 @@ class AdminLogs extends AbstractController implements ControllerInterface
      */
     public function clearOnPeriodLogs(): void
     {
-        $result = ClearLogs::ClearOnPeriodLogs();
+        $result = ClearLogsCommand::ClearOnPeriodLogs();
 
         $this->getMessage($result, 'Cleared the logs for the period');
 
