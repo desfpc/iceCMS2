@@ -51,18 +51,18 @@ class App
             throw new Exception('No command found. Type "php cli.php help" for command help.');
         }
         $this->_argv = $argv;
-        $this->existMethod();
+        $this->_existMethod();
     }
 
     /**
      * @return void
      */
-    private function existMethod(): void
+    private function _existMethod(): void
     {
         $method = ($this->_argv[1] && mb_substr($this->_argv[1], -8) === '-command') ? 'help' : $this->_argv[1];
         $param = $this->_argv;
         if ('help' === $method) {
-            $this->help();
+            $this->_help();
         } else {
             $className = str_replace(
                     ' ',
@@ -70,12 +70,12 @@ class App
                     ucwords(str_replace('-', ' ', $method))
                 ). 'Command';
             $fileName = $className. '.php';
-            $fullPath = $this->findFileByName($fileName);
+            $fullPath = $this->_findFileByName($fileName);
             if(is_null($fullPath)){
-                $this->help();
+                $this->_help();
                 exit();
             }
-            $namespace = $this->getNamespaceFromFile($fullPath);
+            $namespace = $this->_getNamespaceFromFile($fullPath);
             $fullClassName = $namespace . '\\' . $className;
             if (class_exists($fullClassName)) {
                 $classInstance = new $fullClassName();
@@ -89,15 +89,15 @@ class App
     /**
      * @return void
      */
-    private function help(): void
+    private function _help(): void
     {
         echo "\n" . 'IceCMS2 Help';
         echo "\n" . 'Type framework command after php cli.php:';
         echo "\n";
-        $this->scanDirectory(self::DIR_FRAMEWORK);
+        $this->_scanDirectory(self::DIR_FRAMEWORK);
         echo "\n" . 'Type custom command after php cli.php:';
         echo "\n";
-        $this->scanDirectory(self::DIR_CUSTOM);
+        $this->_scanDirectory(self::DIR_CUSTOM);
     }
 
     /**
@@ -105,7 +105,7 @@ class App
      *
      * @return void
      */
-    private function scanDirectory($dir): void
+    private function _scanDirectory($dir): void
     {
         $files = scandir($dir);
         foreach ($files as $file) {
@@ -114,9 +114,9 @@ class App
             }
             $path = $dir . '/' . $file;
             if (is_dir($path)) {
-                $this->scanDirectory($path);
+                $this->_scanDirectory($path);
             } elseif (pathinfo($path, PATHINFO_EXTENSION) === 'php' && str_contains($file, 'Command.php')) {
-                $this->getInfo($path);
+                $this->_getInfo($path);
             }
         }
     }
@@ -126,9 +126,9 @@ class App
      *
      * @return void
      */
-    private function getInfo(string $file): void
+    private function _getInfo(string $file): void
     {
-        $namespace = $this->getNamespaceFromFile($file);
+        $namespace = $this->_getNamespaceFromFile($file);
         $fileName = basename($file, '.php');
 
         $fullClassName = $namespace . '\\' . $fileName;
@@ -146,7 +146,7 @@ class App
      *
      * @return string|null
      */
-    private function getNamespaceFromFile(string $filePath): ?string
+    private function _getNamespaceFromFile(string $filePath): ?string
     {
         $result = null;
         $content = file_get_contents($filePath);
@@ -162,7 +162,7 @@ class App
      *
      * @return string|null
      */
-    private function findFileByName(string $fileName): ?string
+    private function _findFileByName(string $fileName): ?string
     {
         $result = null;
         $dirs = [

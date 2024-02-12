@@ -60,7 +60,7 @@ class FileLogger implements LoggerInterface
             default => date('Y-m-d')
         };
 
-        $rmFiles = self::gerFileName($period, $periodData);
+        $rmFiles = self::_gerFileName($period, $periodData);
 
         $i = 0;
         foreach ($rmFiles as $rmFile) {
@@ -98,7 +98,7 @@ class FileLogger implements LoggerInterface
      *
      * @return array
      */
-    private static function gerFileName(string $period, string $periodData): array
+    private static function _gerFileName(string $period, string $periodData): array
     {
         $dir = dir(self::PATH);
 
