@@ -42,7 +42,7 @@ final class ClearLogsCommand implements CommandInterface
      */
     public static function clearAllLogs(): array|bool|int
     {
-        [$logger, $settings] = self::getInstans();
+        [$logger, $settings] = self::_getInstans();
         return $logger::clearAllLogs($settings);
     }
 
@@ -53,21 +53,8 @@ final class ClearLogsCommand implements CommandInterface
      */
     public static function clearOnPeriodLogs(?string $period = null): array|bool|int
     {
-        [$logger, $settings] = self::getInstans();
+        [$logger, $settings] = self::_getInstans();
         return $logger::clearOnPeriodLogs($settings, $period);
-    }
-
-    /**
-     * @return array
-     */
-    private static function getInstans(): array
-    {
-        /** @var array $settings Settings array from settingsSelector.php */
-        require self::PATH;
-
-        $settings = new Settings($settings);
-        $logger = self::instance($settings);
-        return [$logger, $settings];
     }
 
     /**
@@ -98,5 +85,18 @@ final class ClearLogsCommand implements CommandInterface
             $result .= "\n\e[32m" . "Cleared in period logs!" . "\e[39m" . PHP_EOL;
         }
         return $result;
+    }
+
+    /**
+     * @return array
+     */
+    private static function _getInstans(): array
+    {
+        /** @var array $settings Settings array from settingsSelector.php */
+        require self::PATH;
+
+        $settings = new Settings($settings);
+        $logger = self::instance($settings);
+        return [$logger, $settings];
     }
 }

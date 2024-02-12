@@ -30,11 +30,12 @@ class LoggerFactory
     }
 
     /**
-     * @param Settings $settings
      * @param string $nameFileLog
      * @param mixed $date
      *
-     * @return void
+     * @param Settings|null $settings
+     *
+     * @return bool
      */
     public static function log(string $nameFileLog, mixed $date, ?Settings $settings = null): bool
     {

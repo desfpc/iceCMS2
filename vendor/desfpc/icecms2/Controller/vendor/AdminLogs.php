@@ -105,7 +105,7 @@ class AdminLogs extends AbstractController implements ControllerInterface
     {
         $result = ClearLogsCommand::clearAllLogs();
 
-        $this->getMessage($result, 'Clear All Logs');
+        $this->_getMessage($result, 'Clear All Logs');
 
         $this->_redirect('/admin/logs/');
     }
@@ -118,7 +118,7 @@ class AdminLogs extends AbstractController implements ControllerInterface
     {
         $result = ClearLogsCommand::ClearOnPeriodLogs();
 
-        $this->getMessage($result, 'Cleared the logs for the period');
+        $this->_getMessage($result, 'Cleared the logs for the period');
 
         $this->_redirect('/admin/logs/');
     }
@@ -129,7 +129,7 @@ class AdminLogs extends AbstractController implements ControllerInterface
      *
      * @return void
      */
-    private function getMessage(bool $result, string $message): void
+    private function _getMessage(bool $result, string $message): void
     {
         $flashVars = new FlashVars();
 
