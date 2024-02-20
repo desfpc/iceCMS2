@@ -183,10 +183,15 @@ class AdminUser extends AbstractController implements ControllerInterface
 
     /**
      * @return array
+     * @throws Exception
      */
     private function _getFormSelects(): array
     {
-        return [];
+        return [
+            'language' => array_combine($this->settings->locales, $this->settings->locales),
+            'status' => LocaleText::get($this->settings, 'user/statuses', [], $this->settings->locale, true),
+            'role' => LocaleText::get($this->settings, 'user/roles', [], $this->settings->locale, true),
+        ];
     }
 
     /**

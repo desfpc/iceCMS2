@@ -32,4 +32,14 @@ $langArr = [
         'contacts' => 'Contacts',
         'password' => 'Password',
     ],
+    'statuses' => [
+        'created' => 'Created',
+        'active' => 'Active',
+        'deleted' => 'Deleted',
+    ],
+    'roles' => [
+        'user' => 'User',
+        'moderator' => 'Moderator',
+        'admin' => 'Admin',
+    ],
 ];

@@ -47,4 +47,14 @@ $langArr = [
         'contacts' => 'Контакты',
         'password' => 'Пароль',
     ],
+    'statuses' => [
+        'created' => 'Создан',
+        'active' => 'Активен',
+        'deleted' => 'Удален',
+    ],
+    'roles' => [
+        'user' => 'Пользователь',
+        'moderator' => 'Модератор',
+        'admin' => 'Админ',
+    ],
 ];
