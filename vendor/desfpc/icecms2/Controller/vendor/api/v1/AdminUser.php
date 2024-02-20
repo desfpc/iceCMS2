@@ -14,6 +14,7 @@ use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\DTO\UserListAdminDto;
 use iceCMS2\Helpers\Strings;
+use iceCMS2\Locale\LocaleText;
 use iceCMS2\Models\User;
 use iceCMS2\Models\UserList;
 use iceCMS2\Tools\Exception;
@@ -142,6 +143,7 @@ class AdminUser extends AbstractController implements ControllerInterface
         $this->renderJson([
             'formData' => $userArr,
             'formTypes' => $this->_getFormTypes(),
+            'formNames' => $this->_getFormNames(),
             'formSelects' => $this->_getFormSelects(),
             'formAction' => '/api/v1/admin/user/' . $userId . '/edit',
         ], true);
@@ -172,6 +174,15 @@ class AdminUser extends AbstractController implements ControllerInterface
 
     /**
      * @return array
+     * @throws Exception
+     */
+    private function _getFormNames(): array
+    {
+        return LocaleText::get($this->settings, 'user/fields', [], $this->settings->locale, true);
+    }
+
+    /**
+     * @return array
      */
     private function _getFormSelects(): array
     {
@@ -194,7 +205,7 @@ class AdminUser extends AbstractController implements ControllerInterface
             'cols' => [
                 [
                     'id' => 'id',
-                    'name' => 'ID',
+                    'name' => LocaleText::get($this->settings, 'user/fields/id', [], $this->settings->locale),
                     'ordered' => true,
                     'action' => 'link',
                     'actionUrl' => '/admin/user/{id}/edit/',
@@ -207,7 +218,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                 ],
                 [
                     'id' => 'telegram',
-                    'name' => 'Telegram',
+                    'name' => LocaleText::get($this->settings, 'user/fields/telegram', [], $this->settings->locale),
                     'ordered' => true,
                     'editable' => true,
                     'editUrl' => '/api/v1/admin/user/{id}/edit-prop',
@@ -215,7 +226,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                 ],
                 [
                     'id' => 'role',
-                    'name' => 'Role',
+                    'name' => LocaleText::get($this->settings, 'user/fields/role', [], $this->settings->locale),
                     'ordered' => true,
                     'editable' => true,
                     'editUrl' => '/api/v1/admin/user/{id}/edit-prop',
@@ -228,7 +239,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                 ],
                 [
                     'id' => 'status',
-                    'name' => 'Status',
+                    'name' => LocaleText::get($this->settings, 'user/fields/status', [], $this->settings->locale),
                     'ordered' => true,
                     'editable' => true,
                     'editUrl' => '/api/v1/admin/user/{id}/edit-prop',
@@ -241,7 +252,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                 ],
                 [
                     'id' => 'created_time',
-                    'name' => 'Created Time',
+                    'name' => LocaleText::get($this->settings, 'user/fields/created_time', [], $this->settings->locale),
                     'ordered' => true,
                 ],
                 [

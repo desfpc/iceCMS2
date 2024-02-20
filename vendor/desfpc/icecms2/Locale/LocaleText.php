@@ -23,10 +23,11 @@ class LocaleText
      * @param string $key
      * @param array|null $values
      * @param string|null $locale
-     * @return string
+     * @param bool $arrayReturn
+     * @return string|array
      * @throws Exception
      */
-    public static function get(Settings $settings, string $key, ?array $values = null, ?string $locale = null): string
+    public static function get(Settings $settings, string $key, ?array $values = null, ?string $locale = null, $arrayReturn = false): string|array
     {
         if (is_null($locale)) {
             $locale = $settings->locale;
@@ -40,8 +41,9 @@ class LocaleText
 
         $keyArr = explode('/', $key);
         $template = $keyArr[count($keyArr) - 1];
+        $lastArray = $keyArr;
 
-        if ($locale !== 'en' && in_array($locale, $settings->locales)) {
+        if (in_array($locale, $settings->locales)) {
             $patch = $settings->path . 'locale/' . $locale . '/' . $keyArr[0] . '.php';
             unset($keyArr[0]);
 
@@ -64,13 +66,21 @@ class LocaleText
                             if (!is_array($langArr)) {
                                 $template = $langArr;
                                 break;
+                            } else {
+                                $lastArray = $langArr;
                             }
                         } else {
                             break;
                         }
                     }
                 }
+            } elseif ($locale !== 'en') {
+                throw new Exception('Locale file not found: ' . $patch);
             }
+        }
+
+        if ($arrayReturn) {
+            return $lastArray;
         }
 
         if (!empty($values)) {
