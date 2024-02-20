@@ -33,7 +33,7 @@ class AdminUser extends AbstractController implements ControllerInterface
      * @return void
      * @throws Exception
      */
-    public function edit(): void
+    public function editProperty(): void
     {
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
 
@@ -93,13 +93,13 @@ class AdminUser extends AbstractController implements ControllerInterface
         $userId = (int)$this->routing->pathInfo['query_vars']['id'];
 
         try {
-            $user = new UserModel($this->settings);
+            $user = new User($this->settings);
         } catch (Exception $e) {
             $this->renderJson(['message' => $e->getMessage()], false);
             return;
         }
 
-        if (!$user->load((int)$userId)) {
+        if (!$user->load($userId)) {
             $this->renderJson(['message' => 'Wrong User ID'], false);
             return;
         }
@@ -109,6 +109,73 @@ class AdminUser extends AbstractController implements ControllerInterface
         } else {
             $this->renderJson(['message' => 'User not deleted'], false);
         }
+    }
+
+    /**
+     * Get User by ID for editing
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function get(): void
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+
+        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
+            $this->renderJson(['message' => 'No User ID passed'], false);
+            return;
+        }
+
+        $userId = (int) $this->routing->pathInfo['query_vars']['id'];
+        $user = new User($this->settings);
+        if (!$user->load($userId)) {
+            $this->renderJson(['message' => 'Wrong User ID'], false);
+            return;
+        }
+
+        $userArr = $user->get();
+        $userArr['password'] = '';
+        if (!empty($userArr['contacts'])) {
+            $userArr['contacts'] = json_decode($userArr['contacts'], true);
+        }
+
+        $this->renderJson([
+            'formData' => $userArr,
+            'formTypes' => $this->_getFormTypes(),
+            'formSelects' => $this->_getFormSelects(),
+            'formAction' => '/api/v1/admin/user/' . $userId . '/edit',
+        ], true);
+    }
+
+    /**
+     * @return string[]
+     */
+    private function _getFormTypes(): array
+    {
+        return [
+            'id' => 'label',
+            'avatar' => 'avatar',
+            'contacts' => 'jsonKeyValue',
+            'created_time' => 'label',
+            'email' => 'label',
+            'email_approved' => 'checkbox',
+            'email_send_time' => 'label',
+            'language' => 'select',
+            'password' => 'password',
+            'phone_approved' => 'checkbox',
+            'phone_send_time' => 'label',
+            'role' => 'select',
+            'sex' => 'select',
+            'status' => 'select',
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function _getFormSelects(): array
+    {
+        return [];
     }
 
     /**
@@ -143,7 +210,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                     'name' => 'Telegram',
                     'ordered' => true,
                     'editable' => true,
-                    'editUrl' => '/api/v1/admin/user/{id}/edit',
+                    'editUrl' => '/api/v1/admin/user/{id}/edit-prop',
                     'inputType' => 'input',
                 ],
                 [
@@ -151,7 +218,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                     'name' => 'Role',
                     'ordered' => true,
                     'editable' => true,
-                    'editUrl' => '/api/v1/admin/user/{id}/edit',
+                    'editUrl' => '/api/v1/admin/user/{id}/edit-prop',
                     'inputType' => 'select',
                     'selectArray' => [
                         'user' => 'User',
@@ -164,7 +231,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                     'name' => 'Status',
                     'ordered' => true,
                     'editable' => true,
-                    'editUrl' => '/api/v1/admin/user/{id}/edit',
+                    'editUrl' => '/api/v1/admin/user/{id}/edit-prop',
                     'inputType' => 'select',
                     'selectArray' => [
                         'created' => 'Created',
