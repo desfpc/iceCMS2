@@ -42,4 +42,9 @@ $langArr = [
         'moderator' => 'Moderator',
         'admin' => 'Admin',
     ],
+    'sexes' => [
+        'male' => 'Male',
+        'female' => 'Female',
+        'other' => 'Other',
+    ],
 ];

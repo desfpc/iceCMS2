@@ -191,6 +191,7 @@ class AdminUser extends AbstractController implements ControllerInterface
             'language' => array_combine($this->settings->locales, $this->settings->locales),
             'status' => LocaleText::get($this->settings, 'user/statuses', [], $this->settings->locale, true),
             'role' => LocaleText::get($this->settings, 'user/roles', [], $this->settings->locale, true),
+            'sex' => LocaleText::get($this->settings, 'user/sexes', [], $this->settings->locale, true),
         ];
     }
 
