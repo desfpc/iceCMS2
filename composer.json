@@ -18,7 +18,9 @@
     "desfpc/vuebootstrap": "1.03",
     "ext-gd": "*",
     "ext-redis": "*",
-    "ext-zend-opcache": "*"
+    "ext-zend-opcache": "*",
+    "elasticsearch/elasticsearch": "^8.9.0",
+    "psr/http-message": "^1.0.1"
   },
   "require-dev": {
     "phpunit/phpunit": "9.5.21",
@@ -28,6 +30,11 @@
     "psr-4": {
       "iceCMS2\\": "vendor/desfpc/icecms2/",
       "app\\": "classes/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true
     }
   }
 }

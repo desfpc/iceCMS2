@@ -42,3 +42,18 @@ services:
     image: redis:latest
     ports:
       - "6382:6379"
+  elastic:
+    container_name: elastic-icecms
+    image: elasticsearch:8.12.2
+    volumes:
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
+      - ./elasticsearch/logs:/usr/share/elasticsearch/logs
+    environment:
+      ELASTIC_USERNAME: "elastic"
+      ELASTIC_PASSWORD: "MyPw123"
+      discovery.type: single-node
+    ports:
+      - "9200:9200"
+    depends_on:
+      - db-icecms
+      - redis-icecms
