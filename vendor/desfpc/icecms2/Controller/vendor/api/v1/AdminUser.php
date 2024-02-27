@@ -145,7 +145,15 @@ class AdminUser extends AbstractController implements ControllerInterface
             'formTypes' => $this->_getFormTypes(),
             'formNames' => $this->_getFormNames(),
             'formSelects' => $this->_getFormSelects(),
-            'formAction' => '/api/v1/admin/user/' . $userId . '/edit',
+            'formActions' => [
+                'save' => '/api/v1/admin/user/' . $userId . '/edit',
+                'avatar' => '/api/v1/admin/user/' . $userId . '/avatar',
+                'password' => '/api/v1/admin/user/' . $userId . '/password',
+            ],
+            'formButtons' => [
+                'save' => 'Save',
+                'load' => 'Reset',
+            ],
         ], true);
     }
 
