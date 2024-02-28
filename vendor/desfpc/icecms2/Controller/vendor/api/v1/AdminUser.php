@@ -29,6 +29,40 @@ class AdminUser extends AbstractController implements ControllerInterface
     ];
 
     /**
+     * Edit User password
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function password(): void
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]); //TODO move to checkUser private method
+
+        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
+            $this->renderJson(['message' => 'No User ID passed'], false);
+            return;
+        }
+
+        $id = (int)$this->routing->pathInfo['query_vars']['id'];
+        $user = new User($this->settings);
+        if (!$user->load($id)) {
+            $this->renderJson(['message' => 'Wrong User ID'], false);
+            return;
+        }
+
+        $this->requestParameters->getRequestValues(['password', 'repeatPassword']);
+        $password = $this->requestParameters->values->password;
+        $repeatPassword = $this->requestParameters->values->repeatPassword;
+
+        if ($password !== $repeatPassword) {
+            $this->renderJson(['message' => 'Passwords do not match'], false); //TODO add locale
+            return;
+        }
+
+        //$this->renderJson(['message' => 'Password changed - ' .  $this->requestParameters->values->password . ' - ' . $this->requestParameters->values->repeatPassword], true);
+    }
+
+    /**
      * Edit User separate params
      *
      * @return void
@@ -123,14 +157,14 @@ class AdminUser extends AbstractController implements ControllerInterface
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
 
         if (!isset($this->routing->pathInfo['query_vars']['id'])) {
-            $this->renderJson(['message' => 'No User ID passed'], false);
+            $this->renderJson(['message' => 'No User ID passed'], false); ;//TODO add locale
             return;
         }
 
         $userId = (int) $this->routing->pathInfo['query_vars']['id'];
         $user = new User($this->settings);
         if (!$user->load($userId)) {
-            $this->renderJson(['message' => 'Wrong User ID'], false);
+            $this->renderJson(['message' => 'Wrong User ID'], false); //TODO add locale
             return;
         }
 
@@ -151,8 +185,12 @@ class AdminUser extends AbstractController implements ControllerInterface
                 'password' => '/api/v1/admin/user/' . $userId . '/password',
             ],
             'formButtons' => [
-                'save' => 'Save',
-                'load' => 'Reset',
+                'save' => LocaleText::get($this->settings, 'form/actions/save', [], $this->settings->locale),
+                'load' => LocaleText::get($this->settings, 'form/actions/reset', [], $this->settings->locale),
+                'password' => LocaleText::get($this->settings, 'form/actions/change', [], $this->settings->locale),
+            ],
+            'formValidators' => [
+
             ],
         ], true);
     }

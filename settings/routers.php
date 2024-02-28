@@ -59,6 +59,13 @@ $routers = [
         'useVendor' => true
     ],
 
+    'api/v1/admin/user/$id/password' => [ //Edit user password by ID
+        'method' => 'POST',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
+        'controllerMethod' => 'password',
+        'useVendor' => true
+    ],
+
     'api/v1/admin/user/$id' => [ //User by ID
         'method' => 'GET',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
