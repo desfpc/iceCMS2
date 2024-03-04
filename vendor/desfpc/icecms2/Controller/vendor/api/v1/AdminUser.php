@@ -189,9 +189,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                 'load' => LocaleText::get($this->settings, 'form/actions/reset', [], $this->settings->locale),
                 'password' => LocaleText::get($this->settings, 'form/actions/change', [], $this->settings->locale),
             ],
-            'formValidators' => [
-
-            ],
+            'formValidators' => $this->_getFormValidators(),
         ], true);
     }
 
@@ -215,6 +213,31 @@ class AdminUser extends AbstractController implements ControllerInterface
             'role' => 'select',
             'sex' => 'select',
             'status' => 'select',
+        ];
+    }
+
+    /**
+     * Get form validators array
+     *
+     * @return array
+     */
+    private function _getFormValidators(): array
+    {
+        return [
+            'avatar' => 'empty|positiveInteger',
+            'email_approved' => 'bool',
+            'email_approve_code' => 'empty|string',
+            'language' => 'string',
+            'name' => 'empty|string',
+            'nikname' => 'string',
+            'phone' => 'empty|string',
+            'phone_approved' => 'bool',
+            'phone_approve_code' => 'empty|string',
+            'rating' => 'float',
+            'role' => 'string',
+            'sex' => 'string',
+            'status' => 'string',
+            'telegram' => 'empty|string',
         ];
     }
 

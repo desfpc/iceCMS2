@@ -16,7 +16,7 @@ use iceCMS2\Models\FileImage;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Models\User as UserModel;
 
-class User extends AbstractController implements ControllerInterface
+class User extends AbstractController implements ControllerInterface //TODO create USER service, move logic to it
 {
     public const LOGIC_STATUS_FRIENDS = 'friends';
     public const LOGIC_STATUS_SUBSCRIBERS = 'subscribers';
