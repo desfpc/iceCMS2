@@ -190,6 +190,9 @@ class AdminUser extends AbstractController implements ControllerInterface
                 'password' => LocaleText::get($this->settings, 'form/actions/change', [], $this->settings->locale),
             ],
             'formValidators' => $this->_getFormValidators(),
+            'formJsons' => [
+                'contacts' => [ "Country", "City", "Address", "Zip", "Twitter", "Instagram", "LinkedIn", "YouTube", "Discord", "Website", "Blog", "Other"], //TODO add locale
+            ],
         ], true);
     }
 
