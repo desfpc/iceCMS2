@@ -79,6 +79,11 @@ class Settings
         ],
         'routes' => [],
         'isUseCms' => 1,
+        'search' =>[
+            'type' => 1,
+            'login' => 1,
+            'password' => 1
+        ],
     ];
     
     /** @var stdClass|null DataBase settings */
