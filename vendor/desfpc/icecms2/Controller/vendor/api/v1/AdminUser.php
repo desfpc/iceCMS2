@@ -36,7 +36,7 @@ class AdminUser extends AbstractController implements ControllerInterface
      */
     public function password(): void
     {
-        $this->_authorizationCheckRole([User::ROLE_ADMIN]); //TODO move to checkUser private method
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
 
         if (!isset($this->routing->pathInfo['query_vars']['id'])) {
             $this->renderJson(['message' => 'No User ID passed'], false);
@@ -59,7 +59,7 @@ class AdminUser extends AbstractController implements ControllerInterface
             return;
         }
 
-        //$this->renderJson(['message' => 'Password changed - ' .  $this->requestParameters->values->password . ' - ' . $this->requestParameters->values->repeatPassword], true);
+        $this->renderJson(['message' => 'Password changed - ' .  $this->requestParameters->values->password . ' - ' . $this->requestParameters->values->repeatPassword], true);
     }
 
     /**

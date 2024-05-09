@@ -5,6 +5,7 @@ export default {
                 phone: null,
                 telegram: null,
                 language: null,
+                languages: [],
                 name: null,
                 nikname: null,
                 status: null,
@@ -41,6 +42,7 @@ export default {
             languages: [
                 { text: 'English', value: 'en' },
                 { text: 'Русский', value: 'ru' },
+                { text: 'Српски', value: 'rs' },
                 { text: 'ქართული', value: 'ge' },
             ],
             sexes: [
@@ -95,8 +97,15 @@ export default {
             })
         },
 
-        save() {
+        setLanguages(value) {
+            if (!value.includes(this.user.language)) {
+                value.push(this.user.language);
+            }
 
+            this.user.languages = value;
+        },
+
+        save() {
             if (this.$checkValidation()) {
                 axios.post('/api/v1/profile/update', this.user).then(response => {
 

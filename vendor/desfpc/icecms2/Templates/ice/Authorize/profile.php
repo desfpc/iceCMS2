@@ -18,7 +18,7 @@ use iceCMS2\Models\User;
 /** @var User $user */
 $user = $this->templateData['user'];
 
-
+//TODO js arrays enums + contacts - create DB catalog tables and load it
 
 ?>
 <div class="container">
@@ -34,6 +34,7 @@ $user = $this->templateData['user'];
                         "phone": "<?= $user->get('phone'); ?>",
                         "telegram": "<?= $user->get('telegram'); ?>",
                         "language": "<?= $user->get('language'); ?>",
+                        "languages": <?= empty($user->get('languages')) ? '[]' : $user->get('languages'); ?>,
                         "name": "<?= $user->get('name'); ?>",
                         "nikname": "<?= $user->get('nikname'); ?>",
                         "status": "<?= $user->get('status'); ?>",
@@ -47,7 +48,8 @@ $user = $this->templateData['user'];
                     "languages": [
                         { "text": "English", "value": "en" },
                         { "text": "Русский", "value": "ru" },
-                        { "text": "ქართული", "value": "ge" }
+                        { "text": "ქართული", "value": "ge" },
+                        { "text": "Српски", "value": "rs" }
                     ],
                     "sexes": [
                         { "text": "Male", "value": "male" },
@@ -118,6 +120,20 @@ $user = $this->templateData['user'];
                                         <Validate v-slot="{ errorClass }" :rule="$validationRules.string" :value="user.nikname" :func="$globalValidation">
                                             <input type="text" class="form-control" :class="errorClass" id="nikname" v-model="user.nikname">
                                         </Validate>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="telegram" class="col-sm-2 col-form-label text-end">Language: </label>
+                                    <div class="col-sm-4">
+                                        <Validate v-slot="{ errorClass }" :rule="$validationRules.string" :value="user.language" :func="$globalValidation">
+                                            <select class="form-control" :class="errorClass" v-model="user.language">
+                                                <option v-for="language in languages" :value="language.value">{{ language.text }}</option>
+                                            </select>
+                                        </Validate>
+                                    </div>
+                                    <label for="languages" class="col-sm-2 col-form-label text-end">Known languages: </label>
+                                    <div class="col-sm-4">
+                                        <Checkbox-Group :value="user.languages" :data-Array="languages" :callback="setLanguages"></Checkbox-Group>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">

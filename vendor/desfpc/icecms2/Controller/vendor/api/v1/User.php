@@ -13,6 +13,7 @@ namespace app\Controllers\vendor\api\v1;
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\Models\FileImage;
+use iceCMS2\Services\UserService;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Models\User as UserModel;
 
@@ -344,11 +345,6 @@ class User extends AbstractController implements ControllerInterface //TODO crea
 
         $data = json_decode(file_get_contents('php://input'), true);
 
-        if (empty($data) || empty($data['old']) || empty($data['new'])) {
-            $this->renderJson(['message' => 'Empty passwords', 'input' => $data], false);
-            return;
-        }
-
         if ($data['old'] === $data['new']) {
             $this->renderJson(['message' => 'Old and new passwords are equal'], false);
             return;
@@ -359,15 +355,12 @@ class User extends AbstractController implements ControllerInterface //TODO crea
             return;
         }
 
-        try {
-            $user->set('password', $data['new']);
-            if ($user->save()) {
-                $this->renderJson(['message' => 'Password updated'], true);
-            } else {
-                $this->renderJson(['message' => 'Error in password updating'], false);
-            }
-        } catch (Exception $e) {
-            $this->renderJson(['message' => $e->getMessage()], false);
+        $setPassword = UserService::setPassword($user, $data['new'], $data['new']);
+
+        if ($setPassword['status'] === 'success') {
+            $this->renderJson(['message' => 'Password updated'], true);
+        } else {
+            $this->renderJson(['message' => $setPassword['message']], false);
         }
     }
 
@@ -397,6 +390,14 @@ class User extends AbstractController implements ControllerInterface //TODO crea
                 $data['contacts'] = json_encode($data['contacts']);
             } catch (\Throwable $e) {
                 $data['contacts'] = [];
+            }
+        }
+
+        if (isset($data['languages'])) {
+            try {
+                $data['languages'] = json_encode($data['languages']);
+            } catch (\Throwable $e) {
+                $data['languages'] = [];
             }
         }
 
