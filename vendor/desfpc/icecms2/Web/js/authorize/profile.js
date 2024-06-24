@@ -97,7 +97,7 @@ export default {
             })
         },
 
-        setLanguages(value) {
+        setLanguages(value, key) {
             if (!value.includes(this.user.language)) {
                 value.push(this.user.language);
             }

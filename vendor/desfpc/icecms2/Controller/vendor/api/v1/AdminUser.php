@@ -304,7 +304,12 @@ class AdminUser extends AbstractController implements ControllerInterface
     private function _getFormMultiSelects(): array
     {
         return [
-            'languages' => array_combine($this->settings->locales, $this->settings->locales),
+            'languages' => [
+                ['text' => 'English', 'value' => 'en'],
+                ['text' => 'Русский', 'value' => 'ru'],
+                ['text' => 'ქართული', 'value' => 'ge'],
+                ['text' => 'Српски', 'value' => 'rs'],
+            ],
         ];
     }
 
