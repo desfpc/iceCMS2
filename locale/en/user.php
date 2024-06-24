@@ -15,6 +15,7 @@ $langArr = [
         'phone' => 'Phone',
         'telegram' => 'Telegram',
         'language' => 'Language',
+        'languages' => 'Languages',
         'name' => 'Name',
         'nikname' => 'Nickname',
         'status' => 'Status',

@@ -63,6 +63,35 @@ class AdminUser extends AbstractController implements ControllerInterface
     }
 
     /**
+     * Edit User Form
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function edit(): void
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+
+        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
+            $this->renderJson(['message' => 'No User ID passed'], false);
+            return;
+        }
+
+        $id = (int)$this->routing->pathInfo['query_vars']['id'];
+        $user = new User($this->settings);
+        if (!$user->load($id)) {
+            $this->renderJson(['message' => 'Wrong User ID'], false);
+            return;
+        }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+        //TODO update user data
+
+        print_r($user->email);
+        print_r($data);
+    }
+
+    /**
      * Edit User separate params
      *
      * @return void
@@ -179,6 +208,7 @@ class AdminUser extends AbstractController implements ControllerInterface
             'formTypes' => $this->_getFormTypes(),
             'formNames' => $this->_getFormNames(),
             'formSelects' => $this->_getFormSelects(),
+            'formMultiSelects' => $this->_getFormMultiSelects(),
             'formActions' => [
                 'save' => '/api/v1/admin/user/' . $userId . '/edit',
                 'avatar' => '/api/v1/admin/user/' . $userId . '/avatar',
@@ -210,6 +240,7 @@ class AdminUser extends AbstractController implements ControllerInterface
             'email_approved' => 'checkbox',
             'email_send_time' => 'label',
             'language' => 'select',
+            'languages' => 'multiSelect',
             'password' => 'password',
             'phone_approved' => 'checkbox',
             'phone_send_time' => 'label',
@@ -264,6 +295,16 @@ class AdminUser extends AbstractController implements ControllerInterface
             'status' => LocaleText::get($this->settings, 'user/statuses', [], $this->settings->locale, true),
             'role' => LocaleText::get($this->settings, 'user/roles', [], $this->settings->locale, true),
             'sex' => LocaleText::get($this->settings, 'user/sexes', [], $this->settings->locale, true),
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function _getFormMultiSelects(): array
+    {
+        return [
+            'languages' => array_combine($this->settings->locales, $this->settings->locales),
         ];
     }
 

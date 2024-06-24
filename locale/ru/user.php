@@ -31,6 +31,7 @@ $langArr = [
         'phone' => 'Телефон',
         'telegram' => 'Telegram',
         'language' => 'Язык',
+        'languages' => 'Языки',
         'name' => 'Имя',
         'nikname' => 'Ник',
         'status' => 'Статус',

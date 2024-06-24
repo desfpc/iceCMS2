@@ -17,6 +17,33 @@ use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Types\UnixTime;
 
+/**
+ * Class User
+ *
+ * @package iceCMS2\Models
+ * @property int $id
+ * @property string $email
+ * @property string $phone
+ * @property string $telegram
+ * @property string $language
+ * @property string $languages
+ * @property string $name
+ * @property string $nikname
+ * @property string $status
+ * @property string $role
+ * @property float $rating
+ * @property int $avatar
+ * @property string $email_approve_code
+ * @property int $email_approved
+ * @property int $email_send_time
+ * @property string $phone_approve_code
+ * @property int $phone_approved
+ * @property int $phone_send_time
+ * @property int $created_time
+ * @property string $sex
+ * @property string $contacts
+ * @property string $password
+ */
 class User extends AbstractEntity
 {
     /** @var string User status created */
