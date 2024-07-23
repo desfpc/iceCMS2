@@ -212,6 +212,25 @@ class FileImage extends File
     }
 
     /**
+     * Getting default image URL
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function getDefaultUrl(): string
+    {
+        if (is_null($this->_imageSizes)) {
+            $this->_setImageSizes();
+        }
+
+        if (empty($this->_imageSizes)) {
+            return $this->getUrl();
+        }
+
+        return $this->getUrl($this->_imageSizes[0]['id']);
+    }
+
+    /**
      * Getting file favicon URL
      *
      * @return string|null
@@ -446,15 +465,26 @@ class FileImage extends File
             throw new Exception('Image object not loaded');
         }
         if (is_null($this->_imageSizes)) {
-            $conditions = ['file_id' => $this->_id];
-            $order = ['id' => 'ASC'];
-            $imageSizes = new ImageSizeList($this->_settings, $conditions, $order, 1, null);
-            $this->_imageSizes = $imageSizes->get();
-            if (!$this->_imageSizes) {
-                $this->_imageSizes = null;
-            }
+            $this->_setImageSizes();
         }
         return $this->_imageSizes;
+    }
+
+    /**
+     * Setting image sizes array
+     *
+     * @return void
+     * @throws Exception
+     */
+    private function _setImageSizes(): void
+    {
+        $conditions = ['file_id' => $this->_id];
+        $order = ['id' => 'ASC'];
+        $imageSizes = new ImageSizeList($this->_settings, $conditions, $order, 1, null);
+        $this->_imageSizes = $imageSizes->get();
+        if (!$this->_imageSizes) {
+            $this->_imageSizes = null;
+        }
     }
 
     /**

@@ -197,6 +197,7 @@ class AdminUser extends AbstractController implements ControllerInterface
             return;
         }
 
+        $user->loadAvatar();
         $userArr = $user->get();
         $userArr['password'] = '';
         if (!empty($userArr['contacts'])) {
@@ -221,7 +222,10 @@ class AdminUser extends AbstractController implements ControllerInterface
             ],
             'formValidators' => $this->_getFormValidators(),
             'formJsons' => [
-                'contacts' => [ "Country", "City", "Address", "Zip", "Twitter", "Instagram", "LinkedIn", "YouTube", "Discord", "Website", "Blog", "Other"], //TODO add locale
+                'contacts' => [ "Country", "City", "Address", "Zip", "Twitter", "Instagram", "LinkedIn", "YouTube", "Discord", "Website", "Blog", "Other"],
+            ],
+            'formFiles' => [
+                'avatar' => $user->avatarUrl,
             ],
         ], true);
     }

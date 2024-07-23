@@ -59,6 +59,13 @@ $routers = [
         'useVendor' => true
     ],
 
+    'api/v1/admin/user/$id/avatar' => [ //Upload avatar in admin
+        'method' => 'POST',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
+        'controllerMethod' => 'uploadAvatar',
+        'useVendor' => true
+    ],
+
     'api/v1/admin/user/$id/password' => [ //Edit user password by ID
         'method' => 'POST',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
