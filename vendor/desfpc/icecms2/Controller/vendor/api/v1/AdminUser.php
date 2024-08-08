@@ -37,16 +37,8 @@ class AdminUser extends AbstractController implements ControllerInterface
     public function password(): void
     {
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
-
-        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
-            $this->renderJson(['message' => 'No User ID passed'], false);
-            return;
-        }
-
-        $id = (int)$this->routing->pathInfo['query_vars']['id'];
-        $user = new User($this->settings);
-        if (!$user->load($id)) {
-            $this->renderJson(['message' => 'Wrong User ID'], false);
+        $user = $this->_checkUserFromRequest();
+        if ($user === null) {
             return;
         }
 
@@ -71,16 +63,8 @@ class AdminUser extends AbstractController implements ControllerInterface
     public function edit(): void
     {
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
-
-        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
-            $this->renderJson(['message' => 'No User ID passed'], false);
-            return;
-        }
-
-        $id = (int)$this->routing->pathInfo['query_vars']['id'];
-        $user = new User($this->settings);
-        if (!$user->load($id)) {
-            $this->renderJson(['message' => 'Wrong User ID'], false);
+        $user = $this->_checkUserFromRequest();
+        if ($user === null) {
             return;
         }
 
@@ -100,16 +84,8 @@ class AdminUser extends AbstractController implements ControllerInterface
     public function editProperty(): void
     {
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
-
-        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
-            $this->renderJson(['message' => 'No User ID passed'], false);
-            return;
-        }
-
-        $id = (int)$this->routing->pathInfo['query_vars']['id'];
-        $user = new User($this->settings);
-        if (!$user->load($id)) {
-            $this->renderJson(['message' => 'Wrong User ID'], false);
+        $user = $this->_checkUserFromRequest();
+        if ($user === null) {
             return;
         }
 
@@ -148,22 +124,12 @@ class AdminUser extends AbstractController implements ControllerInterface
     public function delete(): void
     {
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
-
-        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
-            $this->renderJson(['message' => 'No User ID passed'], false);
+        $user = $this->_checkUserFromRequest();
+        if ($user === null) {
             return;
         }
 
-        $userId = (int)$this->routing->pathInfo['query_vars']['id'];
-
-        try {
-            $user = new User($this->settings);
-        } catch (Exception $e) {
-            $this->renderJson(['message' => $e->getMessage()], false);
-            return;
-        }
-
-        if (!$user->load($userId)) {
+        if (!$user->load($user->id)) {
             $this->renderJson(['message' => 'Wrong User ID'], false);
             return;
         }
@@ -184,18 +150,11 @@ class AdminUser extends AbstractController implements ControllerInterface
     public function get(): void
     {
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
-
-        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
-            $this->renderJson(['message' => 'No User ID passed'], false); ;//TODO add locale
+        $user = $this->_checkUserFromRequest();
+        if ($user === null) {
             return;
         }
-
-        $userId = (int) $this->routing->pathInfo['query_vars']['id'];
-        $user = new User($this->settings);
-        if (!$user->load($userId)) {
-            $this->renderJson(['message' => 'Wrong User ID'], false); //TODO add locale
-            return;
-        }
+        $userId = $user->id;
 
         $user->loadAvatar();
         $userArr = $user->get();
@@ -228,6 +187,27 @@ class AdminUser extends AbstractController implements ControllerInterface
                 'avatar' => $user->avatarUrl,
             ],
         ], true);
+    }
+
+    /**
+     * @return ?User
+     * @throws Exception
+     */
+    private function _checkUserFromRequest(): ?User
+    {
+        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
+            $this->renderJson(['message' => 'No User ID passed'], false);
+            return null;
+        }
+
+        $id = (int)$this->routing->pathInfo['query_vars']['id'];
+        $user = new User($this->settings);
+        if (!$user->load($id)) {
+            $this->renderJson(['message' => 'Wrong User ID'], false);
+            return null;
+        }
+
+        return $user;
     }
 
     /**
