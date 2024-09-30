@@ -105,24 +105,34 @@ export default {
             this.user.languages = value;
         },
 
+        showUpdateError(message) {
+            this.alert.class = 'alert alert-danger sticky-top'
+            this.alert.message = message
+            this.alert.show = true
+        },
+
         save() {
+            let ifError = true;
+            let ifMessage = 'Error in profile update';
+
             if (this.$checkValidation()) {
                 axios.post('/api/v1/profile/update', this.user).then(response => {
-
                     if (response.data.success === true) {
+                        ifError = false;
                         this.alert.class = 'alert alert-success sticky-top'
                         this.alert.message = 'Profile updated'
                         this.alert.show = true
                     } else {
-                        this.alert.class = 'alert alert-danger sticky-top'
-                        this.alert.message = 'Error in profile update'
-                        this.alert.show = true
+                        ifMessage = response.data.message;
                     }
-                })
-            } else {
-                this.alert.class = 'alert alert-danger sticky-top'
-                this.alert.message = 'Form not valid!'
-                this.alert.show = true
+                }).catch(function (error) {
+                    ifMessage = error.response.data.message;
+                    console.log(error);
+                });
+            }
+
+            if (ifError) {
+                this.showUpdateError(ifMessage);
             }
         },
 
