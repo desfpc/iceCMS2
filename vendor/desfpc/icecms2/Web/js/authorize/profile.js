@@ -56,6 +56,8 @@ export default {
                 old: '',
                 new: '',
             },
+            ifError: true,
+            ifMessage: '',
         }
     },
 
@@ -106,33 +108,36 @@ export default {
         },
 
         showUpdateError(message) {
-            this.alert.class = 'alert alert-danger sticky-top'
-            this.alert.message = message
-            this.alert.show = true
+
+            if (message !== '') {
+                this.alert.class = 'alert alert-danger sticky-top'
+                this.alert.message = message
+                this.alert.show = true
+            }
         },
 
         save() {
-            let ifError = true;
-            let ifMessage = 'Error in profile update';
-
             if (this.$checkValidation()) {
                 axios.post('/api/v1/profile/update', this.user).then(response => {
                     if (response.data.success === true) {
-                        ifError = false;
+                        this.ifError = false
                         this.alert.class = 'alert alert-success sticky-top'
                         this.alert.message = 'Profile updated'
                         this.alert.show = true
                     } else {
-                        ifMessage = response.data.message;
+                        this.ifMessage = response.data.message;
+                        this.showUpdateError(this.ifMessage)
                     }
                 }).catch(function (error) {
-                    ifMessage = error.response.data.message;
-                    console.log(error);
-                });
-            }
-
-            if (ifError) {
-                this.showUpdateError(ifMessage);
+                    this.ifMessage = error.response.data.message;
+                    if (Array.isArray(error.response.data.data.errors) === true && error.response.data.data.errors.length > 0) {
+                        this.ifMessage = ''
+                        for (let i = 0; i < error.response.data.data.errors.length; i++) {
+                            this.ifMessage += error.response.data.data.errors[i] + '; '
+                        }
+                        this.showUpdateError(this.ifMessage)
+                    }
+                }.bind(this));
             }
         },
 

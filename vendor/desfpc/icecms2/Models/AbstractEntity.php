@@ -361,7 +361,7 @@ abstract class AbstractEntity
                 $this->errors[] = $this->_db->getWarningText();
             }
         } else {
-            $this->errors[] = 'Error while saving Entity: no dirty values';
+            $this->errors[] = 'Error while saving: no data to save';
         }
         return false;
     }
