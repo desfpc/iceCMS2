@@ -79,6 +79,30 @@ class Settings
         ],
         'routes' => [],
         'isUseCms' => 1,
+        'search' =>[
+            'type' => 1,
+            'login' => 1,
+            'password' => 1
+        ],
+        'queue' => [
+            'mysql' => [
+                'type' => 1,
+                'name' => 1,
+                'host' => 1,
+                'port' => 1,
+                'login' => 1,
+                'pass' => 1,
+                'encoding' => 1,
+                'clear_completed_task' => 1,
+            ],
+            'redis' => [
+                'host' => 1,
+                'redisPort' => 1,
+                'redisDB' => 1,
+                'clear_completed_task' => 1,
+            ],
+            'default' => 1
+        ]
     ];
     
     /** @var stdClass|null DataBase settings */

@@ -10,10 +10,10 @@ declare(strict_types=1);
 
 namespace app\Controllers\vendor;
 
-use iceCMS2\Commands\Logs\ClearLogs;
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\Locale\LocaleText;
+use iceCMS2\Commands\Logs\ClearLogsCommand;
 use iceCMS2\Models\User;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Tools\FlashVars;
@@ -109,9 +109,9 @@ class AdminLogs extends AbstractController implements ControllerInterface
      */
     public function clearAllLogs(): void
     {
-        $result = ClearLogs::clearAllLogs();
+        $result = ClearLogsCommand::clearAllLogs();
 
-        $this->getMessage($result, 'Clear All Logs');
+        $this->_getMessage($result, 'Clear All Logs');
 
         $this->_redirect('/admin/logs/');
     }
@@ -122,9 +122,9 @@ class AdminLogs extends AbstractController implements ControllerInterface
      */
     public function clearOnPeriodLogs(): void
     {
-        $result = ClearLogs::ClearOnPeriodLogs();
+        $result = ClearLogsCommand::ClearOnPeriodLogs();
 
-        $this->getMessage($result, 'Cleared the logs for the period');
+        $this->_getMessage($result, 'Cleared the logs for the period');
 
         $this->_redirect('/admin/logs/');
     }
@@ -135,7 +135,7 @@ class AdminLogs extends AbstractController implements ControllerInterface
      *
      * @return void
      */
-    private function getMessage(bool $result, string $message): void
+    private function _getMessage(bool $result, string $message): void
     {
         $flashVars = new FlashVars();
 

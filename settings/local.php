@@ -68,4 +68,28 @@ $settings = [
     ],
     'routes' => $routers,
     'isUseCms' => true,
+    'search' => [
+        'type' => 'Elastic',
+        'login' => 'elastic',
+        'password' => 'MyPw123'
+    ],
+    'queue' => [
+        'mysql' => [
+            'host' => 'db-icecms',
+            'type' => 'MySQL',
+            'name' => 'ice2',
+            'port' => '3306',
+            'login' => 'root',
+            'pass' => 'localRoot',
+            'encoding' => 'UTF8',
+            'clear_completed_task' => false,
+        ],
+        'redis' => [
+            'host' => 'redis-icecms',
+            'redisPort' => 6379,
+            'redisDB' => 2,
+            'clear_completed_task' => false,
+        ],
+        'default' => 'mysql'
+    ]
 ];

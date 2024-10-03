@@ -42,21 +42,25 @@ class FileLogger implements LoggerInterface
 
     /**
      * @param Settings $settings
+     * @param string|null $period
      *
      * @return bool
      */
-    public static function clearOnPeriodLogs(Settings $settings): bool
+    public static function clearOnPeriodLogs(Settings $settings, ?string $period = null): bool
     {
-        $period = isset($settings->logs->periodClear) ? $settings->logs->periodClear : 'month';
+        if(is_null($period)){
+            $period = isset($settings->logs->periodClear) ? $settings->logs->periodClear : 'month';
+        }
 
         $periodData = match ($period) {
-            'day' => date('Y-m-d'),
+            'm' => date('Y-m'),
             'month' => date('Y-m'),
+            'y' => date('Y'),
             'year' => date('Y'),
             default => date('Y-m-d')
         };
 
-        $rmFiles = self::gerFileName($period, $periodData);
+        $rmFiles = self::_gerFileName($period, $periodData);
 
         $i = 0;
         foreach ($rmFiles as $rmFile) {
@@ -94,7 +98,7 @@ class FileLogger implements LoggerInterface
      *
      * @return array
      */
-    private static function gerFileName(string $period, string $periodData): array
+    private static function _gerFileName(string $period, string $periodData): array
     {
         $dir = dir(self::PATH);
 

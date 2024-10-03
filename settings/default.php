@@ -68,4 +68,9 @@ $settings = [
     ],
     'routes' => $routers,
     'isUseCms' => true,
+    'search' => [
+        'type' => 'Elastic',
+        'login' => 'elastic',
+        'password' => 'MyPw123'
+    ],
 ];

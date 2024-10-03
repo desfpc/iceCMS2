@@ -52,26 +52,35 @@ class DBLogger implements LoggerInterface
 
     /**
      * @param Settings $settings
+     * @param string|null $period
      *
      * @return array|bool|int
      * @throws Exception
      */
-    public static function clearOnPeriodLogs(Settings $settings): array|bool|int
+    public static function clearOnPeriodLogs(Settings $settings, ?string $period = null): array|bool|int
     {
-        $db = self::getDDFactory($settings);
+        $db = self::_getDDFactory($settings);
 
-        $query = match ($settings->logs->periodClear) {
-            'day' => [
-                'qyery' => 'DELETE FROM logs WHERE DATE(created_time) = ?',
-                'param' => [date('Y-m-d')]
+        $query = match (is_null($period) ? $settings->logs->periodClear : $period) {
+            'm' => [
+                'qyery' => 'DELETE FROM logs WHERE YEAR(created_time) = ? AND MONTH(created_time) = ?',
+                'param' => [date('Y'), date('m')]
             ],
             'month' => [
                 'qyery' => 'DELETE FROM logs WHERE YEAR(created_time) = ? AND MONTH(created_time) = ?',
                 'param' => [date('Y'), date('m')]
             ],
+            'y' => [
+                'qyery' => 'DELETE FROM logs WHERE YEAR(created_time) = ?',
+                'param' => [date('Y')]
+            ],
             'year' => [
                 'qyery' => 'DELETE FROM logs WHERE YEAR(created_time) = ?',
                 'param' => [date('Y')]
+            ],
+            default => [
+                'qyery' => 'DELETE FROM logs WHERE DATE(created_time) = ?',
+                'param' => [date('Y-m-d')]
             ],
         };
 
@@ -86,7 +95,7 @@ class DBLogger implements LoggerInterface
      */
     public static function clearAllLogs(Settings $settings): array|bool|int
     {
-        $db = self::getDDFactory($settings);
+        $db = self::_getDDFactory($settings);
         return $db->query('TRUNCATE TABLE logs');
     }
 
@@ -96,7 +105,7 @@ class DBLogger implements LoggerInterface
      * @return DBInterface|null
      * @throws Exception
      */
-    private static function getDDFactory(Settings $settings): ?DBInterface
+    private static function _getDDFactory(Settings $settings): ?DBInterface
     {
         $db = (new DBFactory($settings))->db;
         $db->connect();

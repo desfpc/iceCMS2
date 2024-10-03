@@ -29,6 +29,15 @@ iceCMS2\DB\DBInterface
 - run in php-fpm container: php cli.php make-symlinks
 - view site in your browser http://localhost:8181
 
+## ElasticSearch
+ - To run ElasticSearch, run docker
+ - An example of working with ElasticSearch can be found in SearchTest
+ - To implement your own ElasticSearch wishlist, use:
+   - $ch = SearchFactory::instance($settings)->curlStart(...)
+   - {body}
+   - SearchFactory::instance($settings)->curlEnd($ch, ...)
+ - A convenient plug-in for working with search through the browser - [ElasticVue](https://chromewebstore.google.com/detail/hkedbapjpblbodpgbajblpnlpenaebaa)
+
 ## Work with iceCMS2 client:
 - cd to {repository foldder}
 - run: php cli.php help
