@@ -5,7 +5,7 @@ export default {
                 phone: null,
                 telegram: null,
                 language: null,
-                languages: [],
+                languages: null,
                 name: null,
                 nikname: null,
                 status: null,
@@ -99,12 +99,8 @@ export default {
             })
         },
 
-        setLanguages(value, key) {
-            if (!value.includes(this.user.language)) {
-                value.push(this.user.language);
-            }
-
-            this.user.languages = value;
+        setLanguages(key, data) {
+            this.user.languages = data;
         },
 
         showUpdateError(message) {
@@ -205,6 +201,7 @@ export default {
 
     mounted() {
         const startData = JSON.parse(document.getElementById('start-data').innerHTML)
+        //startData.user.languages = JSON.stringify(startData.user.languages)
 
         this.user = startData.user
         this.languages = startData.languages

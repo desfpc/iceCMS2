@@ -133,7 +133,7 @@ $user = $this->templateData['user'];
                                     </div>
                                     <label for="languages" class="col-sm-2 col-form-label text-end">Known languages: </label>
                                     <div class="col-sm-4">
-                                        <Checkbox-Group :value="user.languages" :data-Array="languages" :callback="setLanguages"></Checkbox-Group>
+                                        <Checkbox-Group :value="user.languages" :data-Array="languages" :callback="setLanguages" data-Key="languages"></Checkbox-Group>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">

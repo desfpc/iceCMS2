@@ -389,7 +389,7 @@ class User extends AbstractController implements ControllerInterface //TODO crea
             try {
                 $data['contacts'] = json_encode($data['contacts']);
             } catch (\Throwable $e) {
-                $data['contacts'] = [];
+                $data['contacts'] = '[]';
             }
         }
 
@@ -397,7 +397,7 @@ class User extends AbstractController implements ControllerInterface //TODO crea
             try {
                 $data['languages'] = json_encode($data['languages']);
             } catch (\Throwable $e) {
-                $data['languages'] = [];
+                $data['languages'] = '[]';
             }
         }
 

@@ -15,6 +15,7 @@ use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\DTO\UserListAdminDto;
 use iceCMS2\Helpers\Strings;
 use iceCMS2\Locale\LocaleText;
+use iceCMS2\Models\FileImage;
 use iceCMS2\Models\User;
 use iceCMS2\Models\UserList;
 use iceCMS2\Tools\Exception;
@@ -69,10 +70,75 @@ class AdminUser extends AbstractController implements ControllerInterface
         }
 
         $data = json_decode(file_get_contents('php://input'), true);
-        //TODO update user data
+        $unsetArr = ['avatar', 'email_approve_code', 'email_approved', 'email_send_time', 'phone_approve_code',
+            'password', 'phone_approved', 'phone_send_time', 'created_at',];
 
-        print_r($user->email);
-        print_r($data);
+        foreach ($unsetArr as $unset) {
+            if (isset($data[$unset])) {
+                unset($data[$unset]);
+            }
+        }
+
+        if (isset($data['contacts'])) {
+            try {
+                $data['contacts'] = json_encode($data['contacts']);
+            } catch (\Throwable $e) {
+                $data['contacts'] = '[]';
+            }
+        }
+
+        if (isset($data['languages']) && is_array($data['languages'])) {
+            try {
+                $data['languages'] = json_encode($data['languages']);
+            } catch (\Throwable $e) {
+                $data['languages'] = '[]';
+            }
+        }
+
+        try {
+            $user->set($data);
+            if ($user->save()) {
+                $this->renderJson(['message' => 'Profile updated'], true);
+            } else {
+                $this->renderJson(['message' => 'Error in profile updating', 'errors' => $user->errors], false);
+            }
+        } catch (Exception $e) {
+            $this->renderJson(['message' => $e->getMessage()], false);
+        }
+    }
+
+    /**
+     * Upload User Avatar
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function uploadAvatar(): void
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+        $user = $this->_checkUserFromRequest();
+        if ($user === null) {
+            return;
+        }
+
+        $file = new FileImage($this->settings);
+
+        if ($file->savePostFile('file')) {
+            if (!is_null($user->get('avatar'))) {
+                $oldAvatar = new FileImage($this->settings);
+                $oldAvatar->load((int)$user->get('avatar'));
+                $oldAvatar->del();
+            }
+
+            $fileId = $file->get('id');
+
+            $user->set('avatar', $fileId);
+            $user->save();
+            $user->loadAvatar();
+            $this->renderJson(['file' => $fileId, 'url' => $user->avatarUrl, 'message' => 'Avatar changed'], true);
+        } else {
+            $this->renderJson(['message' => 'Error in avatar uploading'], false);
+        }
     }
 
     /**
