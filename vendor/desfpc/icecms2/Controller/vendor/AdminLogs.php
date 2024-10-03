@@ -10,9 +10,10 @@ declare(strict_types=1);
 
 namespace app\Controllers\vendor;
 
-use iceCMS2\Commands\Logs\ClearLogsCommand;
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
+use iceCMS2\Locale\LocaleText;
+use iceCMS2\Commands\Logs\ClearLogsCommand;
 use iceCMS2\Models\User;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Tools\FlashVars;
@@ -44,6 +45,7 @@ class AdminLogs extends AbstractController implements ControllerInterface
 
     /**
      * @return void
+     * @throws Exception
      */
     public function instance(): void
     {
@@ -55,6 +57,7 @@ class AdminLogs extends AbstractController implements ControllerInterface
 
     /**
      * @return void
+     * @throws Exception
      */
     public function getLogInDB(): void
     {
@@ -72,12 +75,14 @@ class AdminLogs extends AbstractController implements ControllerInterface
         }
 
         if (0 === $i) {
-            echo "<p class='mt-5 alert alert-danger'>Логов пока нет</p>";
+            $notice = LocaleText::get($this->settings, 'log/notices/No logs yet', [], $this->settings->locale);
+            echo "<p class='mt-5 alert alert-danger'>$notice</p>";
         }
     }
 
     /**
      * @return void
+     * @throws Exception
      */
     public function getLogNameFiles(): void
     {
@@ -93,7 +98,8 @@ class AdminLogs extends AbstractController implements ControllerInterface
         }
 
         if (0 === $i) {
-            echo "<p class='mt-5 alert alert-danger'>Логов пока нет</p>";
+            $notice = LocaleText::get($this->settings, 'log/notices/No logs yet', [], $this->settings->locale);
+            echo "<p class='mt-5 alert alert-danger'>$notice</p>";
         }
     }
 

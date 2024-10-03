@@ -36,4 +36,30 @@ class AdminUsers extends AbstractController implements ControllerInterface
 
         $this->renderTemplate('main');
     }
+
+    /**
+     * Edit user method
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function edit(): void
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+
+        $id = (int) $this->routing->pathInfo['query_vars']['id'];
+        if (empty($id)) {
+            $this->_redirect('/404');
+        }
+
+        $this->templateData['id'] = $id;
+
+        $this->breadcrumbs = [
+            ['title' => 'Admin dashboard', 'url' => '/admin/'],
+            ['title' => 'Users', 'url' => '/admin/users/'],
+            ['title' => 'Edit user', 'url' => '/users/edit/']
+        ];
+
+        $this->renderTemplate('edit');
+    }
 }

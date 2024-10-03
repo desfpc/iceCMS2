@@ -14,6 +14,8 @@ use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\DTO\UserListAdminDto;
 use iceCMS2\Helpers\Strings;
+use iceCMS2\Locale\LocaleText;
+use iceCMS2\Models\FileImage;
 use iceCMS2\Models\User;
 use iceCMS2\Models\UserList;
 use iceCMS2\Tools\Exception;
@@ -28,7 +30,33 @@ class AdminUser extends AbstractController implements ControllerInterface
     ];
 
     /**
-     * Edit User separate params
+     * Edit User password
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function password(): void
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+        $user = $this->_checkUserFromRequest();
+        if ($user === null) {
+            return;
+        }
+
+        $this->requestParameters->getRequestValues(['password', 'repeatPassword']);
+        $password = $this->requestParameters->values->password;
+        $repeatPassword = $this->requestParameters->values->repeatPassword;
+
+        if ($password !== $repeatPassword) {
+            $this->renderJson(['message' => 'Passwords do not match'], false); //TODO add locale
+            return;
+        }
+
+        $this->renderJson(['message' => 'Password changed - ' .  $this->requestParameters->values->password . ' - ' . $this->requestParameters->values->repeatPassword], true);
+    }
+
+    /**
+     * Edit User Form
      *
      * @return void
      * @throws Exception
@@ -36,16 +64,94 @@ class AdminUser extends AbstractController implements ControllerInterface
     public function edit(): void
     {
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
-
-        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
-            $this->renderJson(['message' => 'No User ID passed'], false);
+        $user = $this->_checkUserFromRequest();
+        if ($user === null) {
             return;
         }
 
-        $id = (int)$this->routing->pathInfo['query_vars']['id'];
-        $user = new User($this->settings);
-        if (!$user->load($id)) {
-            $this->renderJson(['message' => 'Wrong User ID'], false);
+        $data = json_decode(file_get_contents('php://input'), true);
+        $unsetArr = ['avatar', 'email_approve_code', 'email_approved', 'email_send_time', 'phone_approve_code',
+            'password', 'phone_approved', 'phone_send_time', 'created_at',];
+
+        foreach ($unsetArr as $unset) {
+            if (isset($data[$unset])) {
+                unset($data[$unset]);
+            }
+        }
+
+        if (isset($data['contacts'])) {
+            try {
+                $data['contacts'] = json_encode($data['contacts']);
+            } catch (\Throwable $e) {
+                $data['contacts'] = '[]';
+            }
+        }
+
+        if (isset($data['languages']) && is_array($data['languages'])) {
+            try {
+                $data['languages'] = json_encode($data['languages']);
+            } catch (\Throwable $e) {
+                $data['languages'] = '[]';
+            }
+        }
+
+        try {
+            $user->set($data);
+            if ($user->save()) {
+                $this->renderJson(['message' => 'Profile updated'], true);
+            } else {
+                $this->renderJson(['message' => 'Error in profile updating', 'errors' => $user->errors], false);
+            }
+        } catch (Exception $e) {
+            $this->renderJson(['message' => $e->getMessage()], false);
+        }
+    }
+
+    /**
+     * Upload User Avatar
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function uploadAvatar(): void
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+        $user = $this->_checkUserFromRequest();
+        if ($user === null) {
+            return;
+        }
+
+        $file = new FileImage($this->settings);
+
+        if ($file->savePostFile('file')) {
+            if (!is_null($user->get('avatar'))) {
+                $oldAvatar = new FileImage($this->settings);
+                $oldAvatar->load((int)$user->get('avatar'));
+                $oldAvatar->del();
+            }
+
+            $fileId = $file->get('id');
+
+            $user->set('avatar', $fileId);
+            $user->save();
+            $user->loadAvatar();
+            $this->renderJson(['file' => $fileId, 'url' => $user->avatarUrl, 'message' => 'Avatar changed'], true);
+        } else {
+            $this->renderJson(['message' => 'Error in avatar uploading'], false);
+        }
+    }
+
+    /**
+     * Edit User separate params
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function editProperty(): void
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+        $user = $this->_checkUserFromRequest();
+        if ($user === null) {
             return;
         }
 
@@ -84,22 +190,12 @@ class AdminUser extends AbstractController implements ControllerInterface
     public function delete(): void
     {
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
-
-        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
-            $this->renderJson(['message' => 'No User ID passed'], false);
+        $user = $this->_checkUserFromRequest();
+        if ($user === null) {
             return;
         }
 
-        $userId = (int)$this->routing->pathInfo['query_vars']['id'];
-
-        try {
-            $user = new UserModel($this->settings);
-        } catch (Exception $e) {
-            $this->renderJson(['message' => $e->getMessage()], false);
-            return;
-        }
-
-        if (!$user->load((int)$userId)) {
+        if (!$user->load($user->id)) {
             $this->renderJson(['message' => 'Wrong User ID'], false);
             return;
         }
@@ -109,6 +205,162 @@ class AdminUser extends AbstractController implements ControllerInterface
         } else {
             $this->renderJson(['message' => 'User not deleted'], false);
         }
+    }
+
+    /**
+     * Get User by ID for editing
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function get(): void
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+        $user = $this->_checkUserFromRequest();
+        if ($user === null) {
+            return;
+        }
+        $userId = $user->id;
+
+        $user->loadAvatar();
+        $userArr = $user->get();
+        $userArr['password'] = '';
+        if (!empty($userArr['contacts'])) {
+            $userArr['contacts'] = json_decode($userArr['contacts'], true);
+        }
+
+        $this->renderJson([
+            'formData' => $userArr,
+            'formTypes' => $this->_getFormTypes(),
+            'formNames' => $this->_getFormNames(),
+            'formSelects' => $this->_getFormSelects(),
+            'formMultiSelects' => $this->_getFormMultiSelects(),
+            'formActions' => [
+                'save' => '/api/v1/admin/user/' . $userId . '/edit',
+                'avatar' => '/api/v1/admin/user/' . $userId . '/avatar',
+                'password' => '/api/v1/admin/user/' . $userId . '/password',
+            ],
+            'formButtons' => [
+                'save' => LocaleText::get($this->settings, 'form/actions/save', [], $this->settings->locale),
+                'load' => LocaleText::get($this->settings, 'form/actions/reset', [], $this->settings->locale),
+                'password' => LocaleText::get($this->settings, 'form/actions/change', [], $this->settings->locale),
+            ],
+            'formValidators' => $this->_getFormValidators(),
+            'formJsons' => [
+                'contacts' => [ "Country", "City", "Address", "Zip", "Twitter", "Instagram", "LinkedIn", "YouTube", "Discord", "Website", "Blog", "Other"],
+            ],
+            'formFiles' => [
+                'avatar' => $user->avatarUrl,
+            ],
+        ], true);
+    }
+
+    /**
+     * @return ?User
+     * @throws Exception
+     */
+    private function _checkUserFromRequest(): ?User
+    {
+        if (!isset($this->routing->pathInfo['query_vars']['id'])) {
+            $this->renderJson(['message' => 'No User ID passed'], false);
+            return null;
+        }
+
+        $id = (int)$this->routing->pathInfo['query_vars']['id'];
+        $user = new User($this->settings);
+        if (!$user->load($id)) {
+            $this->renderJson(['message' => 'Wrong User ID'], false);
+            return null;
+        }
+
+        return $user;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function _getFormTypes(): array
+    {
+        return [
+            'id' => 'label',
+            'avatar' => 'avatar',
+            'contacts' => 'jsonKeyValue',
+            'created_time' => 'label',
+            'email' => 'label',
+            'email_approved' => 'checkbox',
+            'email_send_time' => 'label',
+            'language' => 'select',
+            'languages' => 'multiSelect',
+            'password' => 'password',
+            'phone_approved' => 'checkbox',
+            'phone_send_time' => 'label',
+            'role' => 'select',
+            'sex' => 'select',
+            'status' => 'select',
+        ];
+    }
+
+    /**
+     * Get form validators array
+     *
+     * @return array
+     */
+    private function _getFormValidators(): array
+    {
+        return [
+            'avatar' => 'empty|positiveInteger',
+            'email_approved' => 'bool',
+            'email_approve_code' => 'empty|string',
+            'language' => 'string',
+            'name' => 'empty|string',
+            'nikname' => 'string',
+            'phone' => 'empty|string',
+            'phone_approved' => 'bool',
+            'phone_approve_code' => 'empty|string',
+            'rating' => 'float',
+            'role' => 'string',
+            'sex' => 'string',
+            'status' => 'string',
+            'telegram' => 'empty|string',
+        ];
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    private function _getFormNames(): array
+    {
+        return LocaleText::get($this->settings, 'user/fields', [], $this->settings->locale, true);
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    private function _getFormSelects(): array
+    {
+        return [
+            'language' => array_combine($this->settings->locales, $this->settings->locales),
+            'status' => LocaleText::get($this->settings, 'user/statuses', [], $this->settings->locale, true),
+            'role' => LocaleText::get($this->settings, 'user/roles', [], $this->settings->locale, true),
+            'sex' => LocaleText::get($this->settings, 'user/sexes', [], $this->settings->locale, true),
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    private function _getFormMultiSelects(): array
+    {
+        return [
+            'languages' => [
+                ['text' => 'English', 'value' => 'en'],
+                ['text' => 'Русский', 'value' => 'ru'],
+                ['text' => 'ქართული', 'value' => 'ge'],
+                ['text' => 'Српски', 'value' => 'rs'],
+            ],
+        ];
     }
 
     /**
@@ -127,7 +379,7 @@ class AdminUser extends AbstractController implements ControllerInterface
             'cols' => [
                 [
                     'id' => 'id',
-                    'name' => 'ID',
+                    'name' => LocaleText::get($this->settings, 'user/fields/id', [], $this->settings->locale),
                     'ordered' => true,
                     'action' => 'link',
                     'actionUrl' => '/admin/user/{id}/edit/',
@@ -140,18 +392,18 @@ class AdminUser extends AbstractController implements ControllerInterface
                 ],
                 [
                     'id' => 'telegram',
-                    'name' => 'Telegram',
+                    'name' => LocaleText::get($this->settings, 'user/fields/telegram', [], $this->settings->locale),
                     'ordered' => true,
                     'editable' => true,
-                    'editUrl' => '/api/v1/admin/user/{id}/edit',
+                    'editUrl' => '/api/v1/admin/user/{id}/edit-prop',
                     'inputType' => 'input',
                 ],
                 [
                     'id' => 'role',
-                    'name' => 'Role',
+                    'name' => LocaleText::get($this->settings, 'user/fields/role', [], $this->settings->locale),
                     'ordered' => true,
                     'editable' => true,
-                    'editUrl' => '/api/v1/admin/user/{id}/edit',
+                    'editUrl' => '/api/v1/admin/user/{id}/edit-prop',
                     'inputType' => 'select',
                     'selectArray' => [
                         'user' => 'User',
@@ -161,10 +413,10 @@ class AdminUser extends AbstractController implements ControllerInterface
                 ],
                 [
                     'id' => 'status',
-                    'name' => 'Status',
+                    'name' => LocaleText::get($this->settings, 'user/fields/status', [], $this->settings->locale),
                     'ordered' => true,
                     'editable' => true,
-                    'editUrl' => '/api/v1/admin/user/{id}/edit',
+                    'editUrl' => '/api/v1/admin/user/{id}/edit-prop',
                     'inputType' => 'select',
                     'selectArray' => [
                         'created' => 'Created',
@@ -174,7 +426,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                 ],
                 [
                     'id' => 'created_time',
-                    'name' => 'Created Time',
+                    'name' => LocaleText::get($this->settings, 'user/fields/created_time', [], $this->settings->locale),
                     'ordered' => true,
                 ],
                 [

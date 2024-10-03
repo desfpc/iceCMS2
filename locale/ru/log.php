@@ -12,4 +12,10 @@ $langArr = [
     'errors' => [
         'Error creating log table: {tableName}' => 'Ошибка создания таблицы логов: {tableName}',
     ],
+    'notices' => [
+        'No logs yet' => 'Логов пока нет',
+        'Sorry, but you don`t have logs.' => 'Извините, но у вас нет логов.',
+        'Cleared the logs for the period' => 'Очищены логи за период',
+        'Clear All Logs' => 'Очистить все логи',
+    ],
 ];

@@ -18,4 +18,5 @@ web/js/vuebootstrap
 web/js/vendor
 templates/vendor/ice
 controllers/vendor
-/elasticsearch/
+/elasticsearch
+/elasticsearch/*

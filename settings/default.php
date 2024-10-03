@@ -52,8 +52,7 @@ $settings = [
         'jsScriptsVersion' => '1',
     ],
     'locales' => [
-        'en',
-        'ru',
+        'en', 'ru', 'ge', 'rs',
     ],
     'locale' => 'en',
     'logs' => [

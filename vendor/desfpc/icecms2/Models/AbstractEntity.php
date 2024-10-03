@@ -289,7 +289,6 @@ abstract class AbstractEntity
                 }
             } else {
                 $this->_ifGetTableColsError();
-                $this->_getTableCols();
             }
         }
     }
@@ -362,7 +361,7 @@ abstract class AbstractEntity
                 $this->errors[] = $this->_db->getWarningText();
             }
         } else {
-            $this->errors[] = 'Error while saving Entity: no dirty values';
+            $this->errors[] = 'Error while saving: no data to save';
         }
         return false;
     }

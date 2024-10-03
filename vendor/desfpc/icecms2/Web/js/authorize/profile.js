@@ -5,6 +5,7 @@ export default {
                 phone: null,
                 telegram: null,
                 language: null,
+                languages: null,
                 name: null,
                 nikname: null,
                 status: null,
@@ -41,6 +42,7 @@ export default {
             languages: [
                 { text: 'English', value: 'en' },
                 { text: 'Русский', value: 'ru' },
+                { text: 'Српски', value: 'rs' },
                 { text: 'ქართული', value: 'ge' },
             ],
             sexes: [
@@ -54,6 +56,8 @@ export default {
                 old: '',
                 new: '',
             },
+            ifError: true,
+            ifMessage: '',
         }
     },
 
@@ -95,25 +99,41 @@ export default {
             })
         },
 
-        save() {
+        setLanguages(key, data) {
+            this.user.languages = data;
+        },
 
+        showUpdateError(message) {
+
+            if (message !== '') {
+                this.alert.class = 'alert alert-danger sticky-top'
+                this.alert.message = message
+                this.alert.show = true
+            }
+        },
+
+        save() {
             if (this.$checkValidation()) {
                 axios.post('/api/v1/profile/update', this.user).then(response => {
-
                     if (response.data.success === true) {
+                        this.ifError = false
                         this.alert.class = 'alert alert-success sticky-top'
                         this.alert.message = 'Profile updated'
                         this.alert.show = true
                     } else {
-                        this.alert.class = 'alert alert-danger sticky-top'
-                        this.alert.message = 'Error in profile update'
-                        this.alert.show = true
+                        this.ifMessage = response.data.message;
+                        this.showUpdateError(this.ifMessage)
                     }
-                })
-            } else {
-                this.alert.class = 'alert alert-danger sticky-top'
-                this.alert.message = 'Form not valid!'
-                this.alert.show = true
+                }).catch(function (error) {
+                    this.ifMessage = error.response.data.message;
+                    if (Array.isArray(error.response.data.data.errors) === true && error.response.data.data.errors.length > 0) {
+                        this.ifMessage = ''
+                        for (let i = 0; i < error.response.data.data.errors.length; i++) {
+                            this.ifMessage += error.response.data.data.errors[i] + '; '
+                        }
+                        this.showUpdateError(this.ifMessage)
+                    }
+                }.bind(this));
             }
         },
 
@@ -181,6 +201,7 @@ export default {
 
     mounted() {
         const startData = JSON.parse(document.getElementById('start-data').innerHTML)
+        //startData.user.languages = JSON.stringify(startData.user.languages)
 
         this.user = startData.user
         this.languages = startData.languages

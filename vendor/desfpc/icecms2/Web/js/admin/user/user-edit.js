@@ -5,6 +5,6 @@ export default {
     },
 
     mounted() {
-        console.log('Vue admin users loaded...')
+        console.log('Vue admin user loaded...')
     }
 }

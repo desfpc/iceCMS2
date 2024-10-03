@@ -30,28 +30,57 @@ $routers = [
     'admin/logs' => ['controller' => 'AdminLogs', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin' => ['controller' => 'Admin', 'controllerMethod' => 'main', 'useVendor' => true],
 
-    //API for admin and main pages (Session authorization)
-    'api/v1/admin/users' => [ //Admin Users list
+    //API for admin pages (Session authorization)
+    'api/v1/admin/users' => [ //Users list
         'method' => 'GET',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
         'controllerMethod' => 'list',
         'useVendor' => true
     ],
 
-    'api/v1/admin/user/$id/delete' => [
+    'api/v1/admin/user/$id/delete' => [ //Delete user by ID
         'method' => 'POST',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
         'controllerMethod' => 'delete',
         'useVendor' => true
     ],
 
-    'api/v1/admin/user/$id/edit' => [
+    'api/v1/admin/user/$id/edit-prop' => [ //Edit user property by user ID
+        'method' => 'POST',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
+        'controllerMethod' => 'editProperty',
+        'useVendor' => true
+    ],
+
+    'api/v1/admin/user/$id/edit' => [ //Edit user (all form) by ID
         'method' => 'POST',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
         'controllerMethod' => 'edit',
         'useVendor' => true
     ],
 
+    'api/v1/admin/user/$id/avatar' => [ //Upload avatar in admin
+        'method' => 'POST',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
+        'controllerMethod' => 'uploadAvatar',
+        'useVendor' => true
+    ],
+
+    'api/v1/admin/user/$id/password' => [ //Edit user password by ID
+        'method' => 'POST',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
+        'controllerMethod' => 'password',
+        'useVendor' => true
+    ],
+
+    'api/v1/admin/user/$id' => [ //User by ID
+        'method' => 'GET',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
+        'controllerMethod' => 'get',
+        'useVendor' => true
+    ],
+
+    //API for site pages (Session authorization)
     'api/v1/users' => [ //Users list
         'method' => 'GET',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'User',
