@@ -10,12 +10,14 @@ declare(strict_types=1);
 
 namespace app\Controllers\vendor\api\v1;
 
+use desfpc\Visualijoper\Visualijoper;
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\DTO\FilesListAdminDto;
 use iceCMS2\Helpers\Strings;
 use iceCMS2\Locale\LocaleText;
 use iceCMS2\Models\File;
+use iceCMS2\Models\FileList;
 use iceCMS2\Models\User;
 use iceCMS2\Models\UserList;
 use iceCMS2\Tools\Exception;
@@ -115,11 +117,9 @@ class AdminFiles extends AbstractController implements ControllerInterface
                     'id' => 'filename',
                     'name' => LocaleText::get($this->settings, 'files/fields/filename', [], $this->settings->locale),
                     'ordered' => true,
-                ],
-                [
-                    'id' => 'extension',
-                    'name' => LocaleText::get($this->settings, 'files/fields/extension', [], $this->settings->locale),
-                    'ordered' => true,
+                    'editable' => true,
+                    'editUrl' => '/api/v1/admin/files/{id}/edit-prop',
+                    'inputType' => 'input',
                 ],
                 [
                     'id' => 'filetype',
@@ -132,11 +132,6 @@ class AdminFiles extends AbstractController implements ControllerInterface
                     'ordered' => true,
                 ],
                 [
-                    'id' => 'url',
-                    'name' => LocaleText::get($this->settings, 'files/fields/url', [], $this->settings->locale),
-                    'ordered' => true,
-                ],
-                [
                     'id' => 'image_width',
                     'name' => LocaleText::get($this->settings, 'files/fields/image_width', [], $this->settings->locale),
                     'ordered' => true,
@@ -145,14 +140,6 @@ class AdminFiles extends AbstractController implements ControllerInterface
                     'id' => 'image_height',
                     'name' => LocaleText::get($this->settings, 'files/fields/image_height', [], $this->settings->locale),
                     'ordered' => true,
-                ],
-                [
-                    'id' => 'user_nikname',
-                    'name' => LocaleText::get($this->settings, 'files/fields/user', [], $this->settings->locale),
-                    'ordered' => true,
-                    'action' => 'link',
-                    'actionUrl' => '/admin/user/{user_id}/edit/',
-                    'icon' => 'arrow-return-right',
                 ],
                 [
                     'id' => 'private',
@@ -171,96 +158,32 @@ class AdminFiles extends AbstractController implements ControllerInterface
                     'buttons' => [
                         [
                             'name' => '',
-                            'icon' => 'eye',
+                            'icon' => 'save',
                             'action' => 'link',
-                            'actionUrl' => '/file/{id}',
+                            'actionUrl' => '{url}',
                             'class' => 'btn btn-primary btn-sm me-1',
-                            'description' => 'View user profile',
+                            'description' => 'Save or view file',
                         ],
                         [
                             'name' => '',
                             'icon' => 'pencil',
                             'action' => 'link',
-                            'actionUrl' => '/admin/user/{id}/edit',
+                            'actionUrl' => '/admin/files/{id}/edit',
                             'class' => 'btn btn-warning btn-sm me-1',
-                            'description' => 'Edit user',
+                            'description' => 'Edit file',
                         ],
                         [
                             'name' => '',
                             'icon' => 'trash',
                             'action' => 'ajax',
-                            'actionUrl' => '/api/v1/admin/user/{id}/delete',
+                            'actionUrl' => '/api/v1/admin/files/{id}/delete',
                             'class' => 'btn btn-danger btn-sm',
-                            'description' => 'Delete user',
+                            'description' => 'Delete file',
                             'confirm' => 'Are you sure?',
                         ],
                     ],
                 ],
-                /*
-                [
-                    'id' => 'role',
-                    'name' => LocaleText::get($this->settings, 'user/fields/role', [], $this->settings->locale),
-                    'ordered' => true,
-                    'editable' => true,
-                    'editUrl' => '/api/v1/admin/user/{id}/edit-prop',
-                    'inputType' => 'select',
-                    'selectArray' => [
-                        'user' => 'User',
-                        'moderator' => 'Moderator',
-                        'admin' => 'Admin',
-                    ],
-                ],
-                [
-                    'id' => 'status',
-                    'name' => LocaleText::get($this->settings, 'user/fields/status', [], $this->settings->locale),
-                    'ordered' => true,
-                    'editable' => true,
-                    'editUrl' => '/api/v1/admin/user/{id}/edit-prop',
-                    'inputType' => 'select',
-                    'selectArray' => [
-                        'created' => 'Created',
-                        'active' => 'Active',
-                        'deleted' => 'Deleted',
-                    ],
-                ],
-                [
-                    'id' => 'created_time',
-                    'name' => LocaleText::get($this->settings, 'user/fields/created_time', [], $this->settings->locale),
-                    'ordered' => true,
-                ],
-                [
-                    'id' => 'actions',
-                    'name' => 'Actions',
-                    'ordered' => false,
-                    'buttons' => [
-                        [
-                            'name' => '',
-                            'icon' => 'eye',
-                            'action' => 'link',
-                            'actionUrl' => '/user/{id}',
-                            'class' => 'btn btn-primary btn-sm me-1',
-                            'description' => 'View user profile',
-                        ],
-                        [
-                            'name' => '',
-                            'icon' => 'pencil',
-                            'action' => 'link',
-                            'actionUrl' => '/admin/user/{id}/edit',
-                            'class' => 'btn btn-warning btn-sm me-1',
-                            'description' => 'Edit user',
-                        ],
-                        [
-                            'name' => '',
-                            'icon' => 'trash',
-                            'action' => 'ajax',
-                            'actionUrl' => '/api/v1/admin/user/{id}/delete',
-                            'class' => 'btn btn-danger btn-sm',
-                            'description' => 'Delete user',
-                            'confirm' => 'Are you sure?',
-                        ],
-                    ],
-                ],*/
-            ]
+            ],
         ];
 
         $this->requestParameters->getRequestValues(['page','filters','limit','order']);
@@ -280,28 +203,16 @@ class AdminFiles extends AbstractController implements ControllerInterface
                 'type' => 'string',
                 'value' => '',
             ],
-            'role' => [
-                'id' => 'role',
-                'name' => 'Role',
+            'filetype' => [
+                'id' => 'filetype',
+                'name' => 'Type',
                 'type' => 'select',
                 'value' => '',
                 'array' => [
                     'all' => ['name' => 'All', 'value' => ''],
-                    'user' => ['name' => 'User', 'value' => 'user'],
-                    'moderator' => ['name' => 'Moderator', 'value' => 'moderator'],
-                    'admin' => ['name' => 'Admin', 'value' => 'admin'],
-                ],
-            ],
-            'status' => [
-                'id' => 'status',
-                'name' => 'Status',
-                'type' => 'select',
-                'value' => '',
-                'array' => [
-                    'all' => ['name' => 'All', 'value' => ''],
-                    'created' => ['name' => 'Created', 'value' => 'created'],
-                    'active' => ['name' => 'Active', 'value' => 'active'],
-                    'deleted' => ['name' => 'Deleted', 'value' => 'deleted'],
+                    'file' => ['name' => 'File', 'value' => 'file'],
+                    'image' => ['name' => 'Image', 'value' => 'image'],
+                    'document' => ['name' => 'Document', 'value' => 'document'],
                 ],
             ],
         ];
@@ -340,19 +251,20 @@ class AdminFiles extends AbstractController implements ControllerInterface
 
         $offset = ($page - 1) * self::ROWS_COUNT;
 
-        $userList = new UserList(
+        $filesList = new FileList(
             $this->settings, $this->_makeConditions($conditionsArr), $order, $offset, (self::ROWS_COUNT + 1), 0, true
         );
-        $users = $userList->getDtoFields($nullDto);
 
-        if (count($users) === (self::ROWS_COUNT + 1)) {
+        $files = $filesList->getDtoFields($nullDto);
+
+        if (is_array($files) && count($files) === (self::ROWS_COUNT + 1)) {
             $out['nextPage'] = $page + 1;
-            array_pop($users);
+            array_pop($files);
         } else {
             $out['nextPage'] = null;
         }
 
-        $out['rows'] = $users;
+        $out['rows'] = $files;
         $out['order'] = $orderQuery;
         $out['filters'] = $filters;
 
@@ -376,7 +288,7 @@ class AdminFiles extends AbstractController implements ControllerInterface
      * @param array $conditionsArr
      * @return array
      */
-    private function _makeConditions(array $conditionsArr): array
+    private function _makeConditions(array $conditionsArr): array //TODO DRY - create abstract parent class
     {
         $conditions = [];
 
