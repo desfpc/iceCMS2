@@ -59,6 +59,12 @@ abstract class AbstractEntityList
     /** @var bool Use offset instead of page */
     protected bool $_useOffset = false;
 
+    /** @var string More query part */
+    protected string $_moreQuery = '';
+
+    /** @var array More query binding */
+    protected array $_moreQueryBinding = [];
+
     /**
      * Entity list constructor
      *
@@ -69,6 +75,8 @@ abstract class AbstractEntityList
      * @param ?int $size
      * @param int $cacheSeconds
      * @param bool $useOffset
+     * @param string $moreQuery
+     * @param array|null $moreQueryBinding
      * @throws Exception
      */
     public function __construct(
@@ -79,6 +87,8 @@ abstract class AbstractEntityList
         ?int $size = 10,
         int $cacheSeconds = 0,
         bool $useOffset = false,
+        string $moreQuery = '',
+        ?array $moreQueryBinding = []
     ) {
         $this->_settings = $settings;
         $this->_db = DBFactory::get($this->_settings);
@@ -88,6 +98,8 @@ abstract class AbstractEntityList
         $this->_size = $size;
         $this->_cacheSeconds = $cacheSeconds;
         $this->_useOffset = $useOffset;
+        $this->_moreQuery = $moreQuery;
+        $this->_moreQueryBinding = $moreQueryBinding;
 
         $this->_cacher = CachingFactory::instance($this->_settings);
     }
@@ -243,7 +255,17 @@ abstract class AbstractEntityList
      */
     protected function _getMoreWhereQuery(): string
     {
-        return '';
+        return ' ' . $this->_moreQuery;
+    }
+
+    /**
+     * Getting more WHERE query binded params
+     *
+     * @return array
+     */
+    protected function _getMoreWhereQueryBindedParams(): array
+    {
+        return $this->_moreQueryBinding;
     }
 
     /**
@@ -287,6 +309,7 @@ abstract class AbstractEntityList
         }
 
         $query .= $this->_getMoreWhereQuery();
+        $bindedParams = array_merge($bindedParams, $this->_getMoreWhereQueryBindedParams());
 
         return ['query' => $query, 'bindedParams' => $bindedParams];
     }

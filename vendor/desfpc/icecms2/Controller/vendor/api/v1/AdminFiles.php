@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace app\Controllers\vendor\api\v1;
 
-use desfpc\Visualijoper\Visualijoper;
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\DTO\FilesListAdminDto;
@@ -19,13 +18,21 @@ use iceCMS2\Locale\LocaleText;
 use iceCMS2\Models\File;
 use iceCMS2\Models\FileList;
 use iceCMS2\Models\User;
-use iceCMS2\Models\UserList;
 use iceCMS2\Tools\Exception;
 
 class AdminFiles extends AbstractController implements ControllerInterface
 {
     private const ROWS_COUNT = 20;
-    private const EDITABLE_PROPS = [];
+    private const EDITABLE_PROPS = [
+        'name',
+        'filename',
+    ];
+
+    /** @var string More query part */
+    protected string $_moreQuery = '';
+
+    /** @var array More query binding */
+    protected array $_moreQueryBinding = [];
 
     /**
      * Delete File by ID
@@ -252,7 +259,15 @@ class AdminFiles extends AbstractController implements ControllerInterface
         $offset = ($page - 1) * self::ROWS_COUNT;
 
         $filesList = new FileList(
-            $this->settings, $this->_makeConditions($conditionsArr), $order, $offset, (self::ROWS_COUNT + 1), 0, true
+            $this->settings,
+            $this->_makeConditions($conditionsArr),
+            $order,
+            $offset,
+            (self::ROWS_COUNT + 1),
+            0,
+            true,
+            $this->_moreQuery,
+            $this->_moreQueryBinding
         );
 
         $files = $filesList->getDtoFields($nullDto);
@@ -293,19 +308,16 @@ class AdminFiles extends AbstractController implements ControllerInterface
         $conditions = [];
 
         if (!empty($conditionsArr['search'])) {
-            $conditions['email'] = [
-                'logic' => 'AND',
-                'sign' => 'LIKE',
-                'value' => '%' . mb_strtolower($conditionsArr['search'], 'UTF-8') . '%',
-            ];
+            $this->_moreQuery .= "AND (name LIKE ? OR filename LIKE ? OR extension LIKE ? OR id = ?)";
+            $searchStr = '%' . $conditionsArr['search'] . '%';
+            $this->_moreQueryBinding[':name LIKE ?'] = $searchStr;
+            $this->_moreQueryBinding[':filename LIKE ?'] = $searchStr;
+            $this->_moreQueryBinding[':extension LIKE ?'] = $searchStr;
+            $this->_moreQueryBinding[':id = ?'] = $conditionsArr['search'];
         }
 
-        if (!empty($conditionsArr['role'])) {
-            $conditions['role'] = $conditionsArr['role'];
-        }
-
-        if (!empty($conditionsArr['status'])) {
-            $conditions['status'] = $conditionsArr['status'];
+        if (!empty($conditionsArr['filetype'])) {
+            $conditions['filetype'] = $conditionsArr['filetype'];
         }
 
         return $conditions;
