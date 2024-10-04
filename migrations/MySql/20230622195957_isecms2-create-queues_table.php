@@ -13,7 +13,7 @@ namespace app\migrations\MySql;
 
 use iceCMS2\Cli\AbstractMigration;
 
-class Isecms2CreatQueuesTable extends AbstractMigration
+class Isecms2CreateQueuesTable extends AbstractMigration
 {
     /**
      * Execute migration query
@@ -23,6 +23,7 @@ class Isecms2CreatQueuesTable extends AbstractMigration
     public function up(): string
     {
         return "
+        DROP TABLE IF EXISTS `queues`;
         CREATE TABLE `queues`  (
             `id` int unsigned auto_increment comment 'ID' primary key,
             `queue` varchar(255) not null comment 'name queue',
