@@ -38,6 +38,20 @@ $routers = [
         'useVendor' => true
     ],
 
+    'api/v1/admin/files/$id/delete' => [ //Delete file by ID
+        'method' => 'POST',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminFiles',
+        'controllerMethod' => 'delete',
+        'useVendor' => true
+    ],
+
+    'api/v1/admin/files/$id/edit-prop' => [ //Edit file property by file ID
+        'method' => 'POST',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminFiles',
+        'controllerMethod' => 'editProperty',
+        'useVendor' => true
+    ],
+
     'api/v1/admin/users' => [ //Users list
         'method' => 'GET',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',

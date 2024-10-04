@@ -32,6 +32,8 @@ class FileImage extends File
     protected string $_filetype = 'image';
     /** @var array|null Image sizes array*/
     private ?array $_imageSizes = null;
+    /** @var string|null New image extension */
+    protected ?string $_newExtension = null;
 
     /**
      * Check POST file for image
@@ -105,6 +107,7 @@ class FileImage extends File
             $doReformating = true;
             $newExtension = self::DEFAULT_IMG_FORMAT;
             $this->set('extension', $newExtension);
+            $this->set('url', $this->getUrl());
 
         } else {
             $newExtension = $oldExtension;

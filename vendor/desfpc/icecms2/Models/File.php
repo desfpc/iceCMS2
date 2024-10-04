@@ -23,6 +23,9 @@ class File extends AbstractEntity
     /** @var string File Type (enum: file, image, document) */
     protected string $_filetype = 'file';
 
+    /** @var string|null New image extension */
+    protected ?string $_newExtension = null; //TODO change getUrl() extension to newExtension if not null
+
     /**
      * Getting file extension
      *
@@ -186,7 +189,6 @@ class File extends AbstractEntity
         $url = $this->_getUrlDirectory();
 
         $url .= $this->_id;
-
         if (!empty($this->_values['extension'])) {
             $url .= '.' . $this->_values['extension'];
         }
