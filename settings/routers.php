@@ -31,6 +31,13 @@ $routers = [
     'admin' => ['controller' => 'Admin', 'controllerMethod' => 'main', 'useVendor' => true],
 
     //API for admin pages (Session authorization)
+    'api/v1/admin/files' => [ //Files list
+        'method' => 'GET',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminFiles',
+        'controllerMethod' => 'list',
+        'useVendor' => true
+    ],
+
     'api/v1/admin/users' => [ //Users list
         'method' => 'GET',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
