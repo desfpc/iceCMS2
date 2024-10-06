@@ -190,7 +190,11 @@ class File extends AbstractEntity
 
         $url .= $this->_id;
         if (!empty($this->_values['extension'])) {
-            $url .= '.' . $this->_values['extension'];
+            if (is_null($this->_newExtension)) {
+                $url .= '.' . $this->_values['extension'];
+            } else {
+                $url .= '.' . $this->_newExtension;
+            }
         }
 
         return $url;

@@ -106,7 +106,8 @@ class FileImage extends File
         if (self::IF_REFORMAT_ORIGINAL && $oldExtension !== self::DEFAULT_IMG_FORMAT) {
             $doReformating = true;
             $newExtension = self::DEFAULT_IMG_FORMAT;
-            $this->set('extension', $newExtension);
+            $this->_newExtension = self::DEFAULT_IMG_FORMAT;
+            $this->set('extension', $this->_newExtension);
             $this->set('url', $this->getUrl());
 
         } else {
@@ -211,6 +212,11 @@ class FileImage extends File
         } else {
             $extension = '';
         }
+
+        if(!is_null($this->_newExtension)) {
+            $extension = '.' . $this->_newExtension;
+        }
+
         return $this->_getUrlDirectory() . $this->_getImageSizeName($imageSize) . $extension;
     }
 
