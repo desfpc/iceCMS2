@@ -35,6 +35,46 @@ class AdminFiles extends AbstractController implements ControllerInterface
     protected array $_moreQueryBinding = [];
 
     /**
+     * Edit User separate params
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function editProperty(): void //TODO DRY - create abstract parent class
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+        $user = $this->_checkUserFromRequest();
+        if ($user === null) {
+            return;
+        }
+
+        $this->requestParameters->getRequestValues(['property', 'value']);
+
+        if (empty($this->requestParameters->values->property) || empty($this->requestParameters->values->value)) {
+            $this->renderJson(['message' => 'No property or value passed'], false);
+            return;
+        }
+
+        if (!in_array($this->requestParameters->values->property, self::EDITABLE_PROPS)) {
+            $this->renderJson(['message' => 'Property not editable'], false);
+            return;
+        }
+
+        $property = $this->requestParameters->values->property;
+        $value = $this->requestParameters->values->value;
+
+        try {
+            $user->$property = $value;
+            $user->save();
+        } catch (Exception $e) {
+            $this->renderJson(['message' => $e->getMessage()], false);
+            return;
+        }
+
+        $this->renderJson(['message' => 'User updated'], true);
+    }
+
+    /**
      * Delete File by ID
      *
      * @return void
@@ -109,7 +149,7 @@ class AdminFiles extends AbstractController implements ControllerInterface
                     'name' => LocaleText::get($this->settings, 'files/fields/id', [], $this->settings->locale),
                     'ordered' => true,
                     'action' => 'link',
-                    'actionUrl' => '/admin/files/{id}/edit/',
+                    'actionUrl' => '/admin/file/{id}/edit/',
                     'icon' => 'arrow-return-right',
                 ],
                 [
@@ -117,7 +157,7 @@ class AdminFiles extends AbstractController implements ControllerInterface
                     'name' => LocaleText::get($this->settings, 'files/fields/name', [], $this->settings->locale),
                     'ordered' => true,
                     'editable' => true,
-                    'editUrl' => '/api/v1/admin/files/{id}/edit-prop',
+                    'editUrl' => '/api/v1/admin/file/{id}/edit-prop',
                     'inputType' => 'input',
                 ],
                 [
@@ -125,7 +165,7 @@ class AdminFiles extends AbstractController implements ControllerInterface
                     'name' => LocaleText::get($this->settings, 'files/fields/filename', [], $this->settings->locale),
                     'ordered' => true,
                     'editable' => true,
-                    'editUrl' => '/api/v1/admin/files/{id}/edit-prop',
+                    'editUrl' => '/api/v1/admin/file/{id}/edit-prop',
                     'inputType' => 'input',
                 ],
                 [
@@ -175,7 +215,7 @@ class AdminFiles extends AbstractController implements ControllerInterface
                             'name' => '',
                             'icon' => 'pencil',
                             'action' => 'link',
-                            'actionUrl' => '/admin/files/{id}/edit',
+                            'actionUrl' => '/admin/file/{id}/edit',
                             'class' => 'btn btn-warning btn-sm me-1',
                             'description' => 'Edit file',
                         ],
@@ -183,7 +223,7 @@ class AdminFiles extends AbstractController implements ControllerInterface
                             'name' => '',
                             'icon' => 'trash',
                             'action' => 'ajax',
-                            'actionUrl' => '/api/v1/admin/files/{id}/delete',
+                            'actionUrl' => '/api/v1/admin/file/{id}/delete',
                             'class' => 'btn btn-danger btn-sm',
                             'description' => 'Delete file',
                             'confirm' => 'Are you sure?',

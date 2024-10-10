@@ -93,15 +93,27 @@ class Loader
         $useVendor = $this->routing->route['useVendor'] ?? false;
         $controllerNameForClass = str_replace(DIRECTORY_SEPARATOR, '\\', $controllerName);
 
+        $controllerFileVendor = $this->settings->path . 'controllers' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . $controllerName . '.php';
+        $controllerFileNoVendor = $this->settings->path . 'controllers' . DIRECTORY_SEPARATOR . $controllerName . '.php';
+        $controllerClassNameVendor = 'app\Controllers\vendor\\' . $controllerNameForClass;;
+
         if ($useVendor) {
-            $controllerFile = $this->settings->path . 'controllers' . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . $controllerName . '.php';
-            $controllerClassName = 'app\Controllers\vendor\\' . $controllerNameForClass;
+            $controllerFile = $controllerFileVendor;
+            $controllerClassName = $controllerClassNameVendor;
         } else {
-            $controllerFile = $this->settings->path . 'controllers' . DIRECTORY_SEPARATOR . $controllerName . '.php';
+            $controllerFile = $controllerFileNoVendor;
             $controllerClassName = 'app\Controllers\\' . $controllerNameForClass;
+
+            if (!file_exists($controllerFile)) {
+                $controllerFile = $controllerFileVendor;
+                $controllerClassName = $controllerClassNameVendor;
+            }
         }
 
         if (!include_once ($controllerFile)){
+            if (!$useVendor) {
+                throw new Exception('Can\'t load controller file: ' . $controllerFileNoVendor . ' ' . json_encode($this->routing->route));
+            }
             throw new Exception('Can\'t load controller file: ' . $controllerFile);
         } else {
 
@@ -117,7 +129,7 @@ class Loader
         }
 
         if (!method_exists($this->controller, $controllerMethod)) {
-            throw new Exception('Can\'t run controller method: ' . $controllerMethod . ' not exist');
+            throw new Exception('Can\'t run controller method: ' . $controllerMethod . ' not exist; ' . json_encode($this->routing->route));
         }
 
         try {
