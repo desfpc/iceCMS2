@@ -16,6 +16,7 @@ use iceCMS2\DTO\FilesListAdminDto;
 use iceCMS2\Helpers\Strings;
 use iceCMS2\Locale\LocaleText;
 use iceCMS2\Models\File;
+use iceCMS2\Models\FileImage;
 use iceCMS2\Models\FileList;
 use iceCMS2\Models\User;
 use iceCMS2\Tools\Exception;
@@ -43,8 +44,8 @@ class AdminFiles extends AbstractController implements ControllerInterface
     public function editProperty(): void //TODO DRY - create abstract parent class
     {
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
-        $user = $this->_checkUserFromRequest();
-        if ($user === null) {
+        $file = $this->_checkFileFromRequest();
+        if ($file === null) {
             return;
         }
 
@@ -64,8 +65,8 @@ class AdminFiles extends AbstractController implements ControllerInterface
         $value = $this->requestParameters->values->value;
 
         try {
-            $user->$property = $value;
-            $user->save();
+            $file->$property = $value;
+            $file->save();
         } catch (Exception $e) {
             $this->renderJson(['message' => $e->getMessage()], false);
             return;
@@ -83,12 +84,17 @@ class AdminFiles extends AbstractController implements ControllerInterface
     public function delete(): void
     {
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
-        $user = $this->_checkUserFromRequest();
-        if ($user === null) {
+        $file = $this->_checkFileFromRequest();
+        if ($file === null) {
             return;
         }
 
         //TODO Delete File
+        if ($file->del()) {
+            $this->renderJson(['message' => 'File deleted'], true);
+        } else {
+            $this->renderJson(['message' => 'File not deleted'], false);
+        }
     }
 
     /**
@@ -100,11 +106,10 @@ class AdminFiles extends AbstractController implements ControllerInterface
     public function get(): void
     {
         $this->_authorizationCheckRole([User::ROLE_ADMIN]);
-        $user = $this->_checkUserFromRequest();
-        if ($user === null) {
+        $file = $this->_checkFileFromRequest();
+        if ($file === null) {
             return;
         }
-        $userId = $user->id;
 
         //TODO Get File by ID
     }
@@ -113,7 +118,7 @@ class AdminFiles extends AbstractController implements ControllerInterface
      * @return ?File
      * @throws Exception
      */
-    private function _checkUserFromRequest(): ?File
+    private function _checkFileFromRequest(): ?File
     {
         if (!isset($this->routing->pathInfo['query_vars']['id'])) {
             $this->renderJson(['message' => 'No File ID passed'], false);
@@ -125,6 +130,13 @@ class AdminFiles extends AbstractController implements ControllerInterface
         if (!$file->load($id)) {
             $this->renderJson(['message' => 'Wrong File ID'], false);
             return null;
+        }
+        if ($file->get('filetype') === 'image') {
+            $file = new FileImage($this->settings);
+            if (!$file->load($id)) {
+                $this->renderJson(['message' => 'Wrong Image File ID'], false);
+                return null;
+            }
         }
 
         return $file;

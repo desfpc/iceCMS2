@@ -324,16 +324,31 @@ class FileImage extends File
      * Delete FileImageSize by ImageSize Id
      *
      * @param int $imageSizeId
+     * @param string|null $stringId
      * @return bool
      * @throws Exception
      */
-    public function deleteImageSize(int $imageSizeId): bool
+    public function deleteImageSize(int $imageSizeId, ?string $stringId = null): bool
     {
         $fileImageSize = new FileImageSize($this->_settings, [
             'file_id' => $this->_id,
             'image_size_id' => $imageSizeId
         ]);
         if ($fileImageSize->load()) {
+
+            if ($stringId === 'avatar') {
+                $userArr = $this->_db->query('SELECT id FROM users WHERE avatar = ' . $fileImageSize->get('file_id'));
+                if (!empty($userArr) && isset($userArr[0]['id'])) {
+                    $userId = $userArr[0]['id'];
+                    $this->_db->query('UPDATE users SET avatar = NULL where id = ' . $userId);
+
+                    $user = new User($this->_settings);
+                    if ($user->load()) {
+                        $user->clearCache();
+                    }
+                }
+            }
+
             if ((int)$fileImageSize->get('is_created') === 1) {
                 unlink($this->getPath($imageSizeId));
             }
@@ -695,6 +710,13 @@ class FileImage extends File
     {
         $favicon = $this->_getFaviconPath();
         unlink($favicon);
+
+        $imageSizes = $this->getImageSizes();
+        if (!empty($imageSizes)) {
+            foreach ($imageSizes as $imageSize) {
+                $this->deleteImageSize($imageSize['id'], $imageSize['string_id']);
+            }
+        }
 
         return parent::_beforeDel();
     }

@@ -23,6 +23,10 @@ try {
     $app = new Loader($settings);
     $app->loadController();
 } catch (Exception $e) {
-    $app->setServerErrorsController();
-    $app->loadController();
+    if ($app instanceof Loader) {
+        $app->setServerErrorsController();
+        $app->loadController();
+    } else {
+        echo 'Server error';
+    }
 }
