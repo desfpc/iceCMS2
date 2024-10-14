@@ -334,19 +334,11 @@ class FileImage extends File
             'file_id' => $this->_id,
             'image_size_id' => $imageSizeId
         ]);
+
         if ($fileImageSize->load()) {
 
             if ($stringId === 'avatar') {
-                $userArr = $this->_db->query('SELECT id FROM users WHERE avatar = ' . $fileImageSize->get('file_id'));
-                if (!empty($userArr) && isset($userArr[0]['id'])) {
-                    $userId = $userArr[0]['id'];
-                    $this->_db->query('UPDATE users SET avatar = NULL where id = ' . $userId);
-
-                    $user = new User($this->_settings);
-                    if ($user->load()) {
-                        $user->clearCache();
-                    }
-                }
+                $this->_clearUserAvatar((int)$fileImageSize->get('file_id'));
             }
 
             if ((int)$fileImageSize->get('is_created') === 1) {
@@ -356,6 +348,25 @@ class FileImage extends File
             return $fileImageSize->del();
         }
         return false;
+    }
+
+    /**
+     * @param int $fileId
+     * @return void
+     * @throws Exception
+     */
+    private function _clearUserAvatar(int $fileId): void
+    {
+        $userArr = $this->_db->query('SELECT id FROM users WHERE avatar = ' . $fileId);
+        if (!empty($userArr) && isset($userArr[0]['id'])) {
+            $userId = $userArr[0]['id'];
+            $this->_db->query('UPDATE users SET avatar = NULL where id = ' . $userId);
+
+            $user = new User($this->_settings);
+            if ($user->load()) {
+                $user->clearCache();
+            }
+        }
     }
 
     /**
@@ -710,6 +721,8 @@ class FileImage extends File
     {
         $favicon = $this->_getFaviconPath();
         unlink($favicon);
+
+        $this->_clearUserAvatar($this->_id);
 
         $imageSizes = $this->getImageSizes();
         if (!empty($imageSizes)) {
