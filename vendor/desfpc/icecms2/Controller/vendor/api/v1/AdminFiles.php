@@ -89,7 +89,6 @@ class AdminFiles extends AbstractController implements ControllerInterface
             return;
         }
 
-        //TODO Delete File
         if ($file->del()) {
             $this->renderJson(['message' => 'File deleted'], true);
         } else {
@@ -207,12 +206,12 @@ class AdminFiles extends AbstractController implements ControllerInterface
                 ],
                 [
                     'id' => 'created_time',
-                    'name' => LocaleText::get($this->settings, 'files/fields/created_time', [], $this->settings->locale), //TODO make one file for common fields
+                    'name' => LocaleText::get($this->settings, 'files/fields/created_time', [], $this->settings->locale),
                     'ordered' => true,
                 ],
                 [
                     'id' => 'actions',
-                    'name' => 'Actions',
+                    'name' => LocaleText::get($this->settings, 'files/fields/actions', [], $this->settings->locale),
                     'ordered' => false,
                     'buttons' => [
                         [
