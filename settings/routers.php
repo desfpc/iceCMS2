@@ -20,6 +20,7 @@ $routers = [
     'admin/materials' => ['controller' => 'AdminMaterials', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/file/$id/edit' => ['controller' => 'AdminFiles', 'controllerMethod' => 'edit', 'useVendor' => true],
     'admin/files' => ['controller' => 'AdminFiles', 'controllerMethod' => 'main', 'useVendor' => true],
+    'admin/image-sizes' => ['controller' => 'AdminImageSizes', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/user/$id/edit' => ['controller' => 'AdminUsers', 'controllerMethod' => 'edit', 'useVendor' => true],
     'admin/users' => ['controller' => 'AdminUsers', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/caches/clear-php' => ['controller' => 'AdminCaches', 'controllerMethod' => 'clearPHPCaches', 'useVendor' => true],

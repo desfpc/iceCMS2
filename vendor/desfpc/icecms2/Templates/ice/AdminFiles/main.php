@@ -18,6 +18,7 @@ use iceCMS2\Controller\AbstractController;
         <div class="col">
             <?php include($this->_getLayoutPath() . '_alerts.php'); ?>
             <h1><?= $this->title ?></h1>
+            <?php include('_imageSizes.php'); ?>
             <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
             <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 
