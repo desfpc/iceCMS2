@@ -53,6 +53,20 @@ $routers = [
         'useVendor' => true
     ],
 
+    'api/v1/admin/file/$id/edit' => [ //Edit file (all form) by ID
+        'method' => 'POST',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminFiles',
+        'controllerMethod' => 'edit',
+        'useVendor' => true
+    ],
+
+    'api/v1/admin/file/$id' => [ //File by ID
+        'method' => 'GET',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminFiles',
+        'controllerMethod' => 'get',
+        'useVendor' => true
+    ],
+
     'api/v1/admin/users' => [ //Users list
         'method' => 'GET',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',

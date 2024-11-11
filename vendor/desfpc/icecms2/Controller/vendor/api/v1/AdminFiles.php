@@ -36,6 +36,40 @@ class AdminFiles extends AbstractController implements ControllerInterface
     protected array $_moreQueryBinding = [];
 
     /**
+     * Edit File Form
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function edit(): void
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+        $file = $this->_checkFileFromRequest();
+        if ($file === null) {
+            return;
+        }
+
+        $data = json_decode(file_get_contents('php://input'), true);
+        $unsetArr = ['id', 'extension', 'filetype', 'size', 'url',
+            'image_width', 'image_height', 'user_id', 'created_time',];
+
+        foreach ($unsetArr as $unset) {
+            unset($data[$unset]);
+        }
+
+        try {
+            $file->set($data);
+            if ($file->save()) {
+                $this->renderJson(['message' => 'File updated'], true);
+            } else {
+                $this->renderJson(['message' => 'Error in file updating', 'errors' => $file->errors], false);
+            }
+        } catch (Exception $e) {
+            $this->renderJson(['message' => $e->getMessage()], false);
+        }
+    }
+
+    /**
      * Edit User separate params
      *
      * @return void
@@ -110,7 +144,29 @@ class AdminFiles extends AbstractController implements ControllerInterface
             return;
         }
 
-        //TODO Get File by ID
+        $fileId = $file->get('id');;
+        $fileArr = $file->get();
+        $fileArr['private'] = (bool)$fileArr['private'];
+        $fileArr['filetype'] = LocaleText::get($this->settings, 'files/types/' . $fileArr['filetype'], [], $this->settings->locale);
+
+        $this->renderJson([
+            'formData' => $fileArr,
+            'formTypes' => $this->_getFormTypes(),
+            'formNames' => $this->_getFormNames(),
+            'formSelects' => [],
+            'formMultiSelects' => [],
+            'formActions' => [
+                'save' => '/api/v1/admin/file/' . $fileId . '/edit',
+                'url' => $fileArr['url'],
+            ],
+            'formButtons' => [
+                'save' => LocaleText::get($this->settings, 'form/actions/save', [], $this->settings->locale),
+                'load' => LocaleText::get($this->settings, 'form/actions/reset', [], $this->settings->locale),
+            ],
+            'formValidators' => $this->_getFormValidators(),
+            'formJsons' => [],
+            'formFiles' => [], //TODO файл для отображения
+        ], true);
     }
 
     /**
@@ -221,6 +277,7 @@ class AdminFiles extends AbstractController implements ControllerInterface
                             'actionUrl' => '{url}',
                             'class' => 'btn btn-primary btn-sm me-1',
                             'description' => 'Save or view file',
+                            'target' => '_blank',
                         ],
                         [
                             'name' => '',
@@ -372,5 +429,51 @@ class AdminFiles extends AbstractController implements ControllerInterface
         }
 
         return $conditions;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function _getFormTypes(): array
+    {
+        return [
+            'id' => 'label',
+            'name' => 'input',
+            'filename' => 'input',
+            'extension' => 'label',
+            'anons' => 'textarea',
+            'filetype' => 'label',
+            'size' => 'label',
+            'url' => 'link',
+            'image_width' => 'label',
+            'image_height' => 'label',
+            'user_id' => 'label',
+            'private' => 'checkbox',
+            'created_time' => 'label',
+        ];
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    private function _getFormNames(): array
+    {
+        return LocaleText::get($this->settings, 'files/fields', [], $this->settings->locale, true);
+    }
+
+    /**
+     * Get form validators array
+     *
+     * @return array
+     */
+    private function _getFormValidators(): array
+    {
+        return [
+            'name' => 'empty|string',
+            'filename' => 'string',
+            'anons' => 'empty|string',
+            'private' => 'bool',
+        ];
     }
 }
