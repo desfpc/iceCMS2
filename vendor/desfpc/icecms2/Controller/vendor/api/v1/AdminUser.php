@@ -74,9 +74,7 @@ class AdminUser extends AbstractController implements ControllerInterface
             'password', 'phone_approved', 'phone_send_time', 'created_at',];
 
         foreach ($unsetArr as $unset) {
-            if (isset($data[$unset])) {
-                unset($data[$unset]);
-            }
+            unset($data[$unset]);
         }
 
         if (isset($data['contacts'])) {

@@ -30,8 +30,12 @@ if ($this->settings->dev === true) {
         $trace .= '<hr />';
         foreach ($this->templateData[Exception::DEBUG_BACKTRACE_FLASHVARS_KEY] as $key => $val) {
             $trace .= '<strong>' . $key . ': </strong>';
-            $trace .= '<p>File: ' . $val['file'] . PHP_EOL;
-            $trace .= '<br>Line: ' . $val['line'] . PHP_EOL;
+            if (!empty($val['file'])) {
+                $trace .= '<p>File: ' . $val['file'] . PHP_EOL;
+            }
+            if (!empty($val['line'])) {
+                $trace .= '<br>Line: ' . $val['line'] . PHP_EOL;
+            }
             if (!empty($val['function'])) {
                 $trace .= '<br>Function: ' . $val['function'] . PHP_EOL;
             }

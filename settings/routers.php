@@ -18,6 +18,7 @@ $routers = [
 
     //Admin pages
     'admin/materials' => ['controller' => 'AdminMaterials', 'controllerMethod' => 'main', 'useVendor' => true],
+    'admin/file/$id/edit' => ['controller' => 'AdminFiles', 'controllerMethod' => 'edit', 'useVendor' => true],
     'admin/files' => ['controller' => 'AdminFiles', 'controllerMethod' => 'main', 'useVendor' => true],
     'admin/user/$id/edit' => ['controller' => 'AdminUsers', 'controllerMethod' => 'edit', 'useVendor' => true],
     'admin/users' => ['controller' => 'AdminUsers', 'controllerMethod' => 'main', 'useVendor' => true],
@@ -38,17 +39,31 @@ $routers = [
         'useVendor' => true
     ],
 
-    'api/v1/admin/files/$id/delete' => [ //Delete file by ID
+    'api/v1/admin/file/$id/delete' => [ //Delete file by ID
         'method' => 'POST',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminFiles',
         'controllerMethod' => 'delete',
         'useVendor' => true
     ],
 
-    'api/v1/admin/files/$id/edit-prop' => [ //Edit file property by file ID
+    'api/v1/admin/file/$id/edit-prop' => [ //Edit file property by file ID
         'method' => 'POST',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminFiles',
         'controllerMethod' => 'editProperty',
+        'useVendor' => true
+    ],
+
+    'api/v1/admin/file/$id/edit' => [ //Edit file (all form) by ID
+        'method' => 'POST',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminFiles',
+        'controllerMethod' => 'edit',
+        'useVendor' => true
+    ],
+
+    'api/v1/admin/file/$id' => [ //File by ID
+        'method' => 'GET',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminFiles',
+        'controllerMethod' => 'get',
         'useVendor' => true
     ],
 

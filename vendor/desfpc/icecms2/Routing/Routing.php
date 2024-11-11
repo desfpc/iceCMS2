@@ -24,6 +24,8 @@ class Routing
     private const CACHE_KEY_ROUTES_TREE = 'Routing_Tree';
     /** @var string Cache key for routes match */
     private const CACHE_KEY_ROUTES_MATCH = 'Routing_Match';
+    private const ERROR_CONTROLLER = 'ServerErrors';
+    private const ERROR_METHOD = 'notFound';
     
     /**
      * Route info
@@ -31,9 +33,9 @@ class Routing
      * @var array
      */
     public array $route = [
-        'controller' => 'ServerErrors',
+        'controller' => self::ERROR_CONTROLLER,
         'controllerMethod' => 'main',
-        'useVendor' => false,
+        'useVendor' => true,
         'parts' => [],
     ];
 
@@ -65,6 +67,7 @@ class Routing
                     $realRouteKey = '';
                     $routeReal = [];
                     if (!empty($routeParts)) {
+
                         foreach ($routeParts as $part) {
                             if (mb_substr($part, 0, 1, 'UTF-8') === '$') {
                                 $routeReal[] = [
@@ -154,9 +157,10 @@ class Routing
                 break;
             }
         }
-        if ($this->route['controller'] === 'ServerErrors' && $this->route['controllerMethod'] === 'main') {
-            $this->route['controllerMethod'] = 'notFound';
-            $this->route['useVendor'] = true;
+
+        if ($this->route['controller'] === self::ERROR_CONTROLLER && $this->route['controllerMethod'] === 'main') {
+            $this->route['controllerMethod'] = self::ERROR_METHOD;
+            $this->route['useVendor'] = $settings->routes['404']['useVendor'];
         }
     }
 

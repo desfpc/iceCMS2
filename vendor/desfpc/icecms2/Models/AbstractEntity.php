@@ -426,11 +426,20 @@ abstract class AbstractEntity
      * Delete Entity
      *
      * @param int|null $id
+     * @param bool $needLoadedSkip
      * @return bool
      * @throws Exception
      */
-    public function del(?int $id = null): bool
+    public function del(?int $id = null, bool $needLoadedSkip = false): bool
     {
+        if ($needLoadedSkip) {
+            try {
+                $this->_needLoaded();
+            } catch (Exception $e) {
+                return true;
+            }
+        }
+
         $this->_needLoaded();
 
         if (!is_null($id) && empty($this->_idKeys)) {

@@ -36,4 +36,30 @@ class AdminFiles extends AbstractController implements ControllerInterface
 
         $this->renderTemplate('main');
     }
+
+    /**
+     * Edit user method
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function edit(): void
+    {
+        $this->_authorizationCheckRole([User::ROLE_ADMIN]);
+
+        $id = (int) $this->routing->pathInfo['query_vars']['id'];
+        if (empty($id)) {
+            $this->_redirect('/404');
+        }
+
+        $this->templateData['id'] = $id;
+
+        $this->breadcrumbs = [
+            ['title' => 'Admin dashboard', 'url' => '/admin/'],
+            ['title' => 'Files', 'url' => '/admin/files/'],
+            ['title' => 'Edit file', 'url' => '/files/edit/']
+        ];
+
+        $this->renderTemplate('edit');
+    }
 }

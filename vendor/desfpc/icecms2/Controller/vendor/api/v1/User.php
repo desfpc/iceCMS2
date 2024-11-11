@@ -316,7 +316,7 @@ class User extends AbstractController implements ControllerInterface //TODO crea
             if (!is_null($user->get('avatar'))) {
                 $oldAvatar = new FileImage($this->settings);
                 $oldAvatar->load((int)$user->get('avatar'));
-                $oldAvatar->del();
+                $oldAvatar->del(null, true);
             }
 
             $fileId = $file->get('id');

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e47e8521cdf3044de10ecf0e018672cd",
+    "content-hash": "55f3ac2253640b16c2f0cf679e8dfca8",
     "packages": [
         {
             "name": "desfpc/pechkin",
@@ -86,16 +86,16 @@
         },
         {
             "name": "desfpc/vuebootstrap",
-            "version": "1.04",
+            "version": "1.05",
             "source": {
                 "type": "git",
                 "url": "https://github.com/desfpc/vueBootstrap.git",
-                "reference": "d8b29ace5436315331c58c53269516ca8e4a7e32"
+                "reference": "0da2dde80ab438414c6d561a5b64d9325a98b5e6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/desfpc/vueBootstrap/zipball/d8b29ace5436315331c58c53269516ca8e4a7e32",
-                "reference": "d8b29ace5436315331c58c53269516ca8e4a7e32",
+                "url": "https://api.github.com/repos/desfpc/vueBootstrap/zipball/0da2dde80ab438414c6d561a5b64d9325a98b5e6",
+                "reference": "0da2dde80ab438414c6d561a5b64d9325a98b5e6",
                 "shasum": ""
             },
             "type": "library",
@@ -117,9 +117,9 @@
             "description": "Vue bootstrap components",
             "support": {
                 "issues": "https://github.com/desfpc/vueBootstrap/issues",
-                "source": "https://github.com/desfpc/vueBootstrap/tree/1.04"
+                "source": "https://github.com/desfpc/vueBootstrap/tree/1.05"
             },
-            "time": "2024-10-03T20:55:37+00:00"
+            "time": "2024-11-11T10:15:18+00:00"
         }
     ],
     "packages-dev": [
