@@ -5,7 +5,7 @@ declare(strict_types=1);
  * Created by Sergey Peshalov https://github.com/desfpc
  * https://github.com/desfpc/iceCMS2
  *
- * API v1 Admin User Controller Class
+ * API v1 Admin Files Controller Class
  */
 
 namespace app\Controllers\vendor\api\v1;

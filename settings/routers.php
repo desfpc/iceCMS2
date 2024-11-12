@@ -68,6 +68,13 @@ $routers = [
         'useVendor' => true
     ],
 
+    'api/v1/admin/image-sizes' => [ //Image-files list
+        'method' => 'GET',
+        'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminImageSizes',
+        'controllerMethod' => 'list',
+        'useVendor' => true
+    ],
+
     'api/v1/admin/users' => [ //Users list
         'method' => 'GET',
         'controller' => 'api' . DIRECTORY_SEPARATOR . 'v1' . DIRECTORY_SEPARATOR . 'AdminUser',
