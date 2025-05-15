@@ -22,15 +22,11 @@ class RequestParameters
     /**
      * Constructor
      *
-     * @param stdClass|null $values
+     * @param stdClass $values
      */
-    public function __construct(stdClass $values = null)
+    public function __construct(stdClass $values = new stdClass())
     {
-        if (is_null($values)) {
-            $this->values = new stdClass();
-        } else {
-            $this->values = $values;
-        }
+        $this->values = $values;
     }
 
     /**

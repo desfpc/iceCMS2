@@ -11,13 +11,11 @@ services:
       - ./default.conf:/etc/nginx/conf.d/default.conf
     links:
       - php-fpm-icecms
+
   php-fpm-icecms:
+    image: php:8.4-fpm
     container_name: php-fpm-icecms
-    build:
-      context: docker/8.2-fpm
-      dockerfile: "Dockerfile"
     environment:
-      - "ENV_SUBSTITUTION_ENABLE=true"
       - "PHP_MEMORY_LIMIT=512M"
       - "PHP_SESSION_GC_MAXLIFETIME=7200"
     depends_on:
@@ -25,6 +23,20 @@ services:
       - redis-icecms
     volumes:
       - ./:/var/www/html
+    command: bash -c '
+      apt-get update &&
+      apt-get install -y libpng-dev git unzip libzip-dev zip &&
+      docker-php-ext-install mysqli gd opcache zip &&
+      pecl install redis &&
+      docker-php-ext-enable redis &&
+      curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
+      cd /var/www/html &&
+      composer install --no-interaction &&
+      php cli.php migration-exec &&
+      php cli.php make-symlinks &&
+      php-fpm
+      '
+
   db-icecms:
     container_name: db-icecms
     image: mariadb:latest
@@ -36,12 +48,14 @@ services:
       MARIADB_USER: root
       MARIADB_ROOT_PASSWORD: localRoot
       MARIADB_DATABASE: ice2
-      MARIADB_ROOT_HOST: '%' # allow root login from any host
+      MARIADB_ROOT_HOST: '%'
+
   redis-icecms:
     container_name: redis-icecms
     image: redis:latest
     ports:
       - "6382:6379"
+
   elastic:
     container_name: elastic-icecms
     image: elasticsearch:8.12.2

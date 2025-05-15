@@ -15,6 +15,7 @@ require('routers.php');
 $settings = [
     'path' => str_replace('settings', '', dirname(__FILE__)),
     'template' => 'ice',
+    'layoutUseVendor' => false,
     'dev' => true,
     'secret' => 'verySecretSecret',
     'db' => [
@@ -46,15 +47,16 @@ $settings = [
     'site' => [
         'title' => 'IceCMS2 Great Site',
         'primaryDomain' => 'icecms2',
-        'redirectToPrimaryDomain' => true,
-        'localeSubdomain' => true,
+        'redirectToPrimaryDomain' => false,
+        'localeSubdomain' => false,
         'cssScriptsVersion' => '1',
         'jsScriptsVersion' => '1',
     ],
     'locales' => [
-        'en', 'ru', 'ge', 'rs',
+        'en', 'ru', 'ge', 'sr',
     ],
     'locale' => 'en',
+    'defaultLocale' => 'en',
     'logs' => [
         'period' => 'month',
         'periodClear' => 'month',
@@ -91,5 +93,5 @@ $settings = [
             'clear_completed_task' => false,
         ],
         'default' => 'mysql'
-    ]
+    ],
 ];

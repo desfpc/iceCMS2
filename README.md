@@ -23,10 +23,7 @@ iceCMS2\DB\DBInterface
 - Clone repository
 - cd to {repository foldder}
 - run: docker compose up --build -d
-- run project php-fpm container's terminal: docker compose exec -it php-fpm-icecms sh
-- run in php-fpm container: composer install
-- run in php-fpm container: php cli.php migration-exec
-- run in php-fpm container: php cli.php make-symlinks
+- wait until container initialization and site deployment is complete
 - view site in your browser http://localhost:8181
 
 ## ElasticSearch

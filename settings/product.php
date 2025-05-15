@@ -10,29 +10,30 @@ declare(strict_types=1);
  */
 
 /** @var array $routers */
-require_once('routers.php');
+require('routers.php');
 
 $settings = [
-    'path' => 'text/path',
+    'path' => str_replace('settings', '', dirname(__FILE__)),
     'template' => 'ice',
-    'dev' => true,
+    'layoutUseVendor' => false,
+    'dev' => false,
     'secret' => 'verySecretSecret',
     'db' => [
         'type' => 'MySQL',
         'name' => 'icecms2',
-        'host' => '127.0.0.1',
+        'host' => 'db-icecms',
         'port' => '3306',
-        'login' => 'login',
-        'pass' => 'pass',
+        'login' => 'root',
+        'pass' => 'localRoot',
         'encoding' => 'UTF8',
     ],
     'dbTest' => [
         'type' => 'MySQL',
         'name' => 'icecms2_test',
-        'host' => '127.0.0.1',
+        'host' => 'db-icecms',
         'port' => '3306',
-        'login' => 'login',
-        'pass' => 'pass',
+        'login' => 'root',
+        'pass' => 'localRoot',
         'encoding' => 'UTF8',
     ],
     'email' => [
@@ -52,12 +53,13 @@ $settings = [
         'jsScriptsVersion' => '1',
     ],
     'locales' => [
-        'en', 'ru', 'ge', 'rs',
+        'en', 'ru', 'ge', 'sr',
     ],
     'locale' => 'en',
+    'defaultLocale' => 'en',
     'logs' => [
         'period' => 'month',
-        'periodClear' => 'day',
+        'periodClear' => 'month',
         'type' => 'db',
     ],
     'cache' => [
@@ -72,5 +74,24 @@ $settings = [
         'type' => 'Elastic',
         'login' => 'elastic',
         'password' => 'MyPw123'
+    ],
+    'queue' => [
+        'mysql' => [
+            'host' => 'db-icecms',
+            'type' => 'MySQL',
+            'name' => 'ice2',
+            'port' => '3306',
+            'login' => 'root',
+            'pass' => 'localRoot',
+            'encoding' => 'UTF8',
+            'clear_completed_task' => false,
+        ],
+        'redis' => [
+            'host' => 'redis-icecms',
+            'redisPort' => 6379,
+            'redisDB' => 2,
+            'clear_completed_task' => false,
+        ],
+        'default' => 'mysql'
     ],
 ];
