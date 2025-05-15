@@ -26,6 +26,9 @@ class AdminLogs extends AbstractController implements ControllerInterface
     /** @var string */
     private const PATH = '../logs';
 
+    /** @var bool Is full width layout */
+    protected const IS_FULL_WIDTH = true;
+
     /**
      * Default main method
      *
@@ -61,17 +64,18 @@ class AdminLogs extends AbstractController implements ControllerInterface
      */
     public function getLogInDB(): void
     {
-        $query = 'SELECT DATE(created_time) AS created_time, alias FROM logs GROUP BY DATE(created_time), alias';
-
+        $query = 'SELECT DATE(created_time) created_time, alias FROM logs GROUP BY DATE(created_time), alias';
         $res = $this->_db->query($query);
 
         $i = 0;
-        foreach ($res as $item) {
-            echo "<p id='log-$i' class='log' 
+        if (!empty($res) && is_array($res)) {
+            foreach ($res as $item) {
+                echo "<p id='log-$i' class='log' 
                     data-alias='{$item['alias']}'
                     data-created_time='{$item['created_time']}'>
                     {$item['alias']} - {$item['created_time']}</p>";
-            $i++;
+                $i++;
+            }
         }
 
         if (0 === $i) {

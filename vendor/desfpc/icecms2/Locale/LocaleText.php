@@ -33,6 +33,8 @@ class LocaleText
             $locale = $settings->locale;
         }
 
+        $key = str_replace('\\/', '\_', $key);
+
         $cacher = CachingFactory::instance($settings);
         $textCacheKey = self::_getTextCacheKey($settings, $key, $values, $locale);
         if ($cacher->has($textCacheKey)) {
@@ -40,6 +42,7 @@ class LocaleText
         }
 
         $keyArr = explode('/', $key);
+
         $template = $keyArr[count($keyArr) - 1];
         $lastArray = $keyArr;
 
@@ -60,7 +63,9 @@ class LocaleText
                 }
 
                 if (!empty($langArr)) {
+
                     foreach ($keyArr as $key) {
+                        $key = str_replace('\_', '/', $key);
                         if (isset($langArr[$key])) {
                             $langArr = $langArr[$key];
                             if (!is_array($langArr)) {

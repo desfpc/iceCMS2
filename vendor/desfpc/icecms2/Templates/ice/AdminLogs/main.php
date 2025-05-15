@@ -13,7 +13,8 @@ use iceCMS2\Controller\AbstractController;
  * @let AbstractController $this
  */
 ?>
-<div class="container">
+<div class="container-fluid">
+    <?php include $this->settings->path . '/templates/ice/layouts/_breadCrumbs.php'; ?>
     <div class="row">
         <div class="col">
             <?php include($this->_getLayoutPath() . '_alerts.php'); ?>
@@ -58,9 +59,9 @@ use iceCMS2\Controller\AbstractController;
             let logsContainer = document.getElementById("logs-container");
             let xhr = new XMLHttpRequest();
             if(null !== fileName) {
-                xhr.open("GET", "/api/v1/get-logs/" + fileName, true);
+                xhr.open("GET", "/api/v1/admin/get-logs/" + fileName, true);
             } else {
-                xhr.open("GET", "/api/v1/get-db-logs/" + alias + '_' + createdTime, true);
+                xhr.open("GET", "/api/v1/admin/get-db-logs/" + alias + '_' + createdTime, true);
             }
             xhr.onload = function () {
                 if (xhr.status >= 200 && xhr.status < 300) {

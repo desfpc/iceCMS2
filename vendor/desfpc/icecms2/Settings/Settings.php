@@ -29,6 +29,7 @@ class Settings
     private const _POSSIBLE_SETTINGS = [
         'path' => 1,
         'template' => 1,
+        'layoutUseVendor' => 1,
         'dev' => 1,
         'secret' => 1,
         'db' => [
@@ -66,6 +67,8 @@ class Settings
             'jsScriptsVersion' => 1,
         ],
         'locales' => [],
+        'locale' => 1,
+        'defaultLocale' => 1,
         'logs' => [
             'period' => 1,
             'periodClear' => 1,
@@ -79,7 +82,7 @@ class Settings
         ],
         'routes' => [],
         'isUseCms' => 1,
-        'search' =>[
+        'search' => [
             'type' => 1,
             'login' => 1,
             'password' => 1
@@ -102,7 +105,7 @@ class Settings
                 'clear_completed_task' => 1,
             ],
             'default' => 1
-        ]
+        ],
     ];
     
     /** @var stdClass|null DataBase settings */
@@ -130,7 +133,10 @@ class Settings
     public ?stdClass $logs = null;
 
     /** @var string|null site active locale */
-    public ?string $locale = 'en';
+    public ?string $locale = null;
+
+    /** @var string|null site default locale */
+    public ?string $defaultLocale = null;
 
     /** @var stdClass|null cache system settings */
     public ?stdClass $cache = null;
@@ -152,6 +158,12 @@ class Settings
 
     /** @var bool is use CMS system */
     public bool $isUseCms = true;
+    
+    /** @var stdClass|null search settings */
+    public ?stdClass $search = null;
+    
+    /** @var stdClass|null queue settings */
+    public ?stdClass $queue = null;
 
     /**
      * Class constructor

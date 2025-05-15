@@ -245,7 +245,7 @@ class AdminUser extends AbstractController implements ControllerInterface
             ],
             'formValidators' => $this->_getFormValidators(),
             'formJsons' => [
-                'contacts' => [ "Country", "City", "Address", "Zip", "Twitter", "Instagram", "LinkedIn", "YouTube", "Discord", "Website", "Blog", "Other"],
+                'contacts' => [ "Country", "City", "Address", "Zip", "X", "Instagram", "LinkedIn", "YouTube", "Discord", "Website", "Blog", "Other"],
             ],
             'formFiles' => [
                 'avatar' => $user->avatarUrl,
@@ -356,7 +356,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                 ['text' => 'English', 'value' => 'en'],
                 ['text' => 'Русский', 'value' => 'ru'],
                 ['text' => 'ქართული', 'value' => 'ge'],
-                ['text' => 'Српски', 'value' => 'rs'],
+                ['text' => 'Српски', 'value' => 'sr'],
             ],
         ];
     }
@@ -436,7 +436,7 @@ class AdminUser extends AbstractController implements ControllerInterface
                             'name' => '',
                             'icon' => 'eye',
                             'action' => 'link',
-                            'actionUrl' => '/user/{id}',
+                            'actionUrl' => '/profile/{id}',
                             'class' => 'btn btn-primary btn-sm me-1',
                             'description' => 'View user profile',
                         ],

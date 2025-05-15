@@ -25,7 +25,7 @@ class FileLogger implements LoggerInterface
      * @inheritDoc
      * @throws Exception
      */
-    public static function log(string $type, mixed $data, Settings $settings): bool
+    public static function log(Settings $settings, string $type, mixed $data): bool
     {
         $logFile = $settings->path . '/logs/' . $type . match ($settings->logs->period) {
                 'day' => '_' . date('Y-m-d') . '.log',
@@ -49,7 +49,7 @@ class FileLogger implements LoggerInterface
     public static function clearOnPeriodLogs(Settings $settings, ?string $period = null): bool
     {
         if(is_null($period)){
-            $period = isset($settings->logs->periodClear) ? $settings->logs->periodClear : 'month';
+            $period = $settings->logs->periodClear ?? 'month';
         }
 
         $periodData = match ($period) {
@@ -71,7 +71,7 @@ class FileLogger implements LoggerInterface
                 $i++;
             }
         }
-        return 0 === $i ? false : true;
+        return !(0 === $i);
     }
 
     /**
@@ -89,7 +89,7 @@ class FileLogger implements LoggerInterface
                 $i++;
             }
         }
-        return 0 === $i ? false : true;
+        return !(0 === $i);
     }
 
     /**
@@ -111,7 +111,7 @@ class FileLogger implements LoggerInterface
             $filesTmp = explode('_', $file);
             if (isset($filesTmp[1])) {
                 $filesTmp = str_replace('.log', '', $filesTmp[1]);
-                if (strpos($filesTmp, $periodData) !== false) {
+                if (str_contains($filesTmp, $periodData)) {
                     $rmFile[] = $file;
                 }
             }

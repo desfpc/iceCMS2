@@ -23,11 +23,23 @@ interface AuthorizationInterface
     public function __construct(Settings $settings);
 
     /**
+     * Create user tokens by email and password
+     *
+     * @param string $email
+     * @param string $password
+     *
+     * @return bool|array
+     */
+    public function getTokens(string $email, string $password): bool|array;
+
+    /**
      * Authorize request
+     *
+     * @param array|null $params
      *
      * @return bool
      */
-    public function authorizeRequest(): bool;
+    public function authorizeRequest(?array $params = null): bool;
 
     /**
      * Getting authorize status

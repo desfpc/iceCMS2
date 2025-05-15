@@ -20,6 +20,9 @@ use iceCMS2\Tools\FlashVars;
 
 class AdminCaches extends AbstractController implements ControllerInterface
 {
+    /** @var bool Is full width layout */
+    protected const IS_FULL_WIDTH = true;
+
     public string $title = 'Caches';
 
     /**

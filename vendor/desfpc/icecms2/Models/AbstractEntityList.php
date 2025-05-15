@@ -65,18 +65,23 @@ abstract class AbstractEntityList
     /** @var array More query binding */
     protected array $_moreQueryBinding = [];
 
+    /** @var array Time stamp columns */
+    protected ?array $_timeStampColumns = [];
+
     /**
      * Entity list constructor
      *
-     * @param Settings $settings
-     * @param array $conditions
-     * @param array $order
-     * @param int $page
-     * @param ?int $size
-     * @param int $cacheSeconds
-     * @param bool $useOffset
-     * @param string $moreQuery
+     * @param Settings   $settings
+     * @param array      $conditions
+     * @param array      $order
+     * @param int        $page
+     * @param ?int       $size
+     * @param int        $cacheSeconds
+     * @param bool       $useOffset
+     * @param string     $moreQuery
      * @param array|null $moreQueryBinding
+     * @param array|null $timeStampColumns
+     *
      * @throws Exception
      */
     public function __construct(
@@ -88,7 +93,8 @@ abstract class AbstractEntityList
         int $cacheSeconds = 0,
         bool $useOffset = false,
         string $moreQuery = '',
-        ?array $moreQueryBinding = []
+        ?array $moreQueryBinding = [],
+        ?array $timeStampColumns = null
     ) {
         $this->_settings = $settings;
         $this->_db = DBFactory::get($this->_settings);
@@ -100,6 +106,7 @@ abstract class AbstractEntityList
         $this->_useOffset = $useOffset;
         $this->_moreQuery = $moreQuery;
         $this->_moreQueryBinding = $moreQueryBinding;
+        $this->_timeStampColumns = $timeStampColumns;
 
         $this->_cacher = CachingFactory::instance($this->_settings);
     }
@@ -209,6 +216,12 @@ abstract class AbstractEntityList
                 $query = 'SELECT `dbtable`.* ';
             } else {
                 $query = 'SELECT `dbtable`.`' . implode('`,`dbtable`.`', $this->_selectedFields) . '` ';
+            }
+
+            if (!empty($this->_timeStampColumns)) {
+                foreach ($this->_timeStampColumns as $column) {
+                    $query .= ', UNIX_TIMESTAMP(`dbtable`.`' . $column . '`) `' . $column . '_timestamp` ';
+                }
             }
         }
         $query .= $this->_getMoreSelectQuery();

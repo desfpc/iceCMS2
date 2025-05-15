@@ -13,7 +13,8 @@ use iceCMS2\Controller\AbstractController;
  * @var AbstractController $this
  */
 ?>
-<div class="container">
+<div class="container-fluid">
+    <?php include $this->settings->path . '/templates/ice/layouts/_breadCrumbs.php'; ?>
     <div class="row">
         <div class="col">
             <?php include($this->_getLayoutPath() . '_alerts.php'); ?>

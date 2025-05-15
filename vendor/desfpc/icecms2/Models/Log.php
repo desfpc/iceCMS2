@@ -10,14 +10,6 @@ declare(strict_types=1);
 
 namespace iceCMS2\Models;
 
-use Cassandra\Date;
-use iceCMS2\Helpers\Strings;
-use iceCMS2\Locale\LocaleText;
-use iceCMS2\Messages\MessageFactory;
-use iceCMS2\Settings\Settings;
-use iceCMS2\Tools\Exception;
-use iceCMS2\Types\UnixTime;
-
 class Log extends AbstractEntity
 {
     /** @var string Entity DB table name */

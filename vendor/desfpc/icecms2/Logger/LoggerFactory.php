@@ -30,31 +30,23 @@ class LoggerFactory
     }
 
     /**
-     * @param string $nameFileLog
-     * @param mixed $date
+     * @param Settings $settings
      *
-     * @param Settings|null $settings
+     * @param string   $nameFileLog
+     * @param mixed    $date
      *
      * @return bool
      */
-    public static function log(string $nameFileLog, mixed $date, ?Settings $settings = null): bool
+    public static function log(Settings $settings, string $nameFileLog, mixed $date): bool
     {
-        if (strpos($nameFileLog, "_") !== false) {
+        if (str_contains($nameFileLog, "_")) {
             $flashVars = new FlashVars();
             $flashVars->set('error', 'you cannot use _ in the file name');
             return false;
         }
 
-        if(is_null($settings)){
-            /** @var array $settings Settings array from settingsSelector.php */
-            require __DIR__ . '/../../../../settings/settingsSelector.php';
-
-            $settings = new Settings($settings);
-        }
-
         $logger = self::instance($settings);
-        $result = $logger::log($nameFileLog, $date, $settings);
 
-        return $result;
+        return $logger::log($settings, $nameFileLog, $date);
     }
 }

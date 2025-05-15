@@ -23,6 +23,10 @@ class JsonValidator extends AbstractValidator implements ValidatorInterface
     public static function validate(DBInterface $db, mixed $value, ?Settings $settings = null, ?string $table = null,
         ?string $name = null): bool
     {
+        if ($value === '{}' || $value === '[]' || $value === '') {
+            return true;
+        }
+
         if (is_array($value)) {
             return true;
         }

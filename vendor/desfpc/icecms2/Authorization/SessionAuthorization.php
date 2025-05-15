@@ -19,11 +19,12 @@ class SessionAuthorization extends AbstractAuthorization implements Authorizatio
      * @inheritDoc
      * @throws Exception
      */
-    public function authorizeRequest(): bool
+    public function authorizeRequest(?array $params = null): bool
     {
         if (isset($_REQUEST['email']) && isset($_REQUEST['password'])) {
             if ($this->_passwordAuth($_REQUEST['email'], $_REQUEST['password'])) {
                 $_SESSION['user'] = self::$_user->get('id');
+                $_SESSION['locale'] = self::$_user->get('language');
                 return true;
             } else {
                 $this->errors[] = 'Wrong email or password';

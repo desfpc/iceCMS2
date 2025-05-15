@@ -26,6 +26,33 @@ class UnixTime
     }
 
     /**
+     * How much seconds has passed since the timestamp
+     *
+     * @return int
+     */
+    public function passedSeconds(): int
+    {
+        return time() - $this->_timestamp;
+    }
+
+    public function passedString(int $seconds, int $timeShift = 0, string $format = 'd.m.Y'): array
+    {
+        $seconds = time() - $this->_timestamp;
+        $minutes = floor($seconds / 60);
+        $hours = floor($minutes / 60);
+
+        if ($hours > 24) {
+            return [date($format, ($this->_timestamp + $timeShift)), null];
+        } elseif($minutes > 60) {
+            return ['hours ago {time}', $hours];
+        } elseif($seconds > 60) {
+            return ['minutes ago {time}', $minutes];
+        } else {
+            return ['seconds ago {time}', $seconds];
+        }
+    }
+
+    /**
      * Get int timestamp
      *
      * @return false|int|null
@@ -53,7 +80,7 @@ class UnixTime
     }
 
     /**
-     * Magick to string convertion
+     * Magick to string conversion
      *
      * @return string
      */

@@ -48,7 +48,7 @@ class App
             unset($argv[0]);
         }
         if (empty($argv)) {
-            throw new Exception('No command found. Type "php cli.php help" for command help.');
+            $argv = [1 => '-h'];
         }
         $this->_argv = $argv;
         $this->_existMethod();

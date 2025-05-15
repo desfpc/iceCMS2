@@ -55,9 +55,33 @@ class AbstractAuthorization implements AuthorizationInterface
     }
 
     /**
+     * Get tokens by password
+     *
+     * @param string $email
+     * @param string $password
+     * @return bool|array
+     * @throws Exception
+     */
+    public function getTokens(string $email, string $password): bool|array
+    {
+        if ($this->_passwordAuth($email, $password)) {
+            $accessToken = JWT::getJWT($this->_settings, (int)self::$_user->get('id'), 'access');
+            $refreshToken = JWT::getJWT($this->_settings, (int)self::$_user->get('id'), 'refresh');
+
+            return [
+                'accessToken' => $accessToken,
+                'refreshToken' => $refreshToken,
+                'id' => self::$_user->get('id'),
+            ];
+        }
+
+        return false;
+    }
+
+    /**
      * @inheritDoc
      */
-    public function authorizeRequest(): bool
+    public function authorizeRequest(?array $params = null): bool
     {
         return false;
     }

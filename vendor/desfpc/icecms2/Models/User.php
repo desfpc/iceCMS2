@@ -43,6 +43,7 @@ use iceCMS2\Types\UnixTime;
  * @property string $sex
  * @property string $contacts
  * @property string $password
+ * @property int|null $approved_icon
  */
 class User extends AbstractEntity
 {
@@ -145,6 +146,8 @@ class User extends AbstractEntity
                     $this->errors[] = LocaleText::get($this->_settings, 'user/errors/User avatar save error');
                 }
             }
+        } else {
+            $this->avatarUrl = '/img/icons/user.svg';
         }
     }
 
@@ -228,12 +231,14 @@ class User extends AbstractEntity
      * Send approve code to user
      *
      * @param string $codeType
+     * @param int    $len
+     *
      * @return bool
      * @throws Exception
      */
-    public function sendApproveCode(string $codeType): bool
+    public function sendApproveCode(string $codeType, int $len = 6): bool
     {
-        $code = $this->_getApproveCode();
+        $code = $this->_getApproveCode($len);
         $this->set($codeType. '_approve_code', $code);
         $this->set($codeType. '_approved', 0);
         $this->set($codeType. '_send_time', new UnixTime());
@@ -242,6 +247,55 @@ class User extends AbstractEntity
         }
 
         return false;
+    }
+
+    /**
+     * Create task for send approve code
+     *
+     * @param string $codeType
+     * @param int    $len
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function sendApproveCodeTask(string $codeType, int $len = 6): bool
+    {
+        //рассылаем пока только коды мыла
+        if ($codeType === 'email') {
+            $code = $this->_getApproveCode($len);
+            $this->set($codeType. '_approve_code', $code);
+            $this->set($codeType. '_approved', 0);
+            $this->set($codeType. '_send_time', date('Y-m-d H:i:s'), false);
+            $templateData = [
+                'name' => $this->get('name') ?? $this->get('nikname') ?? $this->get('email'),
+                'link' => 'https://' . $_SERVER['HTTP_HOST'] . '/recovery/' . $this->get('id') . '/?code=' . $code,
+            ];
+            if ($this->save() && $this->createSendMailTask($codeType, 'recovery_password', $templateData)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function createSendMailTask(string $codeType, string $template, array $templateData): bool
+    {
+        $task = new QueueTask($this->_settings);
+        $task->set(['queue_id' => 1,
+            'status' => 'pending',
+            'data' => json_encode([
+                'userId' => $this->get('id'),
+                'codeType' => $codeType,
+                'template' => $template,
+                'templateData' => $templateData,
+                'locale' => $this->get('language'),
+            ]),
+        ]);
+
+        return $task->save();
     }
 
     /**
@@ -276,7 +330,7 @@ class User extends AbstractEntity
                             $this->_settings,
                             'Your approval code on {siteName}: <b>{code}</b>', [
                             'siteName' => $this->_settings->site->title,
-                            'code' => $code
+                            'code' => $code,
                         ])
                         . '<br><br>' . LocaleText::get(
                             $this->_settings,
@@ -293,11 +347,13 @@ class User extends AbstractEntity
     /**
      * Generate and get approve code string
      *
+     * @param int $len
+     *
      * @return string
      */
-    private function _getApproveCode():string
+    private function _getApproveCode(int $len = 6):string
     {
-        return Strings::getRandomString(6, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890');
+        return Strings::getRandomString($len, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@$%^*_-');
     }
 
     /**

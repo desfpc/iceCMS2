@@ -12,6 +12,14 @@ namespace iceCMS2\Models;
 
 use iceCMS2\Tools\Exception;
 
+/**
+ * Class UserSubscriber
+ *
+ * @package iceCMS2\Models
+ * @property int $user_id
+ * @property int $target_id
+ * @property string $created_time
+ */
 class UserSubscriber extends AbstractEntity
 {
     /** @var string Entity DB table name */
@@ -19,15 +27,15 @@ class UserSubscriber extends AbstractEntity
 
     /** @var array|null Validators for values by key */
     protected ?array $_validators = [
-        'parent_id' => 'int',
-        'child_id' => 'int',
-        'date_add' => 'string',
+        'user_id' => 'int',
+        'target_id' => 'int',
+        'created_time' => 'unixtime',
     ];
 
     /** @var array|string[]|null IDs columns for DB table */
     protected ?array $_idColumns = [
-        'parent_id',
-        'child_id',
+        'user_id',
+        'target_id',
     ];
 
     /**
@@ -44,7 +52,7 @@ class UserSubscriber extends AbstractEntity
             throw new Exception('You can\'t subscribe to yourself');
         }
 
-        $res = $this->_db->queryBinded('SELECT * FROM user_subscribers WHERE parent_id = ? AND child_id = ?;', [
+        $res = $this->_db->queryBinded('SELECT * FROM user_subscribers WHERE user_id = ? AND target_id = ?;', [
             0 => $fromUser,
             1 => $toUser,
         ]);
@@ -56,11 +64,11 @@ class UserSubscriber extends AbstractEntity
         //Create new record
         else {
             $this->set([
-                'parent_id' => $fromUser,
-                'child_id' => $toUser,
+                'user_id' => $fromUser,
+                'target_id' => $toUser,
             ]);
 
-            return $this->save();
+            return $this->save(); //TODO cerate send notification task
         }
     }
 
@@ -78,7 +86,7 @@ class UserSubscriber extends AbstractEntity
             throw new Exception('You can\'t unsubscribe from yourself');
         }
 
-        $res = $this->_db->queryBinded('SELECT * FROM user_subscribers WHERE parent_id = ? AND child_id = ?;', [
+        $res = $this->_db->queryBinded('SELECT * FROM user_subscribers WHERE user_id = ? AND target_id = ?;', [
             0 => $fromUser,
             1 => $toUser,
         ]);

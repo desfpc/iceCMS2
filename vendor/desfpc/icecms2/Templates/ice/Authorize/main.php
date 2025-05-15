@@ -31,7 +31,7 @@ use iceCMS2\Controller\AbstractController;
                     <div class="mb-3">
                         <input type="submit" class="btn btn-primary" value="Log in">
                     </div>
-                    <p><a href="/registration">Registration</a> | <a href="/reset-password">Reset password</a></p>
+                    <p><a href="/registration">Registration</a> | <a href="/reset-password">Password recovery</a></p>
                 </form>
             </div>
             <p>&nbsp;</p>

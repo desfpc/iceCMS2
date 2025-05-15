@@ -96,6 +96,11 @@ class JWT
     public static function checkJWT(Settings $settings, string $token, string $type): bool|JWTPayload
     {
         $tokenArr = explode('.', $token);
+
+        if (count($tokenArr) !== 3) {
+            return false;
+        }
+
         $headerStr = base64_decode($tokenArr[0]);
         //$header = json_decode($headerStr, true);
         $payloadStr = base64_decode($tokenArr[1]);

@@ -29,6 +29,11 @@ abstract class AbstractController implements ControllerInterface
     /** @var string Authorization type */
     protected const AUTHORIZE_TYPE = 'session';
 
+    /** @var bool Is full width layout */
+    protected const IS_FULL_WIDTH = false;
+
+    public static bool $isLayoutDrawed = false;
+
     /** @var AuthorizationInterface Authorization object */
     protected AuthorizationInterface $authorization;
 
@@ -62,9 +67,6 @@ abstract class AbstractController implements ControllerInterface
     /** @var string Template layout */
     public string $layout = 'default';
 
-    /** @var bool Use vendor layout */
-    public bool $vendorLayout = false;
-
     /** @var RequestParameters|null REQUEST parameters */
     public?RequestParameters $requestParameters = null;
 
@@ -73,6 +75,9 @@ abstract class AbstractController implements ControllerInterface
 
     /** @var array<int, string|array<string, string>> CSS files to load */
     public array $cssFiles = [];
+
+    /** @var array<int, string|array<string, string>> JS files to load in head tags */
+    public array $headJsFiles = [];
 
     /** @var string JS code for Document Ready */
     public string $jsReady = '';
@@ -88,8 +93,9 @@ abstract class AbstractController implements ControllerInterface
 
     /**
      * Class constructor
-     * @param Routing|null $routing
-     * @param Settings|null $settings
+     *
+     * @param Routing|null                $routing
+     * @param Settings|null               $settings
      *
      * @throws Exception
      */
@@ -103,6 +109,8 @@ abstract class AbstractController implements ControllerInterface
 
         $this->authorization = AuthorizationFactory::instance($this->settings, static::AUTHORIZE_TYPE);
         $this->requestParameters = new RequestParameters();
+
+        $this->templateData['fullWidth'] = static::IS_FULL_WIDTH;
     }
 
     /**
@@ -155,7 +163,11 @@ abstract class AbstractController implements ControllerInterface
         }
 
         try {
-            require($this->_getFullLayoutPath());
+            if (!isset($this->routing->route['drawLayout']) || $this->routing->route['drawLayout'] === true) {
+                require($this->_getFullLayoutPath());
+            } else {
+                require($this->_getOnlyBodyPath());
+            }
         } catch (\Exception $e) {
             throw new Exception('Can\'t render template: ' . $e->getMessage());
         }
@@ -172,6 +184,7 @@ abstract class AbstractController implements ControllerInterface
     {
         $this->layout = 'json';
         $this->isTemplate = false;
+
         require($this->_getFullLayoutPath());
 
         if (!$success) {
@@ -202,6 +215,11 @@ abstract class AbstractController implements ControllerInterface
         return $this->_getLayoutPath() . $this->layout . '.php';
     }
 
+    protected function _getOnlyBodyPath(): string
+    {
+        return $this->_getLayoutPath() . 'onlyBody.php';
+    }
+
     /**
      * Get layout path
      *
@@ -209,11 +227,8 @@ abstract class AbstractController implements ControllerInterface
      */
     protected function _getLayoutPath(): string
     {
-        if ($this->vendorLayout) {
-            $layoutTemplateName = $this->_getTemplateName() . DIRECTORY_SEPARATOR . 'vendor';
-        } else {
-            $layoutTemplateName = $this->_getTemplateName();
-        }
+        $layoutTemplateName = $this->_getTemplateName(true);
+
         return $this->settings->path . $layoutTemplateName . DIRECTORY_SEPARATOR . $this->settings->template
             . DIRECTORY_SEPARATOR . 'layouts' . DIRECTORY_SEPARATOR;
     }
@@ -221,11 +236,17 @@ abstract class AbstractController implements ControllerInterface
     /**
      * Get templates folder name
      *
+     * @param bool $isLayout
+     *
      * @return string
      */
-    protected function _getTemplateName(): string
+    protected function _getTemplateName(bool $isLayout = false): string
     {
-        $useVendor = $this->routing->route['useVendor'] ?? false;
+        if ($isLayout) {
+            $useVendor = $this->settings->layoutUseVendor ?? false;
+        } else {
+            $useVendor = $this->routing->route['useVendor'] ?? false;
+        }
 
         if ($useVendor) {
             $templatesName = 'templates' . DIRECTORY_SEPARATOR . 'vendor';
@@ -288,12 +309,22 @@ abstract class AbstractController implements ControllerInterface
     /**
      * Echo JS files (<script ...></script>) from $this->jsFiles array
      *
+     * @param string $type
+     *
      * @return void
      */
-    protected function _echoJS(): void
+    protected function _echoJS(string $type = 'footer'): void
     {
-        if (!empty($this->jsFiles)) {
-            foreach ($this->jsFiles as $jsFile) {
+        switch ($type) {
+            case 'head':
+                $jsFiles = $this->headJsFiles;
+                break;
+            default:
+                $jsFiles = $this->jsFiles;
+        }
+
+        if (!empty($jsFiles)) {
+            foreach ($jsFiles as $jsFile) {
                 echo PHP_EOL;
                 if (!is_array($jsFile)) {
                     echo  '<script src="' . $jsFile . '"></script>';
@@ -361,6 +392,7 @@ abstract class AbstractController implements ControllerInterface
         if (empty($this->_headers)) {
             $this->_headers = $this->_getDefaultHeaders();
         }
+
         foreach ($this->_headers as $header) {
             header($header);
         }
@@ -391,13 +423,13 @@ abstract class AbstractController implements ControllerInterface
 
         //$headers = $this->_getDefaultHeaders();
         $headers[] = 'Location: ' . $url;
-        //$headers[] = 'HTTP/1.1 ' . $code . ' ' . $codeNames[$code];
+        $headers[] = 'HTTP/1.1 ' . $code . ' ' . $codeNames[$code];
 
         foreach ($headers as $header) {
             header($header);
         }
 
-        if ($noDie) {
+        if (!$noDie) {
             die();
         }
     }

@@ -12,7 +12,9 @@ namespace iceCMS2\Messages;
 
 use DateTime;
 use iceCMS2\Logger\LoggerFactory;
-use pechkin\pechkin;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
 class EmailSMTPTransport extends AbstractMessage
 {
@@ -39,46 +41,49 @@ class EmailSMTPTransport extends AbstractMessage
     {
         $this->_sendDate = new DateTime();
 
-        $mail = new pechkin(
-            $this->_settings->email->smtp,
-            $this->_settings->email->port,
-            $this->_settings->email->mail,
-            $this->_settings->email->pass,
-            'ssl',
-            60,
-            false
-        );
+        $mail = new PHPMailer(true);
+        try {
+            //Server settings
+            $mail->CharSet = $mail::CHARSET_UTF8;
+            $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+            $mail->isSMTP();
+            $mail->Host = $this->_settings->email->smtp;
+            $mail->SMTPAuth = true;
+            $mail->Username = $this->_settings->email->mail;
+            $mail->Password = $this->_settings->email->pass;
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+            $mail->Port = $this->_settings->email->port;
 
-        if (is_array($attachments) && count($attachments) > 0) {
-            foreach ($attachments as $attachment) {
-                $mail->addAttachment($attachment);
+            $mail->setFrom($this->_settings->email->mail, 'Nozhove.com Mailer');
+            $mail->addAddress($this->_to, $this->_toName);
+
+            if (is_array($attachments) && count($attachments) > 0) {
+                foreach ($attachments as $attachment) {
+                    $mail->addAttachment($attachment);
+                }
             }
-        }
 
-        if ($mail->send(
-            self::makeEmailFullName($this->_to, $this->_toName),
-            self::makeEmailFullName($this->_from, $this->_fromName),
-            $this->_theme,
-            $this->_text)
-        ) {
+            $mail->isHTML();
+            $mail->Subject = $this->_theme;
+            $mail->Body = $this->_text;
+
+            $mail->send();
+
+            return true;
+        } catch (Exception $e) {
+
             (LoggerFactory::instance($this->_settings))::log(
                 $this->_settings,
                 'email',
                 [
+                    'message' => $e->getMessage(),
                     'type' => 'email',
                     'to' => $this->_to,
-                    'to_name' => $this->_toName,
-                    'from' => $this->_from,
-                    'from_name' => $this->_fromName,
-                    'theme' => $this->_theme,
-                    'text' => $this->_text,
-                    'date' => $this->_sendDate->format('Y-m-d H:i:s')
+                    'trace' => $e->getTraceAsString(),
                 ]
             );
 
-            return true;
+            return false;
         }
-
-    return false;
     }
 }

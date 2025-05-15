@@ -17,6 +17,9 @@ use iceCMS2\Tools\Exception;
 
 class AdminFiles extends AbstractController implements ControllerInterface
 {
+    /** @var bool Is full width layout */
+    protected const IS_FULL_WIDTH = true;
+
     /** @var string */
     public string $title = 'Files';
 

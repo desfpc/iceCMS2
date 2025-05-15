@@ -18,7 +18,7 @@ class UserSubscriberList extends AbstractEntityList
     protected string $_dbtable = 'user_subscribers';
 
     /** @var array|null columns for ID */
-    protected ?array $_idColumns = ['parent_id', 'child_id'];
+    protected ?array $_idColumns = ['user_id', 'target_id'];
 
     /**
      * User subscriptions list
@@ -28,10 +28,10 @@ class UserSubscriberList extends AbstractEntityList
      * @return bool|array
      * @throws Exception
      */
-    public function getSubscriptions(int $userId, array $order = ['date_add' => 'DESC']): bool|array
+    public function getSubscriptions(int $userId, array $order = ['created_time' => 'DESC']): bool|array
     {
         $this->_conditions = [
-            'parent_id' => $userId,
+            'user_id' => $userId,
         ];
         $this->_order = $order;
 
@@ -49,9 +49,65 @@ class UserSubscriberList extends AbstractEntityList
     public function getSubscribers(int $userId, array $order = ['date_add' => 'DESC']): array
     {
         $this->_conditions = [
-            'child_id' => $userId,
+            'target_id' => $userId,
         ];
         $this->_order = $order;
         return $this->get();
+    }
+
+    /**
+     * Get mutual subscribers
+     *
+     * @param int $userId
+     * @param int $subscriberId
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function getMutualSubscribers(int $userId, int $subscriberId): array
+    {
+        $ubscriptions = $this->getSubscriptions($userId);
+        $subscribers = $this->getSubscribers($subscriberId);
+
+        $mutual = [];
+        foreach ($ubscriptions as $subscription) {
+            foreach ($subscribers as $subscriber) {
+                if ($subscription['target_id'] === $subscriber['user_id']) {
+                    $mutual[] = $subscription;
+                }
+            }
+        }
+
+        return $mutual;
+    }
+
+    /**
+     * Get non-mutual subscribers
+     *
+     * @param int $userId
+     * @param int $subscriberId
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function getNonMutualSubscribers(int $userId, int $subscriberId): array
+    {
+        $ubscriptions = $this->getSubscriptions($userId);
+        $subscribers = $this->getSubscribers($subscriberId);
+
+        $nonMutual = [];
+        foreach ($ubscriptions as $subscription) {
+            $isMutual = false;
+            foreach ($subscribers as $subscriber) {
+                if ($subscription['target_id'] === $subscriber['user_id']) {
+                    $isMutual = true;
+                }
+            }
+            if (!$isMutual) {
+                $nonMutual[] = $subscription;
+            }
+        }
+
+        return $nonMutual;
     }
 }

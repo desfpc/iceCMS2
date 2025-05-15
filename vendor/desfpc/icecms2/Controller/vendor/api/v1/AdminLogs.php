@@ -12,7 +12,6 @@ namespace app\Controllers\vendor\api\v1;
 
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
-use iceCMS2\Models\FileImage;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Models\User;
 
@@ -20,9 +19,10 @@ class AdminLogs extends AbstractController implements ControllerInterface
 {
     /** @var string  */
     private const PATH = '../logs';
-    
+
     /**
      * @return void
+     * @throws Exception
      */
     public function getLogByNameFile(): void
     {
@@ -54,14 +54,14 @@ class AdminLogs extends AbstractController implements ControllerInterface
         $response = explode('_', $response);
         $result = "The alias $response[0] not found for $response[1]";
 
-        $query = 'SELECT value FROM logs WHERE alias = ? and DATE(created_time) = ?';
+        $query = 'SELECT created_time, value FROM logs WHERE alias = ? and DATE(created_time) = ?';
         $result = $this->_db->queryBinded($query,[
             0 =>$response[0],
             1 =>$response[1]
         ]);
 
         foreach ($result as &$item) {
-            $item = $item['value'];
+            $item = $item['created_time'] . ': ' . $item['value'];
         }
 
         $result = implode('</br>', $result);

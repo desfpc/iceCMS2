@@ -13,7 +13,7 @@ namespace iceCMS2\Controller;
 abstract class AbstractTokenAuthorizationController extends AbstractController implements ControllerInterface
 {
     /** @var string Authorization redirect url */
-    protected const AUTHORIZE_REDIRECT_URL = '/api/v1/authorize';
+    protected const AUTHORIZE_REDIRECT_URL = '/api/v1/profile/auth';
 
     /** @var string Authorization type */
     protected const AUTHORIZE_TYPE = 'token';
@@ -50,14 +50,25 @@ abstract class AbstractTokenAuthorizationController extends AbstractController i
      */
     protected function _getDefaultHeaders(): array
     {
-
         return array_merge(parent::_getDefaultHeaders(), [
-            'Access-Control-Allow-Origin' => '*',
-            'Access-Control-Allow-Methods' => 'GET, POST, PUT, DELETE, OPTIONS',
-            'Access-Control-Allow-Headers' => 'Content-Type, Authorization, X-Requested-With',
-            'Access-Control-Allow-Credentials' => 'true',
+            'Access-Control-Allow-Origin: *',
+            'Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization, X-Requested-With',
+            'Access-Control-Allow-Credentials: true',
             'Content-Type: application/json; charset=utf-8',
         ]);
+    }
+
+    /**
+     * Check authorization for action method (run it in the top of action, that need authorization)
+     *
+     * @return void
+     */
+    protected function _authorizationCheck(): void
+    {
+        if ($this->authorization->getAuthStatus() === false || !$this->authorization->authorizeRequest()) {
+            $this->_authorizeRedirect();
+        }
     }
 
     /**
@@ -69,7 +80,7 @@ abstract class AbstractTokenAuthorizationController extends AbstractController i
     protected function _authorizeRedirect(): void
     {
         $headers = $this->_getDefaultHeaders();
-        $headers['HTTP/1.1'] = '401 Unauthorized';
+        $headers[] = 'HTTP/1.1: 401 Unauthorized';
 
         foreach ($headers as $header) {
             header($header);

@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace app\Controllers\vendor;
 
-
 use iceCMS2\Controller\AbstractController;
 use iceCMS2\Controller\ControllerInterface;
 use iceCMS2\Models\User;
@@ -18,6 +17,9 @@ use iceCMS2\Tools\Exception;
 
 class AdminUsers extends AbstractController implements ControllerInterface
 {
+    /** @var bool Is full width layout */
+    protected const IS_FULL_WIDTH = true;
+
     public string $title = 'Users';
 
     /**

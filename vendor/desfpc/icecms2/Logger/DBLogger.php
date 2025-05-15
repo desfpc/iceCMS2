@@ -13,7 +13,6 @@ namespace iceCMS2\Logger;
 use iceCMS2\DB\DBFactory;
 use iceCMS2\DB\DBInterface;
 use iceCMS2\Models\AbstractEntity;
-use iceCMS2\Models\Log;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Tools\Exception;
 use iceCMS2\Helpers\LoggerHelper;
@@ -28,13 +27,12 @@ class DBLogger implements LoggerInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameters)
      */
-    public static function log(string $type, mixed $data, Settings $settings): bool
+    public static function log(Settings $settings, string $type, mixed $data): bool
     {
-        if ($data instanceof AbstractLogEntity) {
+        if ($data instanceof AbstractEntity) {
             return $data->save();
         } elseif (is_array($data)) {
             $fullClassName = 'iceCMS2\Models\Log';
-            /** @var AbstractEntity $log */
             $log = new $fullClassName($settings);
 
             $data = self::convertDataToString($data);
@@ -62,19 +60,11 @@ class DBLogger implements LoggerInterface
         $db = self::_getDDFactory($settings);
 
         $query = match (is_null($period) ? $settings->logs->periodClear : $period) {
-            'm' => [
+            'm', 'month' => [
                 'qyery' => 'DELETE FROM logs WHERE YEAR(created_time) = ? AND MONTH(created_time) = ?',
                 'param' => [date('Y'), date('m')]
             ],
-            'month' => [
-                'qyery' => 'DELETE FROM logs WHERE YEAR(created_time) = ? AND MONTH(created_time) = ?',
-                'param' => [date('Y'), date('m')]
-            ],
-            'y' => [
-                'qyery' => 'DELETE FROM logs WHERE YEAR(created_time) = ?',
-                'param' => [date('Y')]
-            ],
-            'year' => [
+            'y', 'year' => [
                 'qyery' => 'DELETE FROM logs WHERE YEAR(created_time) = ?',
                 'param' => [date('Y')]
             ],

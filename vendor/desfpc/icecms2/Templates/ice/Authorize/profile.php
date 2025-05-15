@@ -26,8 +26,6 @@ $user = $this->templateData['user'];
         <div class="col">
             <?php include($this->_getLayoutPath() . '_alerts.php'); ?>
             <h1><?= $user->get('nikname'); ?> profile</h1>
-            <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-            <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
             <div id="start-data" style="display: none;">
                 {
                     "user": {
@@ -43,20 +41,21 @@ $user = $this->templateData['user'];
                         "avatar": "<?= $user->avatarUrl; ?>",
                         "created_time": "<?= $user->get('created_time'); ?>",
                         "sex": "<?= $user->get('sex'); ?>",
-                        "contacts": <?= is_null($user->get('contacts')) ? "{}" : $user->get('contacts'); ?>
+                        "contacts": <?= is_null($user->get('contacts')) ? "{}" : $user->get('contacts'); ?>,
+                        "email": "<?= $user->get('email'); ?>"
                     },
                     "languages": [
                         { "text": "English", "value": "en" },
                         { "text": "Русский", "value": "ru" },
                         { "text": "ქართული", "value": "ge" },
-                        { "text": "Српски", "value": "rs" }
+                        { "text": "Српски", "value": "sr" }
                     ],
                     "sexes": [
                         { "text": "Male", "value": "male" },
                         { "text": "Female", "value": "female" },
                         { "text": "Other", "value": "other" }
                     ],
-                    "contacts": [ "Country", "City", "Address", "Zip", "Twitter", "Instagram", "LinkedIn", "YouTube", "Discord", "Website", "Blog", "Other"]
+                    "contacts": [ "Country", "City", "Address", "Zip", "X", "Instagram", "LinkedIn", "YouTube", "Discord", "Website", "Blog", "Other"]
                 }
             </div>
 

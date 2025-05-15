@@ -15,13 +15,9 @@ export default {
                 created_time: null,
                 sex: null,
                 contacts: {},
+                email: null,
             },
             socialData: {
-                friends: {
-                    page: 0,
-                    total: 0,
-                    entries: [],
-                },
                 subscribers: {
                     page: 0,
                     total: 0,
@@ -39,10 +35,12 @@ export default {
                 class: 'alert',
                 message: '',
             },
+            statuses: [],
+            roles: [],
             languages: [
                 { text: 'English', value: 'en' },
                 { text: 'Русский', value: 'ru' },
-                { text: 'Српски', value: 'rs' },
+                { text: 'Српски', value: 'sr' },
                 { text: 'ქართული', value: 'ge' },
             ],
             sexes: [
@@ -50,8 +48,7 @@ export default {
                 { text: 'Female', value: 'female' },
                 { text: 'Other', value: 'other' },
             ],
-            contacts: [ 'Country', 'City', 'Address', 'Zip', 'Twitter', 'Instagram', 'LinkedIn',
-                'YouTube', 'Discord', 'Website', 'Blog', 'Other' ],
+            contactsLang: {},
             password: {
                 old: '',
                 new: '',
@@ -62,6 +59,22 @@ export default {
     },
 
     methods: {
+        getStatusName(status) {
+            for (var key in this.statuses) {
+                if (this.statuses[key].value === status) {
+                    return this.statuses[key].text;
+                }
+            }
+            return ''
+        },
+        getRoleName(role) {
+            for (var key in this.roles) {
+                if (this.roles[key].value === role) {
+                    return this.roles[key].text;
+                }
+            }
+            return ''
+        },
         onUploadFiles(event) {
             const files = event.target.files
             const formData = new FormData()
@@ -200,14 +213,16 @@ export default {
     },
 
     mounted() {
-        const startData = JSON.parse(document.getElementById('start-data').innerHTML)
-        //startData.user.languages = JSON.stringify(startData.user.languages)
+        const startData = localStorage.getItem('user', JSON.stringify(this.user));
 
-        this.user = startData.user
-        this.languages = startData.languages
-        this.sexes = startData.sexes
-        this.contacts = startData.contacts
+        this.user = startData.user;
 
-        console.log('Vue profile loaded...')
+        this.languages = startData.languages;
+        this.sexes = startData.sexes;
+        this.contactsLang = startData.contactsLang;
+        this.statuses = startData.statuses;
+        this.roles = startData.roles;
+
+        console.log('Vue profile loaded...');
     }
 }

@@ -23,7 +23,7 @@ class UnixTimeValidator extends AbstractValidator implements ValidatorInterface
     public static function validate(DBInterface $db, mixed $value, ?Settings $settings = null, ?string $table = null,
         ?string $name = null): bool
     {
-        if (is_numeric($value)) {
+        if (is_numeric($value) || is_string($value)) {
             return true;
         }
 

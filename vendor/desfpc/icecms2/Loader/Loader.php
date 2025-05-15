@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace iceCMS2\Loader;
 
+use desfpc\Visualijoper\Visualijoper;
+use iceCMS2\Locale\LocaleSelector;
 use iceCMS2\Settings\Settings;
 use iceCMS2\Routing\Routing;
 use iceCMS2\Controller\ControllerInterface;
@@ -22,7 +24,7 @@ class Loader
 
     public Settings $settings;
     public Routing $routing;
-    public ControllerInterface $controller;
+    public ?ControllerInterface $controller = null;
 
     /**
      * Loader class constructor
@@ -36,35 +38,44 @@ class Loader
         $this->routing = new Routing();
         $this->routing->parseURL();
         $this->routing->getRoute($this->settings);
+
+        if ($this->routing->route['controller'] !== 'WebHooksAuth') {
+            LocaleSelector::setLocale($this);
+        }
     }
 
     /**
      * Set route to ServerErrors controller
      *
+     * @param bool|null $drawLayout
+     *
      * @return void
      */
-    public function setServerErrorsController(): void
+    public function setServerErrorsController(?bool $drawLayout = null): void
     {
         $route = $this->settings->routes[500];
-        $this->manuallySetRoute($route['controller'], $route['controllerMethod'], $route['useVendor']);
+        $this->manuallySetRoute($route['controller'], $route['controllerMethod'], $route['useVendor'], []);
     }
 
     /**
      * Set route array manually
      *
-     * @param string $controller
-     * @param string $controllerMethod
-     * @param bool $useVendor
-     * @param array $parts
+     * @param string    $controller
+     * @param string    $controllerMethod
+     * @param bool      $useVendor
+     * @param array     $parts
+     * @param bool|null $drawLayout
+     *
      * @return void
      */
-    public function manuallySetRoute(string $controller, string $controllerMethod, bool $useVendor, array $parts = []): void
+    public function manuallySetRoute(string $controller, string $controllerMethod, bool $useVendor, array $parts = [], ?bool $drawLayout = null): void
     {
         $this->routing->route = [
             'controller' => $controller,
             'controllerMethod' => $controllerMethod,
             'useVendor' => $useVendor,
             'parts' => $parts,
+            'drawLayout' => $drawLayout,
         ];
     }
 
