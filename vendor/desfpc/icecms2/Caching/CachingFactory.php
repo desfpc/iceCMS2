@@ -7,7 +7,6 @@ declare(strict_types=1);
  *
  * Caching Factory
  */
-
 namespace iceCMS2\Caching;
 
 use iceCMS2\Settings\Settings;

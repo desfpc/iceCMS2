@@ -7,7 +7,6 @@ declare(strict_types=1);
  *
  * Caching Class Tests
  */
-
 namespace vendor\Caching;
 
 use Exception;

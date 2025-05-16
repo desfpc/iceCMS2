@@ -7,7 +7,6 @@ declare(strict_types=1);
  *
  * Redis Caching Class
  */
-
 namespace iceCMS2\Caching;
 
 use iceCMS2\Tools\Exception;
