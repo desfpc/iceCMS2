@@ -20,3 +20,4 @@ templates/vendor/ice
 controllers/vendor
 /elasticsearch
 /elasticsearch/*
+.docker-init-done
