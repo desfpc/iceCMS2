@@ -76,14 +76,14 @@ class AuthorizationTest extends Ice2CMSTestCase
         $token = $tokenAuthorization->getTokens($testEmail, $testPassword);
         $this->assertNotFalse($token);
 
-        $_SERVER['HTTP_ACCESS_TOKEN'] = $token['accessToken'];
+        $_SERVER['HTTP_TOKEN'] = $token['accessToken'];
         $this->assertTrue($tokenAuthorization->authorizeRequest());
 
-        $_SERVER['HTTP_REFRESH_TOKEN'] = $token['refreshToken'];
+        $_SERVER['HTTP_TOKEN'] = $token['refreshToken'];
         $newTokens = $tokenAuthorization->refreshToken();
         $this->assertIsArray($newTokens);
 
-        $_SERVER['HTTP_ACCESS_TOKEN'] = $newTokens['accessToken'];
+        $_SERVER['HTTP_TOKEN'] = $newTokens['accessToken'];
         $this->assertTrue($tokenAuthorization->authorizeRequest());
     }
 }
