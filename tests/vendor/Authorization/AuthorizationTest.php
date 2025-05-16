@@ -23,15 +23,12 @@ class AuthorizationTest extends Ice2CMSTestCase
      */
     protected static array $_dbTables = ['users'];
 
-    /**
-     * @inheritdoc
-     */
-    public function __construct()
+    protected function setUp(): void
     {
-        if (session_id() === ''){
+        if (session_id() === '') {
             session_start();
         }
-        parent::__construct();
+        parent::setUp();
     }
 
     /**

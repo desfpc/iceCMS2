@@ -91,8 +91,8 @@ abstract class Ice2CMSTestCase extends TestCase
 
         if (!empty(self::$_settings)) {
             static::$_testSettings->testMode = true;
-            static::$_realDB = (new DBFactory(self::$_settings))->db;
-            static::$_db = (new DBFactory(self::$_testSettings))->db;
+            static::$_realDB = new DBFactory(self::$_settings)->db;
+            static::$_db = new DBFactory(self::$_testSettings)->db;
 
             //Copy Tables structure from real DB to test DB
             if (!empty(static::$_dbTables)) {
@@ -165,7 +165,8 @@ abstract class Ice2CMSTestCase extends TestCase
     protected static function _getPath(): bool|string
     {
         $cl = new ReflectionClass(static::class);
-        return dirname($cl->getFileName());
+        $fileName = $cl->getFileName();
         unset($cl);
+        return dirname($fileName);
     }
 }
