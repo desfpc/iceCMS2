@@ -36,7 +36,7 @@ class HelloWorld extends AbstractController implements ControllerInterface
             ['title' => 'Hello World', 'url' => '/hello-world/'],
         ];
 
-        LoggerFactory::log('debug', $this->breadcrumbs);
+        LoggerFactory::log($this->settings,'debug', $this->breadcrumbs);
 
         $this->renderTemplate('main');
     }

@@ -15,7 +15,7 @@ require('routers.php');
 $settings = [
     'path' => str_replace('settings', '', dirname(__FILE__)),
     'template' => 'ice',
-    'layoutUseVendor' => false,
+    'layoutUseVendor' => true,
     'dev' => true,
     'secret' => 'verySecretSecret',
     'db' => [
