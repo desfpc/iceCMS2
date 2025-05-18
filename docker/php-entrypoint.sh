@@ -39,7 +39,7 @@ if [ ! -f "$INIT_MARKER" ]; then
     echo "🔧 Installing Symfony..."
     composer create-project symfony/skeleton /var/www/html/symfony --no-interaction
     cd /var/www/html/symfony
-    composer require symfony/web-server-bundle symfony/orm-pack symfony/maker-bundle --no-interaction
+    composer require symfony/orm-pack symfony/maker-bundle --no-interaction
   fi
 
   ##########################
