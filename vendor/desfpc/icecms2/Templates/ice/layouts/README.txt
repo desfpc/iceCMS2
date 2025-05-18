@@ -1,1 +1,0 @@
-This is where the app template layouts files are.
