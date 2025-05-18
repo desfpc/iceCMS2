@@ -75,28 +75,6 @@ class Authorize extends AbstractController implements ControllerInterface
     }
 
     /**
-     * User profile page
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function profile(): void
-    {
-        $this->_authorizationCheck();
-
-        $this->breadcrumbs = [
-            ['title' => 'Main', 'url' => '/'],
-            ['title' => 'Profile', 'url' => '/profile/']
-        ];
-
-        $user = $this->authorization->getUser();
-        $user->loadAvatar();
-        $this->templateData['user'] = $user;
-
-        $this->renderTemplate('profile');
-    }
-
-    /**
      * User registration
      *
      * @return void
